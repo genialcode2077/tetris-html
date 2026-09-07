@@ -10,7 +10,7 @@ Juego de bloques que caen (estilo Tetris, reglas Guideline/SRS) en HTML5 + TypeS
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:5173
+pnpm dev        # http://localhost:5180
 pnpm check      # lint + typecheck + tests + build
 ```
 

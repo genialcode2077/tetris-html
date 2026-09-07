@@ -4,21 +4,24 @@
 
 ## Estado actual
 
-- **Fase:** 0 → 1 (planificación cerrada; comenzando MVP)
-- **Versión:** 0.1.0 (sin release)
-- **Demo:** pendiente (GitHub Pages se configura en Fase 0)
-- **Salud:** CI pendiente de primer run
+- **Fase:** 1 completada (MVP jugable desplegado) → Fase 2 en curso (pulido)
+- **Versión:** 0.1.0 (sin release etiquetada)
+- **Demo:** https://genialcode2077.github.io/tetris-html/ (despliegue automático desde `main`)
+- **Repositorio:** https://github.com/genialcode2077/tetris-html
+- **Salud:** `pnpm check` verde en local (79 tests unitarios/propiedades, cobertura core 96 % líneas / 85 % ramas); E2E smoke en chromium y móvil; CI en GitHub Actions
 
 ## Próximos pasos (orden)
 
-1. Implementar `src/core` con tests (ver `docs/ARCHITECTURE.md` y `docs/research/01-*`).
-2. Loop + handling + Canvas 2D + HUD + teclado → partida jugable en Marathon.
-3. Verificación visual en navegador; captura en esta bitácora.
-4. Pantallas, persistencia, modos; primer despliegue.
+1. Verificar en dispositivo móvil real (gestos, botones, audio iOS) y guardar capturas en `docs/assets/screenshots/`.
+2. PWA (vite-plugin-pwa, iconos PNG generados por script, manifest) y Lighthouse CI con presupuestos.
+3. Capturas de regresión visual en Playwright (semilla fija, `__blockfall.tick`).
+4. Iteraciones de investigación periódica según `docs/research/README.md` (SFX A/B, tipografía HUD móvil, paleta).
+5. Fase 3: prototipo de renderer three.js tras la interfaz `Renderer`.
 
 ## Bloqueos / decisiones pendientes del usuario
 
-- Nombre visible del juego: se usa "Blockfall" (ADR-0005); cambiar `APP_TITLE` si se prefiere otro.
+- Nombre visible del juego: se usa "Blockfall" (ADR-0005); cambiar `APP_TITLE` en `src/app/config.ts` si se prefiere otro.
+- Verificación de audio: no se puede escuchar desde el agente; requiere prueba humana.
 
 ## Sesiones
 

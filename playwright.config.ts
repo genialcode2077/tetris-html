@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4173;
+const PORT = 4517; // puerto poco común: evita reutilizar por error otro servidor local
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -24,7 +24,7 @@ export default defineConfig({
   webServer: {
     command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
     env: { VITE_E2E: '1' },
   },

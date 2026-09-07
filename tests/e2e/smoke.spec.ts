@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('flujo básico', () => {
   test('título → modos → partida → pausa', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'BLOCKFALL' })).toBeVisible();
-    await page.getByRole('button', { name: 'Jugar' }).click();
+    await expect(page.getByRole('heading', { name: 'BLOCKFALL', level: 2 })).toBeVisible();
+    await page.getByRole('button', { name: 'Jugar', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Elige modo' })).toBeVisible();
     await page.getByRole('button', { name: 'Empezar' }).click();
     await expect(page.locator('#app')).toHaveAttribute('data-screen', 'game');
@@ -40,6 +40,6 @@ test.describe('flujo básico', () => {
     await page.getByRole('button', { name: 'Récords' }).click();
     await expect(page.getByRole('heading', { name: 'Récords' })).toBeVisible();
     await page.getByRole('button', { name: 'Volver' }).click();
-    await expect(page.getByRole('heading', { name: 'BLOCKFALL' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'BLOCKFALL', level: 2 })).toBeVisible();
   });
 });

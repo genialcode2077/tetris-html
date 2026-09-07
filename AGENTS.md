@@ -14,7 +14,7 @@ Juego tipo Tetris moderno (Guideline SRS) en HTML5 + TypeScript, sin frameworks.
 
 ```bash
 pnpm install            # Node >= 22.12, pnpm 11
-pnpm dev                # http://localhost:5173
+pnpm dev                # http://localhost:5180
 pnpm check              # lint + typecheck + test + build (debe pasar antes de commit)
 pnpm test               # Vitest (unit + property-based)
 pnpm test:e2e           # Playwright (requiere `pnpm exec playwright install chromium` la primera vez)
@@ -47,7 +47,7 @@ CI verde · docs actualizadas (`CHANGELOG.md` Unreleased, `docs/STATUS.md`, `doc
 
 ## Verificación visual
 
-`pnpm dev` → abrir `http://localhost:5173` → jugar ≥ 60 s (mover, rotar con kicks contra pared, hold, hard drop, limpiar un Tetris) → consola sin errores → captura de pantalla. En Claude Code usar las herramientas de Chrome; en otros agentes, Playwright (`pnpm test:e2e`).
+`pnpm dev` → abrir `http://localhost:5180` → jugar ≥ 60 s (mover, rotar con kicks contra pared, hold, hard drop, limpiar un Tetris) → consola sin errores → captura de pantalla. En Claude Code usar las herramientas de Chrome; en otros agentes, Playwright (`pnpm test:e2e`).
 
 ## Investigación
 

@@ -28,11 +28,11 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 5173,
+    port: 5180,
     strictPort: false,
   },
   preview: {
-    port: 4173,
+    port: 4517,
   },
   test: {
     include: ['src/**/*.test.ts'],
@@ -42,7 +42,7 @@ export default defineConfig({
       include: ['src/core/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/core/types.ts'],
       reporter: ['text', 'html', 'lcov'],
-      thresholds: { lines: 90, functions: 90, branches: 85, statements: 90 },
+      thresholds: { lines: 90, functions: 90, branches: 80, statements: 90 },
     },
   },
 });

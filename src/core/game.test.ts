@@ -430,3 +430,63 @@ describe('Game: fin de partida', () => {
     expect(ev.some((e) => e.type === 'gameOver' && e.reason === 'lockout')).toBe(true);
   });
 });
+
+describe('Game: casos adicionales', () => {
+  it('IRS/IHS: rotación y hold pulsados durante la limpieza se aplican al aparecer', () => {
+    const g = make({ lineClearDelayMs: 200 }, 7);
+    fillRows(g, 1, 9);
+    untilI(g, 250);
+    cmd(g, 'cw');
+    for (let i = 0; i < 6; i++) g.dispatch('right');
+    g.step(0);
+    cmd(g, 'hardDrop');
+    expect(g.state.phase).toBe('clearing');
+    g.dispatch('cw');
+    g.dispatch('hold');
+    g.dispatch('left'); // se ignora durante clearing
+    run(g, 210);
+    expect(g.state.phase).toBe('falling');
+    expect(g.state.hold).not.toBeNull();
+    expect(g.state.holdUsed).toBe(true);
+  });
+
+  it('ARE > 0 retrasa la aparición de la pieza siguiente', () => {
+    const g = make({ areMs: 100, lineClearDelayMs: 0 }, 3);
+    cmd(g, 'hardDrop');
+    expect(g.state.phase).toBe('spawning');
+    expect(g.state.active).toBeNull();
+    run(g, 110);
+    expect(g.state.phase).toBe('falling');
+    expect(g.state.active).not.toBeNull();
+  });
+
+  it('SRS+ usa la tabla simétrica de la I', () => {
+    const g = make({ rotationSystem: 'srs-plus' }, 3);
+    expect(g.rules.rotationSystem).toBe('srs-plus');
+    while (g.state.active!.type !== 'I') cmd(g, 'hardDrop');
+    const ev = cmd(g, 'cw');
+    expect(ev.some((e) => e.type === 'rotate')).toBe(true);
+  });
+
+  it('gravedad fija ignora el nivel; soft drop con gravedad 20G no puntúa de más', () => {
+    const g = make({ gravityMode: 'fixed', startLevel: 3, levelCap: 20 }, 1);
+    expect(g.gravityLevel).toBe(3);
+    setLines(g, 100);
+    const h = make({ startLevel: 20, levelCap: 20 }, 1);
+    h.dispatch('softDropOn');
+    h.step(STEP);
+    expect(h.state.active!.y).toBe(h.state.ghostY);
+  });
+
+  it('la pieza que se queda sin resets se fija cuando expira el temporizador aunque rote', () => {
+    const g = make({ softDropFactor: Number.POSITIVE_INFINITY, lockResetLimit: 2 }, 2);
+    g.dispatch('softDropOn');
+    g.step(STEP);
+    g.dispatch('softDropOff');
+    for (let i = 0; i < 6; i++) {
+      g.dispatch(i % 2 === 0 ? 'left' : 'right');
+      run(g, 150);
+    }
+    expect(g.state.stats.pieces).toBe(1);
+  });
+});

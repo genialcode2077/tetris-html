@@ -88,3 +88,12 @@ describe('SRS kicks', () => {
     expect(kicksFor('I', 1, 3, 'srs')).toEqual([{ x: 0, y: 0 }]);
   });
 });
+
+describe('SRS kicks: casos límite', () => {
+  it('180 con I y transiciones no adyacentes devuelven (0,0)', () => {
+    expect(kicksFor('I', 0, 2, 'srs')).toEqual([{ x: 0, y: 0 }]);
+    expect(kicksFor('I', 2, 0, 'srs-plus')).toEqual([{ x: 0, y: 0 }]);
+    expect(kicksFor('J', 3, 1, 'srs')).toHaveLength(6);
+    expect(kicksFor('S', 2, 0, 'srs')).toHaveLength(6);
+  });
+});
