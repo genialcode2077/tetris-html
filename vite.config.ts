@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
+import { VitePWA } from 'vite-plugin-pwa';
 import pkg from './package.json' with { type: 'json' };
 
 function gitShortSha(): string {
@@ -13,8 +14,53 @@ function gitShortSha(): string {
   }
 }
 
+const BASE = process.env.BASE_PATH ?? '/';
+
 export default defineConfig({
-  base: process.env.BASE_PATH ?? '/',
+  base: BASE,
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      manifest: {
+        name: 'Blockfall',
+        short_name: 'Blockfall',
+        description:
+          'Juego de bloques que caen con reglas modernas: SRS, hold, T-spins, back-to-back y perfect clear.',
+        lang: 'es',
+        dir: 'ltr',
+        start_url: BASE,
+        scope: BASE,
+        display: 'standalone',
+        orientation: 'any',
+        background_color: '#0B0F1A',
+        theme_color: '#0B0F1A',
+        categories: ['games', 'entertainment'],
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          {
+            src: 'icons/icon-maskable-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+      },
+      devOptions: { enabled: false },
+    }),
+  ],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

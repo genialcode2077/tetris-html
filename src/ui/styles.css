@@ -290,6 +290,7 @@ body {
 }
 .touch-controls button {
   min-height: 48px;
+  touch-action: manipulation;
   font-size: 18px;
   font-weight: 700;
   color: var(--text);

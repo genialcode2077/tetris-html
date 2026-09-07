@@ -25,16 +25,16 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado. C
 - [x] Audio procedural (SFX) + música chiptune original adaptativa + ajustes de volumen (pendiente afinar por escucha)
 - [x] Game feel: shake, partículas, flashes, popups de combo/T-spin, viñeta de peligro, hit-stop
 - [~] Controles táctiles (gestos + botones) y gamepad — implementados, sin verificar en dispositivo real
-- [~] Accesibilidad: paleta daltónica, patrones, alto contraste, reducir movimiento, ARIA live, foco — implementados, sin auditoría con lector de pantalla
-- [ ] PWA offline + iconos + manifest
-- [~] E2E Playwright (smoke) · pendiente: capturas de regresión visual y Lighthouse CI
+- [x] Accesibilidad: paleta daltónica, patrones, alto contraste, reducir movimiento, ARIA live, foco; auditoría axe-core WCAG A/AA en CI (falta prueba manual con lector de pantalla)
+- [x] PWA offline + iconos generados por script + manifest con iconos recortables
+- [x] E2E Playwright: flujo, capturas, accesibilidad, presupuesto de render y funcionamiento sin conexión · pendiente: Lighthouse CI
 - [x] Modo Zen; estadísticas PPS/tetris rate/combos en resultados
 
 ## Fase 3 · Premium
 
 - [ ] Renderer three.js (WebGPU/WebGL2, InstancedMesh, bloom TSL, fallback)
 - [ ] Replays (semilla + entradas) y fantasma de récord
-- [ ] Finesse y estadísticas avanzadas; tutorial interactivo; i18n es/en
+- [ ] Finesse (pulsaciones mínimas por colocación) y estadísticas avanzadas; tutorial interactivo; traducción a inglés
 - [ ] Tabla 180 verificada y all-spin opcional
 
 ## Fase 4 · Mejora continua (investigaciones periódicas)

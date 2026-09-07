@@ -4,27 +4,42 @@
 
 ## Estado actual
 
-- **Fase:** 1 completada (MVP jugable desplegado) → Fase 2 en curso (pulido)
-- **Versión:** 0.1.0 (sin release etiquetada)
-- **Demo:** https://genialcode2077.github.io/tetris-html/ (despliegue automático desde `main`)
-- **Repositorio:** https://github.com/genialcode2077/tetris-html
-- **Capturas de verificación:** `docs/assets/screenshots/` (generadas con `pnpm exec playwright test --grep @screenshots`; escritorio y móvil)
-- **Salud:** `pnpm check` verde en local (79 tests unitarios/propiedades, cobertura core 96 % líneas / 85 % ramas); E2E smoke en chromium y móvil; CI en GitHub Actions
+- **Fase:** 2 (pulido) muy avanzada; fase 3 pendiente de una decisión de producto (renderer premium)
+- **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
+- **Pruebas:** 89 unitarias y de propiedades + 22 de extremo a extremo (escritorio y móvil), todas en verde
+- **Cobertura del motor:** 96 % de líneas, 85 % de ramas
+- **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
+- **Tamaño:** 21,7 KB de JavaScript comprimido y 2,8 KB de CSS
+- **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas
+- **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
+- **Capturas:** `docs/assets/screenshots/` (`pnpm screenshots`)
 
 ## Próximos pasos (orden)
 
-1. Verificar en dispositivo móvil real (gestos, botones, audio iOS) y guardar capturas en `docs/assets/screenshots/`.
-2. PWA (vite-plugin-pwa, iconos PNG generados por script, manifest) y Lighthouse CI con presupuestos.
-3. Capturas de regresión visual en Playwright (semilla fija, `__blockfall.tick`).
-4. Iteraciones de investigación periódica según `docs/research/README.md` (SFX A/B, tipografía HUD móvil, paleta).
-5. Fase 3: prototipo de renderer three.js tras la interfaz `Renderer`.
+1. **Decidir el renderer premium** (ver `docs/research/07`, sección 2): PixiJS para 2D con resplandor, o three.js para volumen y cámara. La interfaz `Renderer` ya admite ambos con carga diferida.
+2. Estadísticas de finesse (pulsaciones mínimas por colocación) y panel de resultados ampliado.
+3. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
+4. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración).
+5. Presupuestos de Lighthouse en cada propuesta de cambio.
 
 ## Bloqueos / decisiones pendientes del usuario
 
-- Nombre visible del juego: se usa "Blockfall" (ADR-0005); cambiar `APP_TITLE` en `src/app/config.ts` si se prefiere otro.
-- Verificación de audio: no se puede escuchar desde el agente; requiere prueba humana.
+- Renderer premium: elección entre PixiJS y three.js (o quedarse solo con Canvas 2D).
+- Nombre visible "Blockfall" (ADR-0005): cambiar `APP_TITLE` en `src/app/config.ts` si se prefiere otro.
+- Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-07 · Sesión 2 (agente Claude) — validación y aplicación instalable
+
+- Validación del motor con maniobras reales en `src/core/maneuvers.test.ts`: T-Spin Triple con la 5ª prueba del kick, T-Spin Double con back-to-back, I-spin en pozo, perfect clear normal y encadenado, combos, mini T-spin y fin de partida. Todas correctas.
+- Dos aserciones propias estaban mal y el motor tenía razón: un Tetris que vacía el tablero también es perfect clear, y la segunda limpieza consecutiva suma combo.
+- Medido el rendimiento: 35 µs por paso lógico y 1,0 ms de render en el peor caso. Hay margen amplio para un renderer más ambicioso.
+- Auditoría de accesibilidad con axe-core: una violación real corregida (el viewport impedía el zoom, criterio WCAG 1.4.4).
+- Aplicación instalable y sin conexión con `vite-plugin-pwa`; iconos generados por script con Playwright (`pnpm icons`).
+- Integración continua ampliada: ahora también verifica accesibilidad, presupuesto de render y funcionamiento sin conexión.
+- Cerrado el PR de TypeScript 7 (incompatible con typescript-eslint) y rebasados los demás de Dependabot.
+- Informe `docs/research/07-validacion-y-plan-fase-3.md` con los datos y el plan.
 
 ### 2026-09-07 · Sesión 1 (agente Claude)
 

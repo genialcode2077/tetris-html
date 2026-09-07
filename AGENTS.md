@@ -18,6 +18,11 @@ pnpm dev                # http://localhost:5180
 pnpm check              # lint + typecheck + test + build (debe pasar antes de commit)
 pnpm test               # Vitest (unit + property-based)
 pnpm test:e2e           # Playwright (requiere `pnpm exec playwright install chromium` la primera vez)
+pnpm test:a11y          # auditoría axe-core WCAG A/AA
+pnpm test:perf          # presupuesto de coste de render por frame
+pnpm test:pwa           # manifest e instalación, y arranque sin conexión
+pnpm screenshots        # capturas en docs/assets/screenshots
+pnpm icons              # regenera los iconos PNG de la aplicación instalable
 pnpm build && pnpm preview
 ```
 

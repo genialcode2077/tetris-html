@@ -15,10 +15,10 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 
 Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción concreta:
 
-1. Finesse y estadísticas avanzadas (APM/PPS/finesse faults) — referencia TETR.IO/Jstris.
+1. Finesse y estadísticas avanzadas (APM/PPS/finesse faults) — referencia TETR.IO/Jstris. **Siguiente.**
 2. Tuning de SFX con pruebas A/B (percepción de "impacto" del hard drop).
 3. Tipografía y legibilidad del HUD en móviles pequeños (≤ 360 px).
-4. Paleta y contraste: verificación con simuladores de daltonismo (Coblis, Chrome DevTools).
+4. Paleta y contraste: verificación con simuladores de daltonismo (Coblis, Chrome DevTools). Parcial: axe-core ya vigila el contraste en cada PR.
 5. Rendimiento de partículas en Canvas 2D en gama baja (Moto G-class).
 6. Onboarding: tutorial interactivo de 60 s (T-spin, hold, hard drop).
 7. Replays y "ghost" de récord (grabación de entradas con semilla).

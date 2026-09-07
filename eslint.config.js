@@ -35,10 +35,13 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.ts'],
+    files: ['**/*.test.ts', 'tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+      'no-console': 'off',
     },
   },
   {
