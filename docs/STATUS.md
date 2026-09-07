@@ -8,6 +8,7 @@
 - **Versión:** 0.1.0 (sin release etiquetada)
 - **Demo:** https://genialcode2077.github.io/tetris-html/ (despliegue automático desde `main`)
 - **Repositorio:** https://github.com/genialcode2077/tetris-html
+- **Capturas de verificación:** `docs/assets/screenshots/` (generadas con `pnpm exec playwright test --grep @screenshots`; escritorio y móvil)
 - **Salud:** `pnpm check` verde en local (79 tests unitarios/propiedades, cobertura core 96 % líneas / 85 % ramas); E2E smoke en chromium y móvil; CI en GitHub Actions
 
 ## Próximos pasos (orden)

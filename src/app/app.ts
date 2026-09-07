@@ -137,7 +137,7 @@ export class App {
 
   // ------------------------------------------------------------ partida
 
-  newGame(): void {
+  newGame(seedOverride?: number): void {
     const st = this.store.settings;
     const mode = st.game.mode;
     const rules: Partial<RuleSet> = {
@@ -148,7 +148,7 @@ export class App {
       softDropFactor: st.rules.softDropFactor,
       ...(mode === 'sprint' ? {} : { lineClearDelayMs: st.rules.lineClearDelayMs }),
     };
-    const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
+    const seed = seedOverride ?? (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
     this.session?.releaseAll();
     this.session = new Session({
       mode,
