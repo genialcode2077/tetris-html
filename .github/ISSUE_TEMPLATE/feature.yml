@@ -1,0 +1,11 @@
+name: Mejora
+description: Nueva funcionalidad o mejora de UX/rendimiento
+labels: ['type:feature']
+body:
+  - type: textarea
+    id: proposal
+    attributes: { label: Propuesta y motivación }
+    validations: { required: true }
+  - type: textarea
+    id: dod
+    attributes: { label: Criterios de aceptación }

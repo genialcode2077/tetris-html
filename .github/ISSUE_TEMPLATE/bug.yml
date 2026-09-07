@@ -1,0 +1,14 @@
+name: Bug
+description: Algo no funciona como la regla o el diseño indican
+labels: ['type:bug']
+body:
+  - type: textarea
+    id: what
+    attributes: { label: Qué ocurre, description: Pasos, resultado actual y esperado }
+    validations: { required: true }
+  - type: input
+    id: rule
+    attributes: { label: Regla o documento de referencia, placeholder: docs/research/01 §3.1 }
+  - type: input
+    id: env
+    attributes: { label: Entorno, placeholder: Chrome 140 / iOS 19 / commit abc123 }

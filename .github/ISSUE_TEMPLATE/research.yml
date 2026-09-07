@@ -1,0 +1,11 @@
+name: Investigación
+description: Tema de investigación para una iteración periódica
+labels: ['type:research']
+body:
+  - type: textarea
+    id: question
+    attributes: { label: Pregunta a responder }
+    validations: { required: true }
+  - type: textarea
+    id: sources
+    attributes: { label: Fuentes iniciales }
