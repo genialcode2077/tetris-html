@@ -26,5 +26,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: { VITE_E2E: '1' },
   },
 });
