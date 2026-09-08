@@ -38,6 +38,8 @@ export interface GameSettings {
   mode: GameMode;
   startLevel: number;
   endless: boolean;
+  /** Solo en práctica: cada cuántas piezas sube una fila de basura; 0 la desactiva. */
+  garbageEveryPieces: number;
 }
 
 export interface TouchSettings {
@@ -92,7 +94,7 @@ export const DEFAULT_SETTINGS: Settings = {
     patterns: false,
     reducedMotion: 'auto',
   },
-  game: { mode: 'marathon', startLevel: 1, endless: false },
+  game: { mode: 'marathon', startLevel: 1, endless: false, garbageEveryPieces: 0 },
   touch: { buttons: true, tapAlwaysCw: false },
   stats: { showFinesseFaults: false },
   coaching: { enabled: true },

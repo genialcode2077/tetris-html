@@ -50,7 +50,19 @@ describe('modos nuevos', () => {
     expect(rulesForMode('daily').goal).toEqual({ type: 'lines', lines: 40 });
     expect(rulesForMode('practice').goal).toEqual({ type: 'none' });
     expect(rulesForMode('practice').gravityMode).toBe('fixed');
-    expect(rulesForMode('practice').levelCap).toBe(1);
+    // El nivel llega hasta veinte para poder practicar con gravedad máxima.
+    expect(rulesForMode('practice').levelCap).toBe(20);
+    expect(rulesForMode('practice').garbage).toBeNull();
+  });
+
+  it('la práctica activa la basura solo si se pide', () => {
+    expect(rulesForMode('practice', { garbageEveryPieces: 0 }).garbage).toBeNull();
+    const con = rulesForMode('practice', { garbageEveryPieces: 8, garbageHoleChange: 0.5 });
+    expect(con.garbage).toEqual({ everyPieces: 8, holeChangeChance: 0.5 });
+    // El resto de modos nunca la traen.
+    for (const mode of ['marathon', 'sprint', 'ultra', 'zen', 'daily'] as const) {
+      expect(rulesForMode(mode, { garbageEveryPieces: 8 }).garbage).toBeNull();
+    }
   });
 
   it('todos los modos tienen etiqueta', () => {

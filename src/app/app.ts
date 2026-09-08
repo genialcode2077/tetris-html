@@ -195,7 +195,11 @@ export class App {
     this.session?.releaseAll();
     this.session = new Session({
       mode,
-      modeOptions: { startLevel: st.game.startLevel, endless: st.game.endless },
+      modeOptions: {
+        startLevel: st.game.startLevel,
+        endless: st.game.endless,
+        garbageEveryPieces: st.game.garbageEveryPieces,
+      },
       rules,
       handling: st.handling,
       seed,
@@ -627,14 +631,39 @@ export class App {
     endless.addEventListener('change', () => {
       this.store.updateSettings((x) => (x.game.endless = endless.checked));
     });
+    const garbage = byIdAs('garbage-rate', HTMLSelectElement);
+    clear(garbage);
+    for (const value of [0, 4, 8, 12, 20]) {
+      const label = value === 0 ? t('modes.garbageOff') : t('modes.garbagePieces', { n: value });
+      const opt = h('option', { value }, label);
+      opt.selected = st.game.garbageEveryPieces === value;
+      garbage.append(opt);
+    }
+    garbage.addEventListener('change', () => {
+      this.store.updateSettings((x) => (x.game.garbageEveryPieces = Number(garbage.value)));
+    });
+
+    // En práctica el nivel llega hasta veinte, que es la gravedad máxima: la pieza
+    // aparece ya en el suelo (docs/research/13).
+    const practiceLevel = byIdAs('practice-level', HTMLSelectElement);
+    clear(practiceLevel);
+    for (let i = 1; i <= 20; i++) {
+      const opt = h('option', { value: i }, i === 20 ? `20 (${t('modes.maxGravity')})` : String(i));
+      opt.selected = st.game.startLevel === i;
+      practiceLevel.append(opt);
+    }
+    practiceLevel.addEventListener('change', () => {
+      this.store.updateSettings((x) => (x.game.startLevel = Number(practiceLevel.value)));
+    });
+
     this.updateModeOptions();
   }
 
-  /** El reto diario y la práctica fijan sus propias reglas, así que sus opciones se ocultan. */
+  /** Cada modo enseña solo las opciones que le afectan. */
   private updateModeOptions(): void {
     const mode = this.store.settings.game.mode;
-    const fixed = mode === 'daily' || mode === 'practice';
-    byId('mode-options').hidden = fixed;
+    byId('mode-options').hidden = mode === 'daily' || mode === 'practice';
+    byId('practice-options').hidden = mode !== 'practice';
   }
 
   private buildRecords(): void {

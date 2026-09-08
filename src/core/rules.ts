@@ -17,6 +17,7 @@ export const DEFAULT_RULES: RuleSet = {
   gravityMode: 'guideline',
   softDropFactor: 20,
   goal: { type: 'lines', lines: 150 },
+  garbage: null,
 };
 
 export type GameMode = 'marathon' | 'sprint' | 'ultra' | 'zen' | 'daily' | 'practice';
@@ -24,6 +25,10 @@ export type GameMode = 'marathon' | 'sprint' | 'ultra' | 'zen' | 'daily' | 'prac
 export interface ModeOptions {
   readonly startLevel?: number;
   readonly endless?: boolean;
+  /** Solo en el modo práctica: cada cuántas piezas sube una fila de basura. */
+  readonly garbageEveryPieces?: number;
+  /** Solo en el modo práctica: probabilidad de que el hueco cambie de columna. */
+  readonly garbageHoleChange?: number;
 }
 
 export function rulesForMode(mode: GameMode, options: ModeOptions = {}): RuleSet {
@@ -67,15 +72,21 @@ export function rulesForMode(mode: GameMode, options: ModeOptions = {}): RuleSet
         lineClearDelayMs: 0,
         goal: { type: 'lines', lines: 40 },
       };
-    case 'practice':
-      // Para entrenar T-spins y perfect clears sin presión de tiempo.
+    case 'practice': {
+      // Para entrenar sin presión de tiempo, con basura opcional y nivel libre.
+      const every = options.garbageEveryPieces ?? 0;
       return {
         ...DEFAULT_RULES,
-        startLevel: 1,
+        startLevel,
         gravityMode: 'fixed',
-        levelCap: 1,
+        levelCap: 20,
         goal: { type: 'none' },
+        garbage:
+          every > 0
+            ? { everyPieces: every, holeChangeChance: options.garbageHoleChange ?? 0.3 }
+            : null,
       };
+    }
   }
 }
 

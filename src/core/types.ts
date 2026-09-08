@@ -40,6 +40,8 @@ export type Goal =
   | { readonly type: 'lines'; readonly lines: number }
   | { readonly type: 'time'; readonly ms: number };
 
+import type { GarbageRules } from './garbage';
+
 export interface RuleSet {
   readonly rotationSystem: RotationSystem;
   readonly enable180: boolean;
@@ -60,6 +62,8 @@ export interface RuleSet {
   /** Multiplicador de soft drop (Infinity = instantáneo). */
   readonly softDropFactor: number;
   readonly goal: Goal;
+  /** Subida de basura; null la desactiva (docs/research/13). */
+  readonly garbage: GarbageRules | null;
 }
 
 export interface LineClearEvent {
@@ -85,6 +89,7 @@ export type GameEvent =
   | LineClearEvent
   | { readonly type: 'tspin'; readonly mini: boolean; readonly points: number }
   | { readonly type: 'clearDone'; readonly rows: readonly number[] }
+  | { readonly type: 'garbage'; readonly rows: number; readonly hole: number }
   | { readonly type: 'levelUp'; readonly level: number }
   | { readonly type: 'hold'; readonly piece: PieceType }
   | { readonly type: 'holdFail' }

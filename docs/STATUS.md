@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 158 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 175 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,9 +16,9 @@
 
 ## Próximos pasos (orden)
 
-1. Posiciones preparadas en el modo práctica; subida de basura y 20G.
+1. Fantasma del récord en Sprint; controles de avance al ver una repetición.
 2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-3. Fantasma del récord en Sprint; controles de avance al ver una repetición.
+3. Posiciones preparadas en el modo práctica para entrenar giros concretos.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -26,6 +26,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 9 (agente, iteración periódica) — basura y gravedad máxima
+
+- Tema del backlog: subida de basura y gravedad máxima para el modo práctica (informe `docs/research/13`).
+- La wiki oficial publica la tabla de cuántas filas envía cada jugada, cómo se acumulan en una cola y cómo limpiar líneas las cancela antes de que entren. La wiki de Hard Drop añade las proporciones de huecos alineados según el tipo de basura.
+- El modo práctica gana subida de basura configurable, con hueco que se mantiene y cambia con cierta probabilidad, más niveles hasta el veinte para entrenar con gravedad máxima.
+- La basura se genera con el mismo generador que las piezas, así que una repetición sigue reproduciendo exactamente las mismas filas. Hay una prueba que lo fija.
+- Diecisiete pruebas nuevas: la tabla de ataque completa, la cancelación, la subida, el hueco, el determinismo y que los demás modos nunca traen basura.
+- Volvió a fallar una sustitución automática sobre el HTML y los controles nuevos no llegaron a la página. Solo se vio al mirar la captura (F-028).
 
 ### 2026-09-08 · Sesión 8 (agente, iteración periódica) — partículas en equipos lentos
 

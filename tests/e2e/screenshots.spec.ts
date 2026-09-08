@@ -121,3 +121,33 @@ test('captura de un consejo en pantalla @screenshots', async ({ page }, testInfo
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/${tag}-08-tip.png` });
 });
+
+test('captura del modo práctica con basura @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.locale = 'es';
+      s.game.mode = 'practice';
+      s.game.garbageEveryPieces = 4;
+      s.game.startLevel = 1;
+    });
+    window.__blockfall?.app.refreshSettings();
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  // Se colocan piezas para que suba basura varias veces.
+  await page.evaluate(() => {
+    const bf = window.__blockfall;
+    const s = bf?.app.currentSession;
+    if (!bf || !s) return;
+    for (let i = 0; i < 14; i++) {
+      const dir = i % 3 === 0 ? 'left' : i % 3 === 1 ? 'right' : 'cw';
+      for (let n = 0; n < 3; n++) s.game.dispatch(dir);
+      s.game.dispatch('hardDrop');
+      bf.tick(120);
+    }
+  });
+  await page.evaluate(() => window.__blockfall?.tick(200));
+  await page.screenshot({ path: `${OUT}/${tag}-09-practice-garbage.png` });
+});

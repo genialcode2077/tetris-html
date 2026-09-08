@@ -8,6 +8,7 @@ import {
   lockPiece,
 } from './board';
 import { BOARD_W, VISIBLE_H } from './constants';
+import { GarbageQueue, attackFor } from './garbage';
 import { gravityMsPerRow, softDropMsPerRow } from './gravity';
 import { PIECE_BOX, cellsOf } from './pieces';
 import { BagRandomizer } from './randomizer';
@@ -63,11 +64,19 @@ export class Game {
   private lastKick: Point | null = null;
   private comboCount = 0;
   private buffered: Command[] = [];
+  /** Cola de basura pendiente; null si el modo no la usa (docs/research/13). */
+  private readonly garbage: GarbageQueue | null;
+  /** Filas de ataque que sobraron tras cancelar; en solitario solo informan. */
+  private pendingOutgoing = 0;
 
   constructor(options: GameOptions = {}) {
     this.rules = { ...DEFAULT_RULES, ...options.rules };
     this.seed = options.seed ?? 0x5eed;
-    this.bag = new BagRandomizer(mulberry32(this.seed));
+    const rng = mulberry32(this.seed);
+    this.bag = new BagRandomizer(rng);
+    // La basura usa el mismo generador que las piezas, así una repetición
+    // reproduce exactamente las mismas filas.
+    this.garbage = this.rules.garbage ? new GarbageQueue(this.rules.garbage, rng) : null;
     this.s = {
       board: createBoard(),
       active: null,
@@ -104,6 +113,16 @@ export class Game {
   /** Estado interno (solo lectura para consumidores). */
   get state(): Readonly<GameState> {
     return this.s;
+  }
+
+  /** Filas de basura esperando entrar. */
+  get pendingGarbage(): number {
+    return this.garbage?.pendingRows ?? 0;
+  }
+
+  /** Filas de ataque que sobraron tras cancelar la basura entrante. */
+  get outgoingAttack(): number {
+    return this.pendingOutgoing;
   }
 
   start(): void {
@@ -205,7 +224,17 @@ export class Game {
     this.s.ghostY = p ? p.y - dropDistance(this.s.board, p) : 0;
   }
 
+  /** Mete la basura pendiente antes de que aparezca la pieza siguiente. */
+  private applyPendingGarbage(): void {
+    const queue = this.garbage;
+    if (!queue || queue.pendingRows === 0) return;
+    const hole = queue.currentHole;
+    const rows = queue.applyTo(this.s.board);
+    if (rows > 0) this.emit({ type: 'garbage', rows, hole });
+  }
+
   private enterSpawning(): void {
+    this.applyPendingGarbage();
     this.s.phase = 'spawning';
     this.areTimer = 0;
     if (this.rules.areMs <= 0) this.spawnFromQueue();
@@ -482,6 +511,15 @@ export class Game {
       if (tspin !== 'none') s.stats.tspins += 1;
       if (perfectClear) s.stats.perfectClears += 1;
       s.lines += n;
+      if (this.garbage) {
+        const attack = attackFor({
+          lines: n,
+          spin: tspin,
+          backToBack: result.b2bApplied,
+          perfectClear,
+        });
+        this.pendingOutgoing += this.garbage.cancel(attack);
+      }
       this.emit({
         type: 'lineClear',
         rows,
@@ -515,6 +553,7 @@ export class Game {
         this.emit({ type: 'tspin', mini: tspin === 'mini', points: result.points });
       }
     }
+    this.garbage?.onPieceLocked(n);
     if (r.goal.type === 'lines' && s.lines >= r.goal.lines) {
       if (n > 0) {
         clearRows(s.board, rows);
