@@ -185,3 +185,48 @@ test('captura de la comparación con el récord @screenshots', async ({ page }, 
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/${tag}-10-split.png` });
 });
+
+test('captura de los controles de la repetición @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.locale = 'es';
+    });
+    window.__blockfall?.app.refreshSettings();
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  // Se juegan unas piezas y se termina la partida para poder ver la repetición.
+  await page.evaluate(() => {
+    const bf = window.__blockfall;
+    const s = bf?.app.currentSession;
+    if (!bf || !s) return;
+    for (let i = 0; i < 6; i++) {
+      s.press('hardDrop');
+      s.release('hardDrop');
+      bf.tick(200);
+    }
+    const b = s.game.state.board;
+    for (let y = 0; y < 22; y++) {
+      for (let x = 0; x < 10; x++) if (x !== 9) b[y * 10 + x] = 8;
+    }
+    s.press('hardDrop');
+    s.release('hardDrop');
+    bf.tick(1500);
+  });
+  await page.waitForFunction(
+    () => window.__blockfall?.app.currentSession?.status === 'gameover',
+    undefined,
+    { timeout: 10_000 },
+  );
+  await page.getByRole('button', { name: 'Ver repetición' }).click();
+  await page.evaluate(() => window.__blockfall?.tick(2000));
+  // Se pone a media velocidad para que se vea el control.
+  await page.evaluate(() => {
+    document.getElementById('replay-speed')?.click();
+  });
+  await page.evaluate(() => window.__blockfall?.tick(600));
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${OUT}/${tag}-11-replay-controls.png` });
+});

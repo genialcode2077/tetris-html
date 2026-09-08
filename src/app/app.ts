@@ -53,6 +53,9 @@ export class App {
   private resultsTimer: ReturnType<typeof setTimeout> | null = null;
   private lastReplay: Replay | null = null;
   private shownSplit: unknown = null;
+  /** Velocidades disponibles al ver una repetición, dentro del rango accesible. */
+  private static readonly REPLAY_RATES = [0.5, 0.75, 1, 1.5, 2] as const;
+  private replayRateIndex = 2;
   private readonly coach: Coach;
   private readonly reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   private lastTouchCell = 0;
@@ -213,6 +216,8 @@ export class App {
     if (this.resultsTimer) clearTimeout(this.resultsTimer);
     this.resultsTimer = null;
     this.coach.resetForNewGame();
+    this.currentReplay = null;
+    byId('replay-bar').hidden = true;
     this.shownSplit = null;
     (this.rendererHandle?.renderer as { resetBudget?: () => void } | undefined)?.resetBudget?.();
     this.hud.setMode(mode, this.session.rules);
@@ -295,6 +300,7 @@ export class App {
     this.renderer?.render(state, now);
     if (s) {
       this.hud.update(state, s.stats(), s.rules);
+      if (s.isReplay) this.updateReplayBar();
       if (!this.screens.active) this.hud.updateCountdown(s.status === 'countdown', s.countdownMs);
     }
     const cellSize = this.currentCellSize();
@@ -340,6 +346,24 @@ export class App {
   private onAction(action: InputAction, pressed: boolean): void {
     if (action === 'pause') {
       if (pressed) this.togglePause();
+      return;
+    }
+    // Al ver una repetición las teclas del juego no hacen nada, así que se
+    // reutilizan para manejar la reproducción (docs/research/15).
+    if (this.session?.isReplay === true && !this.screens.active) {
+      if (!pressed) return;
+      if (action === 'hardDrop') {
+        this.session.togglePause();
+        this.updateReplayBar();
+      } else if (action === 'right' || action === 'left') {
+        const step = action === 'right' ? 1 : -1;
+        const count = App.REPLAY_RATES.length;
+        this.replayRateIndex = (this.replayRateIndex + step + count) % count;
+        this.session.setPlaybackRate(App.REPLAY_RATES[this.replayRateIndex] ?? 1);
+        this.updateReplayBar();
+      } else if (action === 'hold') {
+        this.watchReplay(this.currentReplay);
+      }
       return;
     }
     if (action === 'restart') {
@@ -551,13 +575,61 @@ export class App {
     on('btn-results-title', () => {
       this.quitToTitle();
     });
+    // Controles de la repetición (docs/research/15).
+    on('replay-restart', () => {
+      const current = this.session;
+      if (current?.isReplay) this.watchReplay(this.currentReplay ?? this.lastReplay ?? null);
+    });
+    on('replay-toggle', () => {
+      this.session?.togglePause();
+      this.updateReplayBar();
+    });
+    on('replay-speed', () => {
+      this.replayRateIndex = (this.replayRateIndex + 1) % App.REPLAY_RATES.length;
+      this.session?.setPlaybackRate(App.REPLAY_RATES[this.replayRateIndex] ?? 1);
+      this.updateReplayBar();
+    });
+    on('replay-exit', () => {
+      this.quitToTitle();
+    });
     on('btn-fullscreen', () => {
       void this.toggleFullscreen();
     });
   }
 
+  /** Repetición que se está viendo, para poder reiniciarla. */
+  private currentReplay: Replay | null = null;
+
+  /** Actualiza los botones y la barra de avance de la repetición. */
+  private updateReplayBar(): void {
+    const bar = byId('replay-bar');
+    const s = this.session;
+    if (!s?.isReplay) {
+      bar.hidden = true;
+      return;
+    }
+    bar.hidden = false;
+    const toggle = byId('replay-toggle');
+    const paused = s.status === 'paused';
+    toggle.textContent = paused ? '▶' : '⏸';
+    toggle.title = t(paused ? 'replay.resume' : 'replay.pause');
+    toggle.setAttribute('aria-label', toggle.title);
+    const speed = byId('replay-speed');
+    speed.textContent = `${s.playbackRate}×`;
+    speed.title = `${t('replay.speed')}: ${s.playbackRate}×`;
+    speed.setAttribute('aria-label', speed.title);
+    byId('replay-restart').setAttribute('aria-label', t('replay.restart'));
+    byId('replay-exit').setAttribute('aria-label', t('replay.exit'));
+    const fill = byId('replay-progress');
+    const percent = Math.round(s.replayProgress * 100);
+    fill.style.width = `${percent}%`;
+    fill.parentElement?.setAttribute('aria-label', t('replay.progress', { n: percent }));
+  }
+
   /** Reproduce una repetición: el jugador solo mira. */
-  watchReplay(replay: Replay): void {
+  watchReplay(replay: Replay | null): void {
+    if (!replay) return;
+    this.currentReplay = replay;
     this.session?.releaseAll();
     this.session = new Session({ mode: replay.mode, countdownMs: 1200, replay });
     this.session.onEvent((e, s) => {
@@ -569,6 +641,8 @@ export class App {
     this.hud.hideOverlay();
     this.audio.startMusic();
     this.screens.hide();
+    this.session.setPlaybackRate(App.REPLAY_RATES[this.replayRateIndex] ?? 1);
+    this.updateReplayBar();
     this.hud.notify(t('notice.replayPlaying'));
     byId('board-wrap').focus();
   }
@@ -609,6 +683,8 @@ export class App {
   private quitToTitle(): void {
     this.session?.releaseAll();
     this.session = null;
+    this.currentReplay = null;
+    byId('replay-bar').hidden = true;
     this.audio.stopMusic();
     this.hud.hideOverlay();
     this.screens.show('title');

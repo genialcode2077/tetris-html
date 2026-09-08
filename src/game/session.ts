@@ -61,6 +61,12 @@ export class Session {
   private readonly splits: SplitTracker | null;
   /** Último hito cruzado, para que el marcador lo muestre. */
   lastSplit: SplitComparison | null = null;
+  /**
+   * Velocidad al ver una repetición. Multiplica cuántos pasos se dan por segundo,
+   * nunca el tamaño del paso, para que el resultado no cambie (docs/research/15).
+   */
+  private rate = 1;
+  private rateCarry = 0;
 
   constructor(options: SessionOptions) {
     const replay = options.replay;
@@ -98,6 +104,16 @@ export class Session {
   /** Avance de la reproducción, de 0 a 1. */
   get replayProgress(): number {
     return this.player?.progress ?? 0;
+  }
+
+  /** Velocidad de reproducción vigente. */
+  get playbackRate(): number {
+    return this.rate;
+  }
+
+  /** Ajusta la velocidad, dentro del rango que admiten los reproductores accesibles. */
+  setPlaybackRate(rate: number): void {
+    this.rate = Math.min(2.5, Math.max(0.5, rate));
   }
 
   press(action: InputAction): void {
@@ -173,6 +189,9 @@ export class Session {
         return [];
       }
       case 'playing': {
+        // Al ver una repetición, la velocidad decide cuánto tiempo de juego avanza
+        // en este cuadro. El paso que recibe el motor no cambia de tamaño.
+        if (this.player && this.rate !== 1) return this.stepAtRate(dtMs);
         this.elapsedMs += dtMs;
         if (this.player) {
           for (const input of this.player.drain(this.elapsedMs)) {
@@ -200,6 +219,24 @@ export class Session {
   /** Tiempos de los hitos cruzados, para guardarlos con el récord. */
   get recordedSplits(): number[] {
     return this.splits?.recorded ?? [];
+  }
+
+  /**
+   * Da varios pasos seguidos para reproducir más rápido o más lento. El paso que
+   * recibe el motor nunca cambia de tamaño, solo cuántos se dan (docs/research/15).
+   */
+  private stepAtRate(dtMs: number): GameEvent[] {
+    this.rateCarry += dtMs * this.rate;
+    const steps = Math.floor(this.rateCarry / dtMs);
+    this.rateCarry -= steps * dtMs;
+    const saved = this.rate;
+    this.rate = 1;
+    const out: GameEvent[] = [];
+    for (let i = 0; i < steps && this.status === 'playing'; i++) {
+      out.push(...this.step(dtMs));
+    }
+    this.rate = saved;
+    return out;
   }
 
   stats(): DerivedStats {

@@ -18,26 +18,30 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 12  | [Coste de las partículas en equipos lentos](12-coste-de-las-particulas-en-equipos-lentos.md)         | 2026-09-08 | vigente |
 | 13  | [Subida de basura y gravedad máxima](13-basura-y-gravedad-maxima.md)                                 | 2026-09-08 | vigente |
 | 14  | [Comparar con tu récord por hitos](14-comparar-con-tu-record-por-hitos.md)                           | 2026-09-08 | vigente |
+| 15  | [Controles al ver una repetición](15-controles-al-ver-una-repeticion.md)                             | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
 Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción concreta. Los temas ya cubiertos quedan marcados para no repetirlos.
 
-| Tema                                                            | Estado                                                                          |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Finesse y estadísticas avanzadas                                | hecho, sesión 3                                                                 |
-| Repeticiones y fantasma del récord                              | hecho (falta el fantasma), sesión 3                                             |
-| Renderer three.js                                               | hecho, informe 06 y sesión 3                                                    |
-| Modos extra (Zen, reto diario, práctica)                        | hecho (falta basura y 20G), sesión 3                                            |
-| Traducción es/en                                                | hecho, sesión 3                                                                 |
-| Tipografía y espacio en móviles de 360 puntos o menos           | hecho, informe 08                                                               |
-| Tuning de efectos de sonido con escucha comparada               | a la espera: necesita a alguien que escuche y compare                           |
-| Paleta y contraste con simuladores de daltonismo                | hecho, informe 09                                                               |
-| Rendimiento de partículas en un teléfono de gama baja           | hecho con freno de procesador, informe 12; falta probarlo en un teléfono real   |
-| Tutorial interactivo de un minuto                               | descartado por la evidencia; sustituido por consejos contextuales, informe 10   |
-| All-spin (regla inmóvil) y tabla de giro de 180                 | hecho el all-spin, informe 11; la tabla de 180 sigue sin fuente pública (F-001) |
-| Subida de basura y gravedad máxima para el modo práctica        | hecho, informe 13                                                               |
-| Fantasma del récord en Sprint y controles al ver una repetición | **siguiente**                                                                   |
+| Tema                                                     | Estado                                                                          |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Finesse y estadísticas avanzadas                         | hecho, sesión 3                                                                 |
+| Repeticiones y fantasma del récord                       | hecho (falta el fantasma), sesión 3                                             |
+| Renderer three.js                                        | hecho, informe 06 y sesión 3                                                    |
+| Modos extra (Zen, reto diario, práctica)                 | hecho (falta basura y 20G), sesión 3                                            |
+| Traducción es/en                                         | hecho, sesión 3                                                                 |
+| Tipografía y espacio en móviles de 360 puntos o menos    | hecho, informe 08                                                               |
+| Tuning de efectos de sonido con escucha comparada        | a la espera: necesita a alguien que escuche y compare                           |
+| Paleta y contraste con simuladores de daltonismo         | hecho, informe 09                                                               |
+| Rendimiento de partículas en un teléfono de gama baja    | hecho con freno de procesador, informe 12; falta probarlo en un teléfono real   |
+| Tutorial interactivo de un minuto                        | descartado por la evidencia; sustituido por consejos contextuales, informe 10   |
+| All-spin (regla inmóvil) y tabla de giro de 180          | hecho el all-spin, informe 11; la tabla de 180 sigue sin fuente pública (F-001) |
+| Subida de basura y gravedad máxima para el modo práctica | hecho, informe 13                                                               |
+| Fantasma del récord en Sprint                            | descartado por la evidencia; sustituido por comparación por hitos, informe 14   |
+| Controles de avance y velocidad al ver una repetición    | hecho, informe 15                                                               |
+| Posiciones preparadas en el modo práctica                | **siguiente**                                                                   |
+| Prueba en un teléfono real y con lector de pantalla      | a la espera: necesita a alguien con un dispositivo                              |
 
 ## Plantilla
 

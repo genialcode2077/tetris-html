@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 185 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 191 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,9 +16,9 @@
 
 ## Próximos pasos (orden)
 
-1. Controles de avance y velocidad al ver una repetición.
+1. Posiciones preparadas en el modo práctica para entrenar giros concretos.
 2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-3. Posiciones preparadas en el modo práctica para entrenar giros concretos.
+3. Afinar los efectos de sonido, que necesita a alguien que escuche y compare.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -26,6 +26,14 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 11 (agente, iteración periódica) — controles de la repetición
+
+- Tema del backlog: controles de avance y velocidad al ver una repetición (informe `docs/research/15`).
+- El W3C tiene los requisitos escritos con identificadores concretos, que sirven de lista de comprobación: velocidad ajustable entre la mitad y dos veces y media, función para volverla a la normal, poder pausar y reanudar, y que todo se maneje con el teclado.
+- Barra que aparece solo durante una repetición: volver al principio, pausar, velocidad en ciclo, avance y salir. Con etiquetas, foco visible y atajos de teclado que reutilizan las teclas del juego, inertes durante la reproducción.
+- La velocidad multiplica cuántos pasos se dan por segundo, nunca el tamaño del paso. Así el motor recibe siempre lo mismo y el resultado no cambia: hay una prueba que compara el tablero final a cinco velocidades distintas.
+- Seis pruebas nuevas y una captura de referencia.
 
 ### 2026-09-08 · Sesión 10 (agente, iteración periódica) — comparar con tu récord
 
