@@ -181,6 +181,7 @@ export class App {
       enable180: st.rules.enable180,
       nextCount: st.rules.nextCount,
       lockResetMode: st.rules.lockResetMode,
+      spinDetection: st.rules.spinDetection,
       softDropFactor: st.rules.softDropFactor,
       ...(mode === 'sprint' ? {} : { lineClearDelayMs: st.rules.lineClearDelayMs }),
     };

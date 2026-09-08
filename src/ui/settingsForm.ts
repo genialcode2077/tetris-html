@@ -85,6 +85,18 @@ export class SettingsForm {
           },
         ),
         this.select(
+          t('settings.spin'),
+          s.rules.spinDetection,
+          [
+            ['t-spin', t('settings.spin.tspin')],
+            ['all-mini', t('settings.spin.allMini')],
+            ['all-mini-plus', t('settings.spin.allMiniPlus')],
+          ],
+          (v) => {
+            set((x) => (x.rules.spinDetection = v as Settings['rules']['spinDetection']));
+          },
+        ),
+        this.select(
           'Velocidad de soft drop (SDF)',
           String(s.rules.softDropFactor),
           [

@@ -216,3 +216,55 @@ describe('maniobras: ghost piece y gravedad', () => {
     expect(stackHeight(g.state.board)).toBeGreaterThanOrEqual(VISIBLE_H);
   });
 });
+
+describe('maniobras: giros de otras piezas', () => {
+  /**
+   * Hueco de dos por dos donde la pieza O encaja sin poder moverse a ningún lado.
+   * Es el caso más claro de la regla del inmóvil: ni esquinas ni geometría, solo
+   * que la pieza queda encerrada (docs/research/11).
+   */
+  function oSlot(g: Game): void {
+    fillRow(g, 0, [4, 5]);
+    fillRow(g, 1, [4, 5]);
+    // Techo, para que tampoco pueda subir.
+    fill(g, 4, 2);
+    fill(g, 5, 2);
+  }
+
+  it('por defecto solo cuenta la T: encajar la O no da bonificación', () => {
+    const g = make();
+    oSlot(g);
+    setActive(g, { type: 'O', rotation: 0, x: 4, y: 0 });
+    cmd(g, 'cw');
+    const lc = lineClear(cmd(g, 'hardDrop'));
+    expect(lc?.count).toBe(2);
+    expect(lc?.tspin).toBe('none');
+    expect(lc?.points).toBe(300); // doble normal
+    expect(g.state.b2b).toBe(0);
+  });
+
+  it('con giros de todas las piezas, la misma jugada cuenta como giro menor', () => {
+    const g = make({ spinDetection: 'all-mini' });
+    oSlot(g);
+    setActive(g, { type: 'O', rotation: 0, x: 4, y: 0 });
+    cmd(g, 'cw');
+    const lc = lineClear(cmd(g, 'hardDrop'));
+    expect(lc?.count).toBe(2);
+    expect(lc?.tspin).toBe('mini');
+    expect(lc?.points).toBe(400); // giro menor doble
+    // Cuenta como jugada difícil, así que arranca la cadena de bonificación.
+    expect(g.state.b2b).toBe(1);
+  });
+
+  it('sin girar la pieza no hay bonificación, aunque quede encajada', () => {
+    const g = make({ spinDetection: 'all-mini' });
+    oSlot(g);
+    setActive(g, { type: 'O', rotation: 0, x: 4, y: 0 });
+    // Se mueve en vez de girar: la última acción ya no es una rotación.
+    cmd(g, 'left');
+    cmd(g, 'right');
+    const lc = lineClear(cmd(g, 'hardDrop'));
+    expect(lc?.tspin).toBe('none');
+    expect(lc?.points).toBe(300);
+  });
+});

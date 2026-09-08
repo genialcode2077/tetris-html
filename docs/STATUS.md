@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 132 unitarias y de propiedades + 49 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 147 unitarias y de propiedades + 49 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,10 +16,9 @@
 
 ## Próximos pasos (orden)
 
-1. Giros de otras piezas con la regla del inmóvil, y verificar la tabla de giro de 180.
-2. Posiciones preparadas en el modo práctica; subida de basura y 20G.
-3. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
-4. Fantasma del récord en Sprint; controles de avance al ver una repetición.
+1. Posiciones preparadas en el modo práctica; subida de basura y 20G.
+2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
+3. Fantasma del récord en Sprint; controles de avance al ver una repetición.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -27,6 +26,14 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 7 (agente, iteración periódica) — giros de todas las piezas
+
+- Tema del backlog: giros de piezas distintas de la T y verificación de la tabla de giro de 180 (informe `docs/research/11`).
+- La regla del inmóvil está definida sin ambigüedad en la wiki de Hard Drop: un giro cuenta si la pieza se fija sin poder moverse a la izquierda, a la derecha ni hacia arriba. TETR.IO la aplica desde julio de 2024 y desde enero de 2025 la extiende también a la T.
+- Ajuste nuevo con tres valores, apagado por omisión: solo la T con la regla oficial, todas las piezas con la T por esquinas, o todas incluyendo la T por encaje. Los giros de otras piezas puntúan como giro menor y cuentan como jugada difícil.
+- La tabla de giro de 180 sigue sin fuente numérica pública, así que F-001 continúa abierto. Se añadieron cuatro pruebas de sus propiedades, que es lo máximo verificable sin acceso al juego original.
+- Quince pruebas nuevas, incluidas dos maniobras completas que comprueban que el comportamiento por omisión no cambia.
 
 ### 2026-09-08 · Sesión 6 (agente, iteración periódica) — aprender jugando
 

@@ -8,6 +8,7 @@ export const DEFAULT_RULES: RuleSet = {
   lockDelayMs: 500,
   lockResetLimit: 15,
   lockResetMode: 'move',
+  spinDetection: 't-spin',
   areMs: 0,
   lineClearDelayMs: 200,
   startLevel: 1,

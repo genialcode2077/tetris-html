@@ -29,6 +29,11 @@ export type TSpinKind = 'none' | 'mini' | 'full';
 export type GameOverReason = 'blockout' | 'lockout';
 export type RotationSystem = 'srs' | 'srs-plus';
 export type LockResetMode = 'move' | 'step' | 'infinite';
+/**
+ * Qué giros reconoce el juego. `t-spin` es lo que fija la especificación oficial;
+ * las otras dos añaden los giros del resto de piezas (docs/research/11).
+ */
+export type SpinDetection = 't-spin' | 'all-mini' | 'all-mini-plus';
 
 export type Goal =
   | { readonly type: 'none' }
@@ -43,6 +48,7 @@ export interface RuleSet {
   readonly lockDelayMs: number;
   readonly lockResetLimit: number;
   readonly lockResetMode: LockResetMode;
+  readonly spinDetection: SpinDetection;
   readonly areMs: number;
   readonly lineClearDelayMs: number;
   readonly startLevel: number;

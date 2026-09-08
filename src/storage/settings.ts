@@ -1,4 +1,4 @@
-import type { LockResetMode, RotationSystem } from '@/core/types';
+import type { LockResetMode, RotationSystem, SpinDetection } from '@/core/types';
 import type { GameMode } from '@/core/rules';
 import type { HandlingSettings } from '@/game/handling';
 import type { PaletteName } from '@/render/types';
@@ -29,6 +29,7 @@ export interface RuleSettings {
   enable180: boolean;
   nextCount: number;
   lockResetMode: LockResetMode;
+  spinDetection: SpinDetection;
   softDropFactor: number;
   lineClearDelayMs: number;
 }
@@ -76,6 +77,7 @@ export const DEFAULT_SETTINGS: Settings = {
     enable180: false,
     nextCount: 5,
     lockResetMode: 'move',
+    spinDetection: 't-spin',
     softDropFactor: 20,
     lineClearDelayMs: 200,
   },

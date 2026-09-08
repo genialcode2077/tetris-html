@@ -106,6 +106,10 @@ const es = {
   'tip.perfectClear':
     'Has dejado el tablero vacío. Eso es un perfect clear y da la mayor bonificación del juego.',
   'settings.tips': 'Consejos mientras juegas',
+  'settings.spin': 'Giros que cuentan',
+  'settings.spin.tspin': 'Solo la T (regla oficial)',
+  'settings.spin.allMini': 'Todas las piezas (la T por esquinas)',
+  'settings.spin.allMiniPlus': 'Todas las piezas, la T también por encaje',
   'countdown.go': '¡YA!',
   'action.single': 'SINGLE',
   'action.double': 'DOUBLE',
@@ -219,6 +223,10 @@ const en: Record<MessageKey, string> = {
   'tip.perfectClear':
     'You emptied the board. That is a perfect clear, the biggest bonus in the game.',
   'settings.tips': 'Tips while you play',
+  'settings.spin': 'Spins that count',
+  'settings.spin.tspin': 'T piece only (official rule)',
+  'settings.spin.allMini': 'All pieces (T by corners)',
+  'settings.spin.allMiniPlus': 'All pieces, T by immobility too',
   'countdown.go': 'GO!',
   'action.single': 'SINGLE',
   'action.double': 'DOUBLE',

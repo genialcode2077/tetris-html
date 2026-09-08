@@ -4,6 +4,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 ### Added
+- Ajuste para reconocer giros de todas las piezas, no solo de la T, con la regla del inmóvil que usan los juegos competitivos actuales. Tiene tres valores y viene apagado, así que el comportamiento por omisión sigue siendo el de la especificación oficial.
 - Investigación inicial (`docs/research/01..06`), arquitectura, ADRs 0001-0007, protocolo de iteración, AGENTS.md/CLAUDE.md.
 - Andamiaje: Vite 8, TypeScript 6, Vitest 5, Playwright, ESLint 10, Prettier, lefthook, CI y despliegue a GitHub Pages.
 - Motor determinista (`src/core`): SRS con kicks Guideline y SRS+, 7-bag semillado, gravedad Guideline, lock delay con move reset, hold, ghost, T-spin (3 esquinas + mini + kick 5), scoring completo (B2B, combo, perfect clear), modos Marathon/Sprint/Ultra/Zen.
@@ -28,6 +29,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 - Dos modos nuevos: reto diario, con la misma partida para todo el mundo cada día porque la semilla sale de la fecha, y modo práctica, sin fin y con velocidad constante.
 
 ### Added
+- Ajuste para reconocer giros de todas las piezas, no solo de la T, con la regla del inmóvil que usan los juegos competitivos actuales. Tiene tres valores y viene apagado, así que el comportamiento por omisión sigue siendo el de la especificación oficial.
 - Consejos que aparecen la primera vez que cada mecánica importa: la reserva de pieza, la caída rápida, el giro de la T, encadenar acciones difíciles, los combos, el tablero vacío y la pila en zona de peligro. Cada uno se muestra una sola vez, no interrumpe la partida y se pueden apagar en Ajustes.
 
 ### Changed

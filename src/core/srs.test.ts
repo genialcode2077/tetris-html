@@ -97,3 +97,56 @@ describe('SRS kicks: casos límite', () => {
     expect(kicksFor('S', 2, 0, 'srs')).toHaveLength(6);
   });
 });
+
+/**
+ * La tabla de giro de 180 no tiene fuente numérica pública: el juego que la
+ * estrenó solo publicó un diagrama (F-001, docs/research/11). Lo que sí se puede
+ * comprobar es que cumple las propiedades que se le suponen a una tabla de este
+ * tipo, para detectar errores al copiarla o al editarla.
+ */
+describe('tabla de giro de 180', () => {
+  const HALF_TURNS: [Rotation, Rotation][] = [
+    [0, 2],
+    [2, 0],
+    [1, 3],
+    [3, 1],
+  ];
+
+  it('cubre las cuatro medias vueltas y siempre empieza sin desplazar', () => {
+    for (const [from, to] of HALF_TURNS) {
+      for (const type of ['J', 'L', 'S', 'T', 'Z', 'I'] as const) {
+        const kicks = kicksFor(type, from, to, 'srs');
+        expect(kicks.length, `${type} ${from}->${to}`).toBeGreaterThan(0);
+        expect(kicks[0], `${type} ${from}->${to}`).toEqual({ x: 0, y: 0 });
+      }
+    }
+  });
+
+  it('las pruebas de una media vuelta no se repiten entre sí', () => {
+    for (const [from, to] of HALF_TURNS) {
+      const kicks = kicksFor('T', from, to, 'srs');
+      const seen = new Set(kicks.map((k) => `${k.x},${k.y}`));
+      expect(seen.size, `${from}->${to}`).toBe(kicks.length);
+    }
+  });
+
+  it('la ida y la vuelta son simétricas entre sí', () => {
+    for (const [from, to] of [
+      [0, 2],
+      [1, 3],
+    ] as [Rotation, Rotation][]) {
+      const there = kicksFor('T', from, to, 'srs');
+      const back = kicksFor('T', to, from, 'srs');
+      expect(back.length).toBe(there.length);
+    }
+  });
+
+  it('los desplazamientos son pequeños, como en el resto de la tabla', () => {
+    for (const [from, to] of HALF_TURNS) {
+      for (const kick of kicksFor('L', from, to, 'srs')) {
+        expect(Math.abs(kick.x)).toBeLessThanOrEqual(2);
+        expect(Math.abs(kick.y)).toBeLessThanOrEqual(2);
+      }
+    }
+  });
+});

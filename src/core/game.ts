@@ -15,7 +15,7 @@ import { mulberry32 } from './rng';
 import { DEFAULT_RULES } from './rules';
 import { HARD_DROP_POINTS, SOFT_DROP_POINTS, scoreClear } from './scoring';
 import { kicksFor } from './srs';
-import { detectTSpin } from './tspin';
+import { detectSpin } from './tspin';
 import type {
   ActivePiece,
   Command,
@@ -445,7 +445,7 @@ export class Game {
     const r = this.rules;
     const p = s.active;
     if (!p) return;
-    const tspin = detectTSpin(s.board, p, this.lastActionRotation, this.lastKick);
+    const tspin = detectSpin(s.board, p, this.lastActionRotation, this.lastKick, r.spinDetection);
     lockPiece(s.board, p);
     s.stats.pieces += 1;
     this.emit({ type: 'lock', piece: { ...p } });
