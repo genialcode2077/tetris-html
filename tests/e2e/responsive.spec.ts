@@ -8,13 +8,17 @@ import { expect, test } from '@playwright/test';
 /**
  * El mínimo se da por separado según si la fila de botones táctiles está a la
  * vista, porque ocupa 64 puntos de alto y eso son unos 3 píxeles menos de celda.
- * Los valores salen de medir el estado actual y dejan margen para no volverse
- * frágiles ante retoques pequeños del marcador.
+ *
+ * Los valores llevan un margen de dos o tres píxeles sobre lo medido, porque el
+ * alto del marcador depende de la fuente del sistema y no es igual en macOS que
+ * en los servidores de integración con Linux. Aun con ese margen siguen por
+ * encima de lo que había antes del cambio (13 píxeles en 320 y 16 en 360), así
+ * que una regresión del reparto de espacio haría fallar la prueba.
  */
 const SIZES = [
-  { name: '320×568', width: 320, height: 568, minCell: 16, minCellTouch: 12 },
-  { name: '360×640', width: 360, height: 640, minCell: 19, minCellTouch: 16 },
-  { name: '390×844', width: 390, height: 844, minCell: 28, minCellTouch: 25 },
+  { name: '320×568', width: 320, height: 568, minCell: 14, minCellTouch: 11 },
+  { name: '360×640', width: 360, height: 640, minCell: 17, minCellTouch: 15 },
+  { name: '390×844', width: 390, height: 844, minCell: 25, minCellTouch: 23 },
 ];
 
 for (const size of SIZES) {
