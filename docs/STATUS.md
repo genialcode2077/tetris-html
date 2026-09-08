@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 115 unitarias y de propiedades + 37 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 114 unitarias y de propiedades + 37 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -17,7 +17,7 @@
 ## Próximos pasos (orden)
 
 1. Tutorial interactivo de un minuto (mover, rotar, hold, hard drop, T-spin).
-2. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
+2. Posiciones preparadas en el modo práctica; subida de basura y 20G.
 3. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
 
 ## Bloqueos / decisiones pendientes del usuario
@@ -40,6 +40,7 @@
 - Las pruebas de extremo a extremo pasaron a tener su propio `tsconfig.json`, para poder usar tipos de Node sin contaminar el código del navegador.
 - Repeticiones: semilla más lista de pulsaciones. La prueba clave comprueba que reproducir una partida da el mismo tablero, la misma puntuación y las mismas piezas.
 - Traducción al inglés de toda la interfaz, con detección del idioma del navegador y cambio inmediato desde Ajustes.
+- Modos nuevos: reto diario con semilla derivada de la fecha (misma partida para todos, sin servidor) y modo práctica sin fin.
 
 ### 2026-09-07 · Sesión 2 (agente Claude) — validación y aplicación instalable
 

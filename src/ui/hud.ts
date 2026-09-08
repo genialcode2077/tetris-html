@@ -7,12 +7,7 @@ import type { PaletteName } from '@/render/types';
 import { byId, byIdAs, clear, h } from './dom';
 import { getLocale, t } from './i18n';
 
-const MODE_LABEL: Readonly<Record<GameMode, string>> = {
-  marathon: 'Marathon',
-  sprint: 'Sprint 40L',
-  ultra: 'Ultra 2:00',
-  zen: 'Zen',
-};
+const modeLabel = (mode: GameMode): string => t(`modes.${mode}`);
 
 /** HUD en DOM: marcadores, hold/next, popups y anuncios accesibles. */
 export class Hud {
@@ -49,7 +44,7 @@ export class Hud {
   }
 
   setMode(mode: GameMode, rules: RuleSet): void {
-    this.modeLabel.textContent = MODE_LABEL[mode];
+    this.modeLabel.textContent = modeLabel(mode);
     const goal = rules.goal;
     this.goalLabel.textContent =
       goal.type === 'lines'

@@ -1,5 +1,5 @@
 import { Game } from '@/core/game';
-import { MODE_LABELS, type GameMode } from '@/core/rules';
+import { ALL_MODES, dailyLabel, dailySeed, type GameMode } from '@/core/rules';
 import type { GameEvent, RuleSet } from '@/core/types';
 import type { InputAction } from '@/game/handling';
 import { GameLoop } from '@/game/loop';
@@ -174,7 +174,11 @@ export class App {
       softDropFactor: st.rules.softDropFactor,
       ...(mode === 'sprint' ? {} : { lineClearDelayMs: st.rules.lineClearDelayMs }),
     };
-    const seed = seedOverride ?? (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
+    const seed =
+      seedOverride ??
+      (mode === 'daily'
+        ? dailySeed()
+        : (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0);
     this.session?.releaseAll();
     this.session = new Session({
       mode,
@@ -363,7 +367,7 @@ export class App {
     const row = (label: string, value: string): HTMLElement =>
       h('div', { className: 'result-row' }, h('span', {}, label), h('strong', {}, value));
     body.append(
-      row(t('results.mode'), MODE_LABELS[s.mode]),
+      row(t('results.mode'), t(`modes.${s.mode}`)),
       row(t('records.points'), state.score.toLocaleString(getLocale())),
       row(t('records.lines'), String(state.lines)),
       row(t('records.level'), String(state.level)),
@@ -557,26 +561,25 @@ export class App {
     const st = this.store.settings;
     const list = byId('mode-list');
     clear(list);
-    const modes: GameMode[] = ['marathon', 'sprint', 'ultra', 'zen'];
-    const descriptions: Record<GameMode, string> = {
-      marathon: t('modes.marathon.desc'),
-      sprint: t('modes.sprint.desc'),
-      ultra: t('modes.ultra.desc'),
-      zen: t('modes.zen.desc'),
-    };
+    const modes = ALL_MODES;
+    const describe = (mode: GameMode): string =>
+      mode === 'daily'
+        ? `${t('modes.daily.desc')} ${t('daily.today', { d: dailyLabel() })}`
+        : t(`modes.${mode}.desc`);
     for (const mode of modes) {
       const input = h('input', { type: 'radio', name: 'mode', value: mode });
       input.checked = st.game.mode === mode;
       input.addEventListener('change', () => {
         this.store.updateSettings((x) => (x.game.mode = mode));
+        this.updateModeOptions();
       });
       list.append(
         h(
           'label',
           { className: 'mode-card' },
           input,
-          h('span', { className: 'mode-name' }, MODE_LABELS[mode]),
-          h('span', { className: 'mode-desc' }, descriptions[mode]),
+          h('span', { className: 'mode-name' }, t(`modes.${mode}`)),
+          h('span', { className: 'mode-desc' }, describe(mode)),
         ),
       );
     }
@@ -595,18 +598,25 @@ export class App {
     endless.addEventListener('change', () => {
       this.store.updateSettings((x) => (x.game.endless = endless.checked));
     });
+    this.updateModeOptions();
+  }
+
+  /** El reto diario y la práctica fijan sus propias reglas, así que sus opciones se ocultan. */
+  private updateModeOptions(): void {
+    const mode = this.store.settings.game.mode;
+    const fixed = mode === 'daily' || mode === 'practice';
+    byId('mode-options').hidden = fixed;
   }
 
   private buildRecords(): void {
     const root = byId('records-body');
     clear(root);
-    const modes: GameMode[] = ['marathon', 'sprint', 'ultra', 'zen'];
-    for (const mode of modes) {
+    for (const mode of ALL_MODES) {
       const list = this.store.highscores(mode);
       const table = h(
         'table',
         { className: 'records-table' },
-        h('caption', {}, MODE_LABELS[mode]),
+        h('caption', {}, t(`modes.${mode}`)),
         h(
           'thead',
           {},

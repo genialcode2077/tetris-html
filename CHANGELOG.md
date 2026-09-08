@@ -25,6 +25,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 - Traducción al inglés de toda la interfaz, con detección del idioma del navegador la primera vez y selector en Ajustes. El cambio es inmediato, sin recargar.
 
+- Dos modos nuevos: reto diario, con la misma partida para todo el mundo cada día porque la semilla sale de la fecha, y modo práctica, sin fin y con velocidad constante.
+
 ### Fixed
 - `backdrop-filter` en pantallas superpuestas provocaba bloqueos de segundos (F-006).
 - El viewport impedía ampliar la página, lo que incumple el criterio WCAG 1.4.4 (F-009).
