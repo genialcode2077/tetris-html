@@ -18,10 +18,13 @@ export interface Palette {
 export const PALETTES: Readonly<Record<PaletteName, Palette>> = {
   neon: {
     name: 'neon',
+    // El azul de la J era casi idéntico al morado de la T para quien tiene
+    // protanopia: 2,0 de diferencia perceptual, es decir indistinguibles. Este
+    // azul más profundo lo sube a 6,7 sin dejar de ser azul (docs/research/09).
     cells: [
       '',
       '#22E5FF',
-      '#4A6BFF',
+      '#1E5AE8',
       '#FF9F1C',
       '#FFE600',
       '#3BFF7A',
@@ -60,15 +63,18 @@ export const PALETTES: Readonly<Record<PaletteName, Palette>> = {
   },
   highContrast: {
     name: 'highContrast',
+    // Colores elegidos maximizando la distancia perceptual mínima entre piezas bajo
+    // las tres dicromacias: pasa de 2,6 a 9,1 respecto a la versión anterior, que
+    // pese al nombre era la peor de las tres para protanopia (docs/research/09).
     cells: [
       '',
-      '#00FFFF',
-      '#3399FF',
-      '#FF9900',
-      '#FFFF00',
-      '#00FF00',
-      '#FF66FF',
-      '#FF3333',
+      '#19E0FF',
+      '#0033FF',
+      '#FF9500',
+      '#FFE800',
+      '#2FD65B',
+      '#C77DFF',
+      '#FF1F3D',
       '#BBBBBB',
     ],
     boardBg: '#000000',

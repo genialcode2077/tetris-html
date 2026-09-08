@@ -4,7 +4,7 @@ import { ACTION_LABELS, DEFAULT_KEYMAP, keyLabel, type KeyMap } from '@/input/ke
 import type { Settings } from '@/storage/settings';
 import type { Store } from '@/storage/store';
 import { byId, clear, h } from './dom';
-import { LOCALES, LOCALE_NAMES, type Locale } from './i18n';
+import { LOCALES, LOCALE_NAMES, t, type Locale } from './i18n';
 
 export interface SettingsFormCallbacks {
   onChange(): void;
@@ -191,9 +191,9 @@ export class SettingsForm {
           'Paleta',
           s.video.palette,
           [
-            ['neon', 'Neón'],
-            ['accessible', 'Accesible (daltonismo, Okabe-Ito)'],
-            ['highContrast', 'Alto contraste'],
+            ['neon', t('settings.palette.neon')],
+            ['accessible', t('settings.palette.accessible')],
+            ['highContrast', t('settings.palette.highContrast')],
           ],
           (v) => {
             set((x) => (x.video.palette = v as Settings['video']['palette']));

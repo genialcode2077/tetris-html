@@ -28,6 +28,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 - Dos modos nuevos: reto diario, con la misma partida para todo el mundo cada día porque la semilla sale de la fecha, y modo práctica, sin fin y con velocidad constante.
 
 ### Changed
+- La pieza azul cambia a un azul más profundo. Con protanopia era prácticamente el mismo color que la pieza morada, así que dos de las siete piezas eran indistinguibles para aproximadamente uno de cada doce hombres.
+- La paleta de alto contraste se rehace entera: pese a su nombre, era la peor de las tres para daltonismo. Su par de piezas más parecido pasa de 2,6 a 9,1 de diferencia perceptual.
+- Las etiquetas de las paletas en Ajustes describen lo que hace cada una, en vez de sugerir que la de alto contraste es la más accesible.
 - En pantallas pequeñas el tablero se queda con todo el espacio que sobra en lugar de encogerse por una altura reservada a ojo. En un móvil de 360 puntos la celda pasa de 16 a 20 píxeles, y en uno de 320 de 13 a 17.
 
 ### Fixed

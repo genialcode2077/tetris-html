@@ -6,11 +6,11 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 114 unitarias y de propiedades + 45 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 123 unitarias y de propiedades + 45 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
-- **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas
+- **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas; las tres paletas verificadas contra las tres dicromacias
 - **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
 - **Capturas:** `docs/assets/screenshots/` (`pnpm screenshots`)
 
@@ -26,6 +26,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-07 · Sesión 5 (agente, iteración periódica) — colores y daltonismo
+
+- Tema del backlog: verificar la paleta con simuladores de daltonismo (informe `docs/research/09`). Se saltó el ajuste de efectos de sonido, que figuraba como siguiente, porque exige que alguien escuche y compare y no se puede verificar de otro modo.
+- Método: simulación de las tres dicromacias con las matrices de Machado, Oliveira y Fernandes, y medida de la diferencia percibida entre cada par de piezas con CIEDE2000.
+- Hallazgo grave: en la paleta por defecto, la pieza azul y la morada tenían una diferencia de 2,0 con protanopia, es decir eran el mismo color. Afecta a una de cada doce personas de sexo masculino.
+- Segundo hallazgo: la paleta llamada "alto contraste" era la peor de las tres para daltonismo, justo lo contrario de lo que su nombre sugiere.
+- Cambios: azul más profundo para la pieza J (2,0 → 6,7), paleta de alto contraste rehecha (2,6 → 9,1) y etiquetas de Ajustes que describen lo que hace cada opción.
+- Módulo nuevo `src/render/colorVision.ts` con la simulación y la fórmula de diferencia de color, más nueve pruebas que impiden que una paleta futura empeore.
 
 ### 2026-09-07 · Sesión 4 (agente, iteración periódica) — espacio en móviles pequeños
 
