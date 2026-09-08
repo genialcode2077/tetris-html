@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 98 unitarias y de propiedades + 30 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 111 unitarias y de propiedades + 32 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,10 +16,9 @@
 
 ## Próximos pasos (orden)
 
-1. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
-2. Tutorial interactivo y traducción a inglés.
-3. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
-4. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
+1. Tutorial interactivo y traducción a inglés.
+2. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
+3. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -39,6 +38,7 @@
 - Coste de render en 3D: 1,9 ms en el percentil 95, dentro del presupuesto de 8 ms.
 - Medida de finesse: pulsaciones mínimas por colocación con Dijkstra, porcentaje en el marcador y en resultados, y aviso opcional al gastar teclas de más. El primer intento usaba búsqueda en anchura y daba mínimos incorrectos.
 - Las pruebas de extremo a extremo pasaron a tener su propio `tsconfig.json`, para poder usar tipos de Node sin contaminar el código del navegador.
+- Repeticiones: semilla más lista de pulsaciones. La prueba clave comprueba que reproducir una partida da el mismo tablero, la misma puntuación y las mismas piezas.
 
 ### 2026-09-07 · Sesión 2 (agente Claude) — validación y aplicación instalable
 

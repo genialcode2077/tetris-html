@@ -82,3 +82,48 @@ describe('Store', () => {
     });
   });
 });
+
+describe('Store: repeticiones', () => {
+  const replay = (score: number, timeMs: number, finished: boolean) =>
+    ({
+      version: 1 as const,
+      createdAt: '2026-09-07',
+      appVersion: '0.1.0',
+      mode: 'marathon' as const,
+      seed: 1,
+      rules: {} as never,
+      handling: { dasMs: 167, arrMs: 33, dcdMs: 0 },
+      inputs: [],
+      result: { score, lines: 0, level: 1, timeMs, pieces: 0, finished },
+    }) as never;
+
+  it('guarda solo la mejor partida por puntuación', () => {
+    const s = new Store(memoryStorage());
+    expect(s.bestReplay('marathon')).toBeNull();
+    expect(s.saveBestReplay('marathon', replay(1000, 60_000, false))).toBe(true);
+    expect(s.saveBestReplay('marathon', replay(500, 30_000, false))).toBe(false);
+    expect(s.saveBestReplay('marathon', replay(2000, 90_000, false))).toBe(true);
+    expect(s.bestReplay('marathon')?.result.score).toBe(2000);
+  });
+
+  it('en sprint gana la partida terminada más rápida', () => {
+    const s = new Store(memoryStorage());
+    const sprint = (timeMs: number, finished: boolean) => ({
+      ...(replay(0, timeMs, finished) as unknown as { mode: string }),
+      mode: 'sprint',
+    });
+    expect(s.saveBestReplay('sprint', sprint(80_000, false) as never)).toBe(true);
+    expect(s.saveBestReplay('sprint', sprint(60_000, true) as never)).toBe(true);
+    expect(s.saveBestReplay('sprint', sprint(70_000, true) as never)).toBe(false);
+    expect(s.bestReplay('sprint')?.result.timeMs).toBe(60_000);
+  });
+
+  it('los datos persistidos sobreviven a una recarga', () => {
+    const mem = memoryStorage();
+    const a = new Store(mem);
+    a.saveBestReplay('ultra', replay(4321, 120_000, true));
+    const b = new Store(mem);
+    expect(b.bestReplay('ultra')?.result.score).toBe(4321);
+    expect(b.bestReplay('marathon')).toBeNull();
+  });
+});

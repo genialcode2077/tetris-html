@@ -3,6 +3,7 @@ import { MODE_LABELS, type GameMode } from '@/core/rules';
 import type { GameEvent, RuleSet } from '@/core/types';
 import type { InputAction } from '@/game/handling';
 import { GameLoop } from '@/game/loop';
+import { parseReplay, serializeReplay, type Replay } from '@/game/replay';
 import { Session } from '@/game/session';
 import { formatTime } from '@/game/stats';
 import { GamepadInput } from '@/input/gamepad';
@@ -40,6 +41,7 @@ export class App {
   private session: Session | null = null;
   private readonly idle = new Game({ seed: 1 });
   private resultsTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastReplay: Replay | null = null;
   private readonly reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   private lastTouchCell = 0;
 
@@ -380,6 +382,44 @@ export class App {
           rank === 1 ? '¡Nuevo récord!' : `Puesto ${rank} en tus récords`,
         ),
       );
+
+    // La repetición solo se guarda si mejora la mejor partida del modo.
+    if (!s.isReplay) {
+      const replay = s.buildReplay(APP_VERSION);
+      this.lastReplay = replay;
+      if (this.store.saveBestReplay(s.mode, replay)) {
+        body.append(h('p', { className: 'muted small' }, 'Repetición guardada.'));
+      }
+    }
+    const watchable = s.isReplay ? null : (this.store.bestReplay(s.mode) ?? this.lastReplay);
+    const actions = byId('results-actions');
+    clear(actions);
+    if (watchable) {
+      actions.append(
+        h(
+          'button',
+          {
+            type: 'button',
+            className: 'btn ghost small',
+            onClick: () => {
+              this.watchReplay(watchable);
+            },
+          },
+          'Ver repetición',
+        ),
+        h(
+          'button',
+          {
+            type: 'button',
+            className: 'btn ghost small',
+            onClick: () => {
+              this.downloadReplay(watchable);
+            },
+          },
+          'Descargar',
+        ),
+      );
+    }
     this.screens.show('results');
   }
 
@@ -401,6 +441,9 @@ export class App {
     on('btn-records', () => {
       this.buildRecords();
       this.screens.show('records');
+    });
+    on('btn-open-replay', () => {
+      this.openReplayFile();
     });
     on('btn-help', () => {
       this.screens.show('help');
@@ -440,6 +483,56 @@ export class App {
     on('btn-fullscreen', () => {
       void this.toggleFullscreen();
     });
+  }
+
+  /** Reproduce una repetición: el jugador solo mira. */
+  watchReplay(replay: Replay): void {
+    this.session?.releaseAll();
+    this.session = new Session({ mode: replay.mode, countdownMs: 1200, replay });
+    this.session.onEvent((e, s) => {
+      this.onGameEvent(e, s);
+    });
+    if (this.resultsTimer) clearTimeout(this.resultsTimer);
+    this.resultsTimer = null;
+    this.hud.setMode(replay.mode, this.session.rules);
+    this.hud.hideOverlay();
+    this.audio.startMusic();
+    this.screens.hide();
+    this.hud.notify('Reproduciendo una partida guardada.');
+    byId('board-wrap').focus();
+  }
+
+  private downloadReplay(replay: Replay): void {
+    const blob = new Blob([serializeReplay(replay)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = h('a', {
+      href: url,
+      download: `blockfall-${replay.mode}-${replay.result.score}.json`,
+    });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+
+  /** Carga una repetición desde un archivo elegido por el jugador. */
+  private openReplayFile(): void {
+    const input = h('input', { type: 'file', accept: 'application/json,.json' });
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      void file.text().then((text) => {
+        const replay = parseReplay(text);
+        if (!replay) {
+          this.hud.notify('Ese archivo no es una repetición válida.');
+          return;
+        }
+        this.watchReplay(replay);
+      });
+    });
+    input.click();
   }
 
   private quitToTitle(): void {

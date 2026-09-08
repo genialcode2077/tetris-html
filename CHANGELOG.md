@@ -21,6 +21,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 - Medida de finesse: calcula las pulsaciones mínimas para cada colocación y muestra el porcentaje de colocaciones perfectas en el marcador y en los resultados, con aviso opcional cuando se gastan teclas de más.
 
+- Repeticiones: cada partida se graba como semilla más lista de pulsaciones, así que ocupa unos pocos kilobytes y se reproduce exactamente igual. Se guarda la mejor de cada modo, se puede volver a ver desde los resultados, descargar como archivo y abrir una guardada.
+
 ### Fixed
 - `backdrop-filter` en pantallas superpuestas provocaba bloqueos de segundos (F-006).
 - El viewport impedía ampliar la página, lo que incumple el criterio WCAG 1.4.4 (F-009).

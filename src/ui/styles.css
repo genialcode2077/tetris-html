@@ -560,6 +560,11 @@ body {
   border-bottom: 1px solid var(--panel-border);
   font-size: 14px;
 }
+.muted.small {
+  font-size: 12px;
+  text-align: center;
+  margin: 8px 0 0;
+}
 .result-rank {
   text-align: center;
   color: var(--accent-2);

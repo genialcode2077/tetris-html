@@ -43,3 +43,55 @@ test.describe('flujo básico', () => {
     await expect(page.getByRole('heading', { name: 'BLOCKFALL', level: 2 })).toBeVisible();
   });
 });
+
+test('se puede ver la repetición de la partida recién jugada @replay', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+
+  // Unas cuantas jugadas para que la repetición tenga contenido.
+  for (const key of ['ArrowLeft', 'ArrowUp', 'Space', 'ArrowRight', 'Space', 'KeyC', 'Space']) {
+    await page.keyboard.press(key);
+    await page.evaluate(() => window.__blockfall?.tick(150));
+  }
+  const played = await page.evaluate(() => {
+    const s = window.__blockfall?.app.currentSession;
+    return { pieces: s?.game.state.stats.pieces ?? 0, score: s?.game.state.score ?? 0 };
+  });
+  expect(played.pieces).toBeGreaterThan(2);
+
+  // Se llena el tablero dejando una columna libre, para que no se limpie ninguna
+  // línea y la siguiente pieza no quepa: así termina la partida.
+  await page.evaluate(() => {
+    const s = window.__blockfall?.app.currentSession;
+    if (!s) return;
+    const b = s.game.state.board;
+    for (let y = 0; y < 22; y++) {
+      for (let x = 0; x < 10; x++) if (x !== 9) b[y * 10 + x] = 8;
+    }
+  });
+  await page.keyboard.press('Space');
+  await page.evaluate(() => window.__blockfall?.tick(1500));
+  await page.waitForFunction(
+    () => window.__blockfall?.app.currentSession?.status === 'gameover',
+    undefined,
+    { timeout: 10_000 },
+  );
+  await expect(page.getByRole('button', { name: 'Ver repetición' })).toBeVisible({
+    timeout: 10_000,
+  });
+
+  await page.getByRole('button', { name: 'Ver repetición' }).click();
+  expect(await page.evaluate(() => window.__blockfall?.app.currentSession?.isReplay)).toBe(true);
+  await page.evaluate(() => window.__blockfall?.tick(2000));
+
+  // La repetición reproduce las mismas jugadas.
+  await page.evaluate(() => window.__blockfall?.tick(3000));
+  const replayed = await page.evaluate(() => {
+    const s = window.__blockfall?.app.currentSession;
+    return { pieces: s?.game.state.stats.pieces ?? 0, score: s?.game.state.score ?? 0 };
+  });
+  expect(replayed.pieces).toBeGreaterThanOrEqual(played.pieces);
+});

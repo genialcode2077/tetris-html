@@ -2,7 +2,14 @@ import { evaluateFinesse } from '@/core/finesse';
 import { Game } from '@/core/game';
 import { rulesForMode, type GameMode, type ModeOptions } from '@/core/rules';
 import type { ActivePiece, GameEvent, PieceType, RuleSet } from '@/core/types';
-import { Handling, GAME_ACTIONS, type HandlingSettings, type InputAction } from './handling';
+import {
+  DEFAULT_HANDLING,
+  GAME_ACTIONS,
+  Handling,
+  type HandlingSettings,
+  type InputAction,
+} from './handling';
+import { ReplayPlayer, ReplayRecorder, type Replay } from './replay';
 import { deriveStats, emptyFinesseTally, type DerivedStats, type FinesseTally } from './stats';
 
 export type SessionStatus = 'countdown' | 'playing' | 'paused' | 'finished' | 'gameover';
@@ -14,6 +21,8 @@ export interface SessionOptions {
   readonly handling?: HandlingSettings;
   readonly seed?: number;
   readonly countdownMs?: number;
+  /** Al pasar una repetición, la sesión reproduce sus entradas en vez de escuchar al jugador. */
+  readonly replay?: Replay;
 }
 
 export type SessionListener = (event: GameEvent, session: Session) => void;
@@ -41,12 +50,22 @@ export class Session {
   private usedHoldThisPiece = false;
   /** Última colocación evaluada; el HUD la usa para avisar de un fallo. */
   lastFinesseFault = 0;
+  private readonly recorder = new ReplayRecorder();
+  private readonly player: ReplayPlayer | null;
+  readonly seed: number;
+  private readonly handlingSettings: HandlingSettings;
 
   constructor(options: SessionOptions) {
-    this.mode = options.mode;
-    const rules: RuleSet = { ...rulesForMode(options.mode, options.modeOptions), ...options.rules };
-    this.game = new Game({ rules, ...(options.seed !== undefined ? { seed: options.seed } : {}) });
-    this.handling = new Handling(options.handling);
+    const replay = options.replay;
+    this.mode = replay?.mode ?? options.mode;
+    const rules: RuleSet = replay
+      ? replay.rules
+      : { ...rulesForMode(options.mode, options.modeOptions), ...options.rules };
+    this.seed = replay?.seed ?? options.seed ?? (Date.now() ^ 0x5eed) >>> 0;
+    this.game = new Game({ rules, seed: this.seed });
+    this.handlingSettings = replay?.handling ?? options.handling ?? DEFAULT_HANDLING;
+    this.handling = new Handling(this.handlingSettings);
+    this.player = replay ? new ReplayPlayer(replay.inputs) : null;
     this.countdownMs = options.countdownMs ?? 3000;
     if (this.countdownMs <= 0) this.beginPlay();
   }
@@ -60,11 +79,27 @@ export class Session {
     return () => this.listeners.delete(listener);
   }
 
+  /** true si la sesión está reproduciendo una repetición en lugar de una partida. */
+  get isReplay(): boolean {
+    return this.player !== null;
+  }
+
+  /** Avance de la reproducción, de 0 a 1. */
+  get replayProgress(): number {
+    return this.player?.progress ?? 0;
+  }
+
   press(action: InputAction): void {
+    if (this.player) return; // durante una repetición no se aceptan órdenes del jugador
+    this.applyPress(action);
+  }
+
+  private applyPress(action: InputAction): void {
     if (!GAME_ACTIONS.includes(action)) return;
     if (this.held.has(action)) return;
     this.held.add(action);
     if (this.status !== 'playing') return;
+    this.recorder.record(this.elapsedMs, action, true);
     // El finesse cuenta movimientos y rotaciones, nunca el hard drop.
     if (
       action === 'left' ||
@@ -83,13 +118,19 @@ export class Session {
   }
 
   release(action: InputAction): void {
+    if (this.player) return;
+    this.applyRelease(action);
+  }
+
+  private applyRelease(action: InputAction): void {
     if (!this.held.delete(action)) return;
+    if (this.status === 'playing') this.recorder.record(this.elapsedMs, action, false);
     if (this.status === 'playing' || this.status === 'paused')
       this.handling.release(action, this.game);
   }
 
   releaseAll(): void {
-    for (const a of [...this.held]) this.release(a);
+    for (const a of [...this.held]) this.applyRelease(a);
     this.handling.reset();
   }
 
@@ -122,6 +163,12 @@ export class Session {
       }
       case 'playing': {
         this.elapsedMs += dtMs;
+        if (this.player) {
+          for (const input of this.player.drain(this.elapsedMs)) {
+            if (input.down) this.applyPress(input.action);
+            else this.applyRelease(input.action);
+          }
+        }
         this.handling.step(dtMs, this.game);
         const events = this.game.step(dtMs);
         for (const e of events) {
@@ -184,6 +231,26 @@ export class Session {
     this.finesse.faults += result.faults;
     if (result.faults > 0) this.finesse.faultyPlacements++;
     this.lastFinesseFault = result.faults;
+  }
+
+  /** Empaqueta la partida jugada como repetición. */
+  buildReplay(appVersion: string): Replay {
+    const state = this.game.state;
+    return this.recorder.build({
+      appVersion,
+      mode: this.mode,
+      seed: this.seed,
+      rules: this.rules,
+      handling: this.handlingSettings,
+      result: {
+        score: state.score,
+        lines: state.lines,
+        level: state.level,
+        timeMs: Math.round(this.elapsedMs),
+        pieces: state.stats.pieces,
+        finished: this.status === 'finished',
+      },
+    });
   }
 
   private beginPlay(): void {

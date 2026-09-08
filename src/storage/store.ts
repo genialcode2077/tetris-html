@@ -1,5 +1,6 @@
 import type { GameMode } from '@/core/rules';
 import { DEFAULT_KEYMAP, type KeyMap } from '@/input/keymap';
+import type { Replay } from '@/game/replay';
 import { DEFAULT_SETTINGS, type Settings } from './settings';
 
 export interface HighScore {
@@ -16,6 +17,8 @@ export interface PersistedV1 {
   settings: Settings;
   keymap: KeyMap;
   highscores: Partial<Record<GameMode, HighScore[]>>;
+  /** Repetición de la mejor partida de cada modo. */
+  bestReplays: Partial<Record<GameMode, Replay>>;
 }
 
 export const STORAGE_KEY = 'tetris-html:v1';
@@ -53,6 +56,7 @@ export function defaultPersisted(): PersistedV1 {
     settings: structuredClone(DEFAULT_SETTINGS),
     keymap: structuredClone(DEFAULT_KEYMAP),
     highscores: {},
+    bestReplays: {},
   };
 }
 
@@ -73,6 +77,34 @@ export class Store {
 
   highscores(mode: GameMode): HighScore[] {
     return this.data.highscores[mode] ?? [];
+  }
+
+  bestReplay(mode: GameMode): Replay | null {
+    return this.data.bestReplays[mode] ?? null;
+  }
+
+  /** Guarda la repetición si es la mejor del modo; devuelve true si la reemplazó. */
+  saveBestReplay(mode: GameMode, replay: Replay): boolean {
+    const current = this.data.bestReplays[mode];
+    const better =
+      current === undefined ||
+      (mode === 'sprint'
+        ? replay.result.finished &&
+          (!current.result.finished || replay.result.timeMs < current.result.timeMs)
+        : replay.result.score > current.result.score);
+    if (!better) return false;
+    const previous = { ...this.data.bestReplays };
+    this.data.bestReplays[mode] = replay;
+    try {
+      this.save();
+    } catch {
+      // Si no cabe en el almacenamiento, se prescinde de la repetición antes que
+      // de los récords: se restaura lo que había y se guarda de nuevo.
+      this.data.bestReplays = previous;
+      this.save();
+      return false;
+    }
+    return true;
   }
 
   updateSettings(patch: (s: Settings) => void): void {
@@ -115,6 +147,7 @@ export class Store {
         settings: mergeDefaults(base.settings, parsed.settings),
         keymap: mergeDefaults(base.keymap, parsed.keymap),
         highscores: isObject(parsed.highscores) ? parsed.highscores : {},
+        bestReplays: isObject(parsed.bestReplays) ? parsed.bestReplays : {},
       };
     } catch {
       return base;
