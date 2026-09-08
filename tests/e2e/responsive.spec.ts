@@ -5,10 +5,16 @@ import { expect, test } from '@playwright/test';
  * puede salirse a lo ancho. Antes se reservaba una altura fija para el resto de la
  * interfaz y el tablero quedaba diminuto (docs/research/08).
  */
+/**
+ * El mínimo se da por separado según si la fila de botones táctiles está a la
+ * vista, porque ocupa 64 puntos de alto y eso son unos 3 píxeles menos de celda.
+ * Los valores salen de medir el estado actual y dejan margen para no volverse
+ * frágiles ante retoques pequeños del marcador.
+ */
 const SIZES = [
-  { name: '320×568', width: 320, height: 568, minCell: 15 },
-  { name: '360×640', width: 360, height: 640, minCell: 18 },
-  { name: '390×844', width: 390, height: 844, minCell: 24 },
+  { name: '320×568', width: 320, height: 568, minCell: 16, minCellTouch: 12 },
+  { name: '360×640', width: 360, height: 640, minCell: 19, minCellTouch: 16 },
+  { name: '390×844', width: 390, height: 844, minCell: 28, minCellTouch: 25 },
 ];
 
 for (const size of SIZES) {
@@ -23,9 +29,11 @@ for (const size of SIZES) {
     const metrics = await page.evaluate(() => {
       const canvas = document.querySelector('.board-canvas')?.getBoundingClientRect();
       const doc = document.documentElement;
+      const bar = document.getElementById('touch-controls');
       return {
         canvasWidth: canvas ? Math.round(canvas.width) : 0,
         canvasHeight: canvas ? Math.round(canvas.height) : 0,
+        touchVisible: bar ? !bar.hidden : false,
         scrollWidth: doc.scrollWidth,
         clientWidth: doc.clientWidth,
         fontSizes: [...document.querySelectorAll<HTMLElement>('.stat .value')].map((el) =>
@@ -36,7 +44,11 @@ for (const size of SIZES) {
 
     // Diez columnas: el ancho del lienzo dividido entre diez es el lado de la celda.
     const cell = metrics.canvasWidth / 10;
-    expect(cell, `celda en ${size.name}`).toBeGreaterThanOrEqual(size.minCell);
+    const minimum = metrics.touchVisible ? size.minCellTouch : size.minCell;
+    expect(
+      cell,
+      `celda en ${size.name} (botones táctiles: ${String(metrics.touchVisible)})`,
+    ).toBeGreaterThanOrEqual(minimum);
     // Nada debe salirse a lo ancho.
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth);
     // El marcador no baja del mínimo legible en móvil.
