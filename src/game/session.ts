@@ -1,3 +1,4 @@
+import { DRILLS, buildDrillBoard, type DrillId } from '@/core/drills';
 import { evaluateFinesse } from '@/core/finesse';
 import { Game } from '@/core/game';
 import { rulesForMode, type GameMode, type ModeOptions } from '@/core/rules';
@@ -26,6 +27,8 @@ export interface SessionOptions {
   readonly replay?: Replay;
   /** Tiempos de la mejor marca, para comparar hito a hito (docs/research/14). */
   readonly referenceSplits?: readonly number[];
+  /** Posición preparada con la que empezar (docs/research/16). */
+  readonly drill?: DrillId;
 }
 
 export type SessionListener = (event: GameEvent, session: Session) => void;
@@ -75,7 +78,17 @@ export class Session {
       ? replay.rules
       : { ...rulesForMode(options.mode, options.modeOptions), ...options.rules };
     this.seed = replay?.seed ?? options.seed ?? (Date.now() ^ 0x5eed) >>> 0;
-    this.game = new Game({ rules, seed: this.seed });
+    const drill = options.drill ? DRILLS[options.drill] : null;
+    // Una posición preparada monta el tablero y fija las primeras piezas, y puede
+    // exigir su propia detección de giros para que la jugada cuente.
+    const finalRules: RuleSet = drill?.spinDetection
+      ? { ...rules, spinDetection: drill.spinDetection }
+      : rules;
+    this.game = new Game({
+      rules: finalRules,
+      seed: this.seed,
+      ...(drill ? { initialBoard: buildDrillBoard(drill), initialQueue: drill.queue } : {}),
+    });
     this.handlingSettings = replay?.handling ?? options.handling ?? DEFAULT_HANDLING;
     this.handling = new Handling(this.handlingSettings);
     this.player = replay ? new ReplayPlayer(replay.inputs) : null;

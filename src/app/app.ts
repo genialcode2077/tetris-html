@@ -2,6 +2,7 @@ import { Game } from '@/core/game';
 import { ALL_MODES, dailyLabel, dailySeed, type GameMode } from '@/core/rules';
 import type { GameEvent, GameState, RuleSet } from '@/core/types';
 import type { InputAction } from '@/game/handling';
+import { DRILL_IDS, type DrillId } from '@/core/drills';
 import { Coach } from '@/game/coaching';
 import { GameLoop } from '@/game/loop';
 import { parseReplay, serializeReplay, type Replay } from '@/game/replay';
@@ -205,6 +206,7 @@ export class App {
         endless: st.game.endless,
         garbageEveryPieces: st.game.garbageEveryPieces,
       },
+      ...(mode === 'practice' && st.game.drill ? { drill: st.game.drill } : {}),
       rules,
       handling: st.handling,
       seed,
@@ -754,6 +756,19 @@ export class App {
     }
     practiceLevel.addEventListener('change', () => {
       this.store.updateSettings((x) => (x.game.startLevel = Number(practiceLevel.value)));
+    });
+
+    // Posiciones preparadas para entrenar jugadas concretas (docs/research/16).
+    const drill = byIdAs('drill-select', HTMLSelectElement);
+    clear(drill);
+    for (const value of ['', ...DRILL_IDS]) {
+      const label = value === '' ? t('drill.none') : t(`drill.${value}` as MessageKey);
+      const opt = h('option', { value }, label);
+      opt.selected = st.game.drill === value;
+      drill.append(opt);
+    }
+    drill.addEventListener('change', () => {
+      this.store.updateSettings((x) => (x.game.drill = drill.value as DrillId | ''));
     });
 
     this.updateModeOptions();

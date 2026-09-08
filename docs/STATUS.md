@@ -6,19 +6,20 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 191 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 198 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
-- **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
+- **Tamaño:** 32,7 KB de JavaScript comprimido y 3,2 KB de CSS; el modo 3D son 239 KB aparte que solo descarga quien lo activa
 - **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas; las tres paletas verificadas contra las tres dicromacias
 - **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
 - **Capturas:** `docs/assets/screenshots/` (`pnpm screenshots`)
 
 ## Próximos pasos (orden)
 
-1. Posiciones preparadas en el modo práctica para entrenar giros concretos.
-2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-3. Afinar los efectos de sonido, que necesita a alguien que escuche y compare.
+1. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
+2. Afinar los efectos de sonido, que necesita a alguien que escuche y compare.
+
+Los dos que quedan necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -26,6 +27,14 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 12 (agente, iteración periódica) — posiciones preparadas
+
+- Tema del backlog: posiciones preparadas en el modo práctica (informe `docs/research/16`).
+- La wiki de Hard Drop documenta una regla que no se descubre jugando: si la T entra usando la última prueba del ajuste, el giro asciende a completo aunque las esquinas no cumplan la condición de siempre. Es justo el tipo de jugada que merece una posición para entrenarla.
+- Cuatro posiciones en el modo práctica, cada una con su tablero montado y su cola de piezas fija: giro doble de la T, giro triple, vaciar el tablero y giro por encaje. La del encaje enciende sola los giros de todas las piezas, que es lo único con lo que cuenta.
+- El motor admite ahora arrancar con un tablero y una cola dados. Es lo que hace posibles las posiciones, y sirve igual para cualquiera que se añada después.
+- Siete pruebas que juegan la solución de cada posición y comprueban lo prometido: tipo de giro, líneas, puntos y, en el giro triple, que el ajuste usado es la quinta prueba. Una captura de referencia con la posición montada.
 
 ### 2026-09-08 · Sesión 11 (agente, iteración periódica) — controles de la repetición
 

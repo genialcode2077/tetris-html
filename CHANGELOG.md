@@ -4,6 +4,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 ### Added
+- El modo práctica puede empezar con una posición ya montada: giro doble de la T, giro triple, vaciar el tablero y giro por encaje. Cada una trae su tablero y su cola de piezas fija, así la misma jugada se repite hasta que sale sin volver al menú.
 - Al ver una repetición aparece una barra con volver al principio, pausar, velocidad y salir, más un indicador de avance. La velocidad va de la mitad al doble y se maneja también con el teclado, siguiendo los requisitos de accesibilidad para reproducir contenido.
 - En Sprint y en el reto diario, al cruzar cada diez líneas se muestra cuánto se va por delante o por detrás de tu mejor marca, en verde o en naranja. El panel del modo enseña además el récord como referencia. Los récords guardan ahora los tiempos parciales.
 - El modo práctica admite subida de basura y niveles hasta el veinte, donde la pieza cae de golpe. La basura sube cada tantas piezas con un hueco que a veces cambia de columna, y limpiar líneas la cancela según la tabla oficial. Todo se genera con la semilla de la partida, así que una repetición sigue reproduciéndose igual.

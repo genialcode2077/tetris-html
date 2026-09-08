@@ -32,6 +32,10 @@ import type {
 export interface GameOptions {
   readonly rules?: Partial<RuleSet>;
   readonly seed?: number;
+  /** Tablero de partida; se usa en las posiciones de entrenamiento. */
+  readonly initialBoard?: Uint8Array;
+  /** Piezas fijas al principio de la cola, antes de las que salen de la bolsa. */
+  readonly initialQueue?: readonly PieceType[];
 }
 
 const ZERO: Point = { x: 0, y: 0 };
@@ -107,6 +111,8 @@ export class Game {
       },
       gameOverReason: null,
     };
+    if (options.initialBoard) this.s.board.set(options.initialBoard);
+    if (options.initialQueue) this.s.queue.push(...options.initialQueue);
     this.ensureQueue();
   }
 

@@ -19,6 +19,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 13  | [Subida de basura y gravedad máxima](13-basura-y-gravedad-maxima.md)                                 | 2026-09-08 | vigente |
 | 14  | [Comparar con tu récord por hitos](14-comparar-con-tu-record-por-hitos.md)                           | 2026-09-08 | vigente |
 | 15  | [Controles al ver una repetición](15-controles-al-ver-una-repeticion.md)                             | 2026-09-08 | vigente |
+| 16  | [Posiciones preparadas para entrenar](16-posiciones-preparadas-para-entrenar.md)                     | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
@@ -40,8 +41,8 @@ Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción 
 | Subida de basura y gravedad máxima para el modo práctica | hecho, informe 13                                                               |
 | Fantasma del récord en Sprint                            | descartado por la evidencia; sustituido por comparación por hitos, informe 14   |
 | Controles de avance y velocidad al ver una repetición    | hecho, informe 15                                                               |
-| Posiciones preparadas en el modo práctica                | **siguiente**                                                                   |
-| Prueba en un teléfono real y con lector de pantalla      | a la espera: necesita a alguien con un dispositivo                              |
+| Posiciones preparadas en el modo práctica                | hecho, informe 16                                                               |
+| Prueba en un teléfono real y con lector de pantalla      | **siguiente**: necesita a alguien con un dispositivo                            |
 
 ## Plantilla
 

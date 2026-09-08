@@ -230,3 +230,21 @@ test('captura de los controles de la repetición @screenshots', async ({ page },
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/${tag}-11-replay-controls.png` });
 });
+
+test('captura de una posición preparada @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.locale = 'es';
+      s.game.mode = 'practice';
+      s.game.garbageEveryPieces = 0;
+      s.game.drill = 'tspinTriple';
+    });
+    window.__blockfall?.app.refreshSettings();
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${OUT}/${tag}-12-drill.png` });
+});

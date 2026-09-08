@@ -1,4 +1,5 @@
 import type { LockResetMode, RotationSystem, SpinDetection } from '@/core/types';
+import type { DrillId } from '@/core/drills';
 import type { GameMode } from '@/core/rules';
 import type { HandlingSettings } from '@/game/handling';
 import type { PaletteName } from '@/render/types';
@@ -40,6 +41,8 @@ export interface GameSettings {
   endless: boolean;
   /** Solo en práctica: cada cuántas piezas sube una fila de basura; 0 la desactiva. */
   garbageEveryPieces: number;
+  /** Solo en práctica: posición preparada con la que empezar; vacío para ninguna. */
+  drill: DrillId | '';
 }
 
 export interface TouchSettings {
@@ -94,7 +97,7 @@ export const DEFAULT_SETTINGS: Settings = {
     patterns: false,
     reducedMotion: 'auto',
   },
-  game: { mode: 'marathon', startLevel: 1, endless: false, garbageEveryPieces: 0 },
+  game: { mode: 'marathon', startLevel: 1, endless: false, garbageEveryPieces: 0, drill: '' },
   touch: { buttons: true, tapAlwaysCw: false },
   stats: { showFinesseFaults: false },
   coaching: { enabled: true },
