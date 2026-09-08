@@ -101,8 +101,10 @@ export class App {
 
   /** Diagnóstico del renderer activo, para pruebas automáticas. */
   get rendererDiagnostics(): unknown {
-    const r = this.rendererHandle?.renderer as { diagnostics?: unknown } | undefined;
-    return r?.diagnostics ?? { kind: this.rendererKind };
+    const r = this.rendererHandle?.renderer as
+      { diagnostics?: unknown; particleBudget?: number } | undefined;
+    if (r?.diagnostics !== undefined) return r.diagnostics;
+    return { kind: this.rendererKind, particleBudget: r?.particleBudget };
   }
 
   start(): void {
@@ -204,6 +206,7 @@ export class App {
     if (this.resultsTimer) clearTimeout(this.resultsTimer);
     this.resultsTimer = null;
     this.coach.resetForNewGame();
+    (this.rendererHandle?.renderer as { resetBudget?: () => void } | undefined)?.resetBudget?.();
     this.hud.setMode(mode, this.session.rules);
     this.hud.hideOverlay();
     this.audio.setLevel(st.game.startLevel);

@@ -19,6 +19,8 @@ import {
 const ROWS_DRAWN = VISIBLE_H + 0.5;
 const DANGER_ROW = 15;
 const MAX_SHAKE_PX = 6;
+/** A partir de aquí se considera que dibujar va lento (un cuadro a 60 por segundo son 16,7 ms). */
+const FRAME_BUDGET_MS = 6;
 
 export class CanvasRenderer implements Renderer {
   private container: HTMLElement | null = null;
@@ -94,6 +96,7 @@ export class CanvasRenderer implements Renderer {
     const ctx = this.ctx;
     const canvas = this.canvas;
     if (!ctx || !canvas) return;
+    const started = performance.now();
     const dt = this.lastNow === 0 ? 16 : Math.min(nowMs - this.lastNow, 100);
     this.lastNow = nowMs;
     if (nowMs < this.hitStopUntil) return;
@@ -231,6 +234,20 @@ export class CanvasRenderer implements Renderer {
     ctx.strokeStyle = this.palette.border;
     ctx.lineWidth = 2;
     ctx.strokeRect(1, 1, W - 2, H - 2);
+
+    // Si dibujar sale caro de forma sostenida, se reducen las partículas antes de
+    // perder cuadros (docs/research/12).
+    this.particles.reportFrameCost(performance.now() - started, FRAME_BUDGET_MS);
+  }
+
+  /** Presupuesto de partículas vigente; se consulta desde las pruebas. */
+  get particleBudget(): number {
+    return this.particles.currentBudget;
+  }
+
+  /** Devuelve el presupuesto al máximo al empezar una partida. */
+  resetBudget(): void {
+    this.particles.resetBudget();
   }
 
   effect(event: GameEvent, state: Readonly<GameState>): void {

@@ -6,9 +6,9 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 147 unitarias y de propiedades + 49 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 158 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
-- **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
+- **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
 - **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas; las tres paletas verificadas contra las tres dicromacias
 - **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
@@ -26,6 +26,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 8 (agente, iteración periódica) — partículas en equipos lentos
+
+- Tema del backlog: coste de las partículas en un teléfono de gama baja (informe `docs/research/12`).
+- Sin teléfono a mano, se midió con el freno de procesador del navegador. Conviene ser explícito: la documentación de Chrome avisa de que eso no simula un móvil de verdad, así que las medidas dicen cómo escala el coste, no cómo se comporta en un aparato concreto.
+- Hallazgo: el límite de partículas era un número fijo de 600 que no miraba nada. Con el procesador seis veces más lento aparecían picos de 114 milisegundos, casi siete cuadros perdidos, y justo al limpiar líneas.
+- Ahora el presupuesto se recorta tras varios cuadros lentos seguidos y se recupera despacio, con el mismo criterio que ya usaba el modo tridimensional para su resplandor.
+- Resultado: con el procesador seis veces más lento, el peor cuadro pasa de 114 a 8,4 milisegundos y el percentil 95 vuelve dentro del presupuesto. En una máquina holgada no cambia nada.
+- Once pruebas nuevas del módulo de efectos y una de extremo a extremo que frena el procesador y comprueba que el presupuesto baja de verdad.
 
 ### 2026-09-08 · Sesión 7 (agente, iteración periódica) — giros de todas las piezas
 

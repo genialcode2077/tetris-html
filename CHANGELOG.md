@@ -33,6 +33,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 - Consejos que aparecen la primera vez que cada mecánica importa: la reserva de pieza, la caída rápida, el giro de la T, encadenar acciones difíciles, los combos, el tablero vacío y la pila en zona de peligro. Cada uno se muestra una sola vez, no interrumpe la partida y se pueden apagar en Ajustes.
 
 ### Changed
+- Las partículas ajustan solas su número según lo que cuesta dibujar. En una máquina holgada no cambia nada; en una que va justa se ven menos partículas en lugar de perderse cuadros. Con el procesador seis veces más lento, el peor cuadro pasa de 114 a 8,4 milisegundos.
 - La pieza azul cambia a un azul más profundo. Con protanopia era prácticamente el mismo color que la pieza morada, así que dos de las siete piezas eran indistinguibles para aproximadamente uno de cada doce hombres.
 - La paleta de alto contraste se rehace entera: pese a su nombre, era la peor de las tres para daltonismo. Su par de piezas más parecido pasa de 2,6 a 9,1 de diferencia perceptual.
 - Las etiquetas de las paletas en Ajustes describen lo que hace cada una, en vez de sugerir que la de alto contraste es la más accesible.

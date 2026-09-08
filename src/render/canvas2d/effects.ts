@@ -11,17 +11,61 @@ export interface Particle {
   color: string;
 }
 
+/** Cuadros lentos seguidos antes de recortar el presupuesto. */
+const SLOW_FRAMES_BEFORE_CUT = 12;
+/** Cuánto se recorta cada vez que hace falta. */
+const CUT_FACTOR = 0.6;
+/** Partículas que se recuperan por cuadro holgado, para que no aparezcan de golpe. */
+const RECOVERY_PER_FRAME = 1.5;
+/** Suelo del presupuesto: por debajo de esto el efecto ya no se ve. */
+const MIN_BUDGET = 40;
+
 export class ParticleSystem {
   readonly particles: Particle[] = [];
   private readonly max: number;
+  /**
+   * Presupuesto vigente. Se recorta solo cuando dibujar sale caro de forma
+   * sostenida y se recupera despacio cuando vuelve a ir holgado, para que en una
+   * máquina lenta se vean menos partículas en lugar de perderse cuadros
+   * (docs/research/12). Es el mismo criterio que usa el modo tridimensional con
+   * su efecto de resplandor.
+   */
+  private budget: number;
+  private slowFrames = 0;
 
   constructor(max = 600) {
     this.max = max;
+    this.budget = max;
+  }
+
+  /** Máximo de partículas que se permiten ahora mismo. */
+  get currentBudget(): number {
+    return Math.round(this.budget);
+  }
+
+  /**
+   * Informa de lo que costó el último cuadro para ajustar el presupuesto.
+   * @param frameMs tiempo de dibujado
+   * @param budgetMs a partir de cuánto se considera que va lento
+   */
+  reportFrameCost(frameMs: number, budgetMs: number): void {
+    if (frameMs > budgetMs) {
+      this.slowFrames++;
+      if (this.slowFrames >= SLOW_FRAMES_BEFORE_CUT) {
+        this.slowFrames = 0;
+        this.budget = Math.max(MIN_BUDGET, this.budget * CUT_FACTOR);
+        if (this.particles.length > this.budget) this.particles.length = Math.floor(this.budget);
+      }
+      return;
+    }
+    if (this.slowFrames > 0) this.slowFrames--;
+    else if (this.budget < this.max)
+      this.budget = Math.min(this.max, this.budget + RECOVERY_PER_FRAME);
   }
 
   burst(x: number, y: number, count: number, color: string, speed: number, size: number): void {
     for (let i = 0; i < count; i++) {
-      if (this.particles.length >= this.max) return;
+      if (this.particles.length >= this.budget) return;
       const a = Math.random() * Math.PI * 2;
       const v = speed * (0.4 + Math.random() * 0.8);
       const life = 400 + Math.random() * 300;
@@ -66,6 +110,12 @@ export class ParticleSystem {
 
   clear(): void {
     this.particles.length = 0;
+  }
+
+  /** Devuelve el presupuesto al máximo; se usa al empezar una partida nueva. */
+  resetBudget(): void {
+    this.budget = this.max;
+    this.slowFrames = 0;
   }
 }
 
