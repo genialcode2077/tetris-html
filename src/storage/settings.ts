@@ -43,6 +43,11 @@ export interface TouchSettings {
   tapAlwaysCw: boolean;
 }
 
+export interface StatsSettings {
+  /** Avisar en pantalla cuando una colocación gasta teclas de más. */
+  showFinesseFaults: boolean;
+}
+
 export interface Settings {
   handling: HandlingSettings;
   rules: RuleSettings;
@@ -50,6 +55,7 @@ export interface Settings {
   video: VideoSettings;
   game: GameSettings;
   touch: TouchSettings;
+  stats: StatsSettings;
   announce: boolean;
 }
 
@@ -76,5 +82,6 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   game: { mode: 'marathon', startLevel: 1, endless: false },
   touch: { buttons: true, tapAlwaysCw: false },
+  stats: { showFinesseFaults: false },
   announce: true,
 };

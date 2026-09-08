@@ -244,6 +244,13 @@ body {
 .badge.level .badge-main {
   color: #3bff7a;
 }
+.badge.fault .badge-main {
+  color: var(--danger);
+  font-size: 14px;
+}
+.stat .value.warn {
+  color: var(--accent-2);
+}
 .badge.notice {
   animation: fade 4s linear forwards;
   max-width: min(90vw, 320px);

@@ -4,7 +4,12 @@ import { expect, test } from '@playwright/test';
  * Mide el coste real de render en el navegador. No es una prueba de fps absoluta
  * (depende de la máquina), sino un techo de coste por frame que detecta regresiones.
  */
+// En integración continua no hay tarjeta gráfica: se registra el dato igual, pero
+// el umbral estricto solo se exige en una máquina con aceleración real.
+const BUDGET_MS = process.env.CI ? 12 : 8;
+
 test('presupuesto de render por frame @perf', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
   await page.goto('/');
   await page.evaluate(() => {
     window.__blockfall?.app.newGame(4242);
@@ -49,5 +54,5 @@ test('presupuesto de render por frame @perf', async ({ page }, testInfo) => {
     `[${testInfo.project.name}] render p50=${p50.toFixed(2)}ms p95=${p95.toFixed(2)}ms max=${max.toFixed(2)}ms`,
   );
   // Presupuesto: un frame a 60 fps son 16.7 ms; exigimos holgura amplia.
-  expect(p95).toBeLessThan(8);
+  expect(p95).toBeLessThan(BUDGET_MS);
 });

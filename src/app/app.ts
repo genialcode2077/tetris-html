@@ -98,6 +98,7 @@ export class App {
     void this.mountRenderer(this.store.settings.video.renderer);
     this.hud.setStyle(this.store.settings.video.palette, this.store.settings.video.patterns);
     this.hud.announce = this.store.settings.announce;
+    this.hud.showFinesseFaults = this.store.settings.stats.showFinesseFaults;
     this.keyboard.attach();
     this.setupTouch();
     this.wireScreens();
@@ -259,6 +260,7 @@ export class App {
 
   private onGameEvent(event: GameEvent, s: Session): void {
     const state = s.game.state;
+    if (event.type === 'lock') this.hud.pendingFinesseFault = s.lastFinesseFault;
     this.renderer?.effect(event, state);
     this.audio.handleEvent(event, state);
     this.hud.handleEvent(event, this.reducedMotion());
@@ -359,6 +361,12 @@ export class App {
       row('Tiempo', formatTime(s.elapsedMs)),
       row('Piezas / s', stats.pps.toFixed(2)),
       row('Tetris rate', `${Math.round(stats.tetrisRate * 100)} %`),
+      row(
+        'Finesse',
+        s.finesse.placements > 0
+          ? `${Math.round(stats.finesseRate * 100)} % · ${stats.finesseFaults} teclas de más`
+          : 'sin datos',
+      ),
       row('T-spins', String(state.stats.tspins)),
       row('Combo máx.', String(Math.max(0, state.stats.maxCombo))),
       row('B2B máx.', String(state.stats.maxB2b)),
@@ -592,6 +600,7 @@ export class App {
     }
     this.hud.setStyle(st.video.palette, st.video.patterns);
     this.hud.announce = st.announce;
+    this.hud.showFinesseFaults = st.stats.showFinesseFaults;
     this.audio.setSettings(st.audio);
     this.session?.handling.setSettings(st.handling);
     this.touch?.setOptions({ tapAlwaysCw: st.touch.tapAlwaysCw });

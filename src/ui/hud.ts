@@ -20,6 +20,7 @@ export class Hud {
   private readonly lines = byId('lines');
   private readonly time = byId('time');
   private readonly pps = byId('pps');
+  private readonly finesse = byId('finesse');
   private readonly modeLabel = byId('mode-label');
   private readonly goalLabel = byId('goal-label');
   private readonly holdCanvas = byIdAs('hold', HTMLCanvasElement);
@@ -35,6 +36,10 @@ export class Hud {
   private lastAnnounce = 0;
   private countdownShown = -1;
   announce = true;
+  /** Avisar en pantalla cuando una colocación gasta teclas de más. */
+  showFinesseFaults = false;
+  /** Fallos de la colocación que está a punto de anunciarse. */
+  pendingFinesseFault = 0;
 
   setStyle(palette: PaletteName, patterns: boolean): void {
     this.style = { palette: PALETTES[palette], patterns };
@@ -63,6 +68,11 @@ export class Hud {
     const remaining = goal.type === 'time' ? Math.max(0, goal.ms - state.timeMs) : stats.elapsedMs;
     this.time.textContent = formatTime(remaining, goal.type !== 'time');
     this.pps.textContent = stats.pps.toFixed(2);
+    this.finesse.textContent =
+      stats.finesseFaults === 0
+        ? '100 %'
+        : `${Math.round(stats.finesseRate * 100)} % · ${stats.finesseFaults}`;
+    this.finesse.classList.toggle('warn', stats.finesseRate < 0.9);
     if (state.hold !== this.lastHold || state.holdUsed !== this.lastHoldUsed) {
       drawPiecePreview(this.holdCanvas, state.hold, this.style, state.holdUsed);
       this.lastHold = state.hold;
@@ -155,6 +165,17 @@ export class Hud {
       case 'levelUp':
         this.popup(`NIVEL ${event.level}`, [], 'level', reducedMotion);
         this.say(`Nivel ${event.level}`);
+        break;
+      case 'lock':
+        if (this.showFinesseFaults && this.pendingFinesseFault > 0) {
+          this.popup(
+            `+${this.pendingFinesseFault} TECLA${this.pendingFinesseFault > 1 ? 'S' : ''}`,
+            [],
+            'fault',
+            reducedMotion,
+          );
+        }
+        this.pendingFinesseFault = 0;
         break;
       case 'gameOver':
         this.say('Fin de la partida');

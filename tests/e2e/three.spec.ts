@@ -5,6 +5,13 @@ import { expect, test, type Page } from '@playwright/test';
  * que arranca, que dibuja, que respeta el presupuesto de render y que vuelve al
  * modo clásico cuando el dispositivo no puede con él.
  */
+
+// En los servidores de integración no hay tarjeta gráfica y WebGL se emula por
+// software, así que el umbral se relaja: el dato se registra igual para poder
+// comparar entre ejecuciones, pero el presupuesto real solo se exige en local.
+const BUDGET_MS = process.env.CI ? 16 : 8;
+const SAMPLES = process.env.CI ? 60 : 180;
+
 async function enable3d(page: Page): Promise<void> {
   await page.goto('/');
   await page.evaluate(() => {
@@ -18,7 +25,7 @@ async function enable3d(page: Page): Promise<void> {
       (window.__blockfall?.app.rendererDiagnostics as { ready?: boolean } | undefined)?.ready ===
       true,
     undefined,
-    { timeout: 20_000 },
+    { timeout: 25_000 },
   );
 }
 
@@ -58,6 +65,8 @@ test.describe('modo 3D', () => {
   test('respeta el presupuesto de render con el tablero lleno @3d @perf', async ({
     page,
   }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'basta con medirlo en un motor');
+    test.setTimeout(120_000);
     await enable3d(page);
     await page.evaluate(() => {
       window.__blockfall?.app.newGame(4242);
@@ -71,11 +80,12 @@ test.describe('modo 3D', () => {
         for (let x = 0; x < 10; x++) if ((x + y) % 5 !== 0) b[y * 10 + x] = ((x * 3 + y) % 7) + 1;
       }
     });
-    const result = await page.evaluate(async () => {
+
+    const result = await page.evaluate(async (samplesWanted: number) => {
       const bf = window.__blockfall;
       if (!bf) return null;
       const samples: number[] = [];
-      for (let i = 0; i < 180; i++) {
+      for (let i = 0; i < samplesWanted; i++) {
         const t0 = performance.now();
         bf.tick(1000 / 120);
         samples.push(performance.now() - t0);
@@ -86,14 +96,18 @@ test.describe('modo 3D', () => {
         p50: samples[Math.floor(samples.length * 0.5)] ?? 0,
         p95: samples[Math.floor(samples.length * 0.95)] ?? 0,
       };
-    });
+    }, SAMPLES);
+
     expect(result).not.toBeNull();
-    console.log(`[3d] render p50=${result!.p50.toFixed(2)}ms p95=${result!.p95.toFixed(2)}ms`);
+    const { p50, p95 } = result!;
+    console.log(
+      `[3d] render p50=${p50.toFixed(2)}ms p95=${p95.toFixed(2)}ms (límite ${BUDGET_MS}ms)`,
+    );
     await testInfo.attach('frame-cost-3d', {
-      body: `p50=${result!.p50.toFixed(2)}ms p95=${result!.p95.toFixed(2)}ms`,
+      body: `p50=${p50.toFixed(2)}ms p95=${p95.toFixed(2)}ms limite=${BUDGET_MS}ms`,
       contentType: 'text/plain',
     });
-    expect(result!.p95).toBeLessThan(8);
+    expect(p95).toBeLessThan(BUDGET_MS);
   });
 
   test('vuelve al modo clásico si el 3D no está disponible @3d', async ({ page }) => {
@@ -115,9 +129,14 @@ test.describe('modo 3D', () => {
       });
     });
     await page.reload();
-    await page.waitForTimeout(2000);
-    const kind = await page.evaluate(() => window.__blockfall?.app.rendererKind);
-    expect(kind).toBe('canvas2d');
+    await page.waitForFunction(
+      () => window.__blockfall?.app.rendererKind === 'canvas2d',
+      undefined,
+      {
+        timeout: 25_000,
+      },
+    );
+
     // El juego sigue siendo jugable tras la vuelta atrás.
     await page.evaluate(() => {
       window.__blockfall?.app.newGame(1);

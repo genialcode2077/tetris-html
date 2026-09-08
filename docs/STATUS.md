@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 89 unitarias y de propiedades + 27 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 98 unitarias y de propiedades + 30 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,11 +16,10 @@
 
 ## Próximos pasos (orden)
 
-1. Estadísticas de finesse (pulsaciones mínimas por colocación) y panel de resultados ampliado.
-2. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
-3. Tutorial interactivo y traducción a inglés.
-4. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
-5. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
+1. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
+2. Tutorial interactivo y traducción a inglés.
+3. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
+4. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -30,14 +29,16 @@
 
 ## Sesiones
 
-### 2026-09-07 · Sesión 3 (agente Claude) — renderer 3D
+### 2026-09-07 · Sesión 3 (agente Claude) — renderer 3D y finesse
 
 - Decidido con el usuario: three.js para el renderer premium (ADR-0008), con las cuatro líneas de trabajo restantes aprobadas.
 - `ThreeRenderer` completo: pozo con paredes iluminadas, cubos biselados por instancia, fantasma, partículas en tres dimensiones, sacudida y balanceo de cámara, pulso de luz al subir de nivel y aviso rojo cuando la pila sube.
 - Resplandor con `RenderPipeline` y bloom de TSL. Se ajustó tras verlo en pantalla: la primera versión quemaba todo a blanco porque la emisión era global en lugar de venir del color de cada pieza.
 - WebGPU con vuelta atrás automática a WebGL2 y, si tampoco hay, a Canvas 2D. Verificado con una prueba que simula un dispositivo sin GPU.
 - Carga diferida real: el fragmento de three.js queda fuera de la precarga del service worker y se guarda en caché solo cuando alguien usa el modo.
-- Coste de render en 3D: 3,3 ms en el percentil 95, dentro del presupuesto de 8 ms.
+- Coste de render en 3D: 1,9 ms en el percentil 95, dentro del presupuesto de 8 ms.
+- Medida de finesse: pulsaciones mínimas por colocación con Dijkstra, porcentaje en el marcador y en resultados, y aviso opcional al gastar teclas de más. El primer intento usaba búsqueda en anchura y daba mínimos incorrectos.
+- Las pruebas de extremo a extremo pasaron a tener su propio `tsconfig.json`, para poder usar tipos de Node sin contaminar el código del navegador.
 
 ### 2026-09-07 · Sesión 2 (agente Claude) — validación y aplicación instalable
 

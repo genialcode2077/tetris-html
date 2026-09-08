@@ -19,6 +19,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 - Modo de dibujo en tres dimensiones opcional con three.js (ADR-0008): cubos con volumen, pozo con paredes, resplandor por post-proceso, partículas y cámara que reacciona. Se descarga aparte y vuelve al modo clásico si el dispositivo no lo soporta.
 
+- Medida de finesse: calcula las pulsaciones mínimas para cada colocación y muestra el porcentaje de colocaciones perfectas en el marcador y en los resultados, con aviso opcional cuando se gastan teclas de más.
+
 ### Fixed
 - `backdrop-filter` en pantallas superpuestas provocaba bloqueos de segundos (F-006).
 - El viewport impedía ampliar la página, lo que incumple el criterio WCAG 1.4.4 (F-009).

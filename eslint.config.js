@@ -35,6 +35,10 @@ export default defineConfig([
     },
   },
   {
+    files: ['tests/**/*.ts'],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
+  {
     files: ['**/*.test.ts', 'tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',

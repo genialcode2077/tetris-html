@@ -5,15 +5,41 @@ export interface DerivedStats {
   readonly lpm: number;
   readonly tetrisRate: number;
   readonly elapsedMs: number;
+  /** Colocaciones con pulsaciones de más. */
+  readonly finesseFaults: number;
+  /** Porcentaje de colocaciones perfectas, de 0 a 1. */
+  readonly finesseRate: number;
 }
 
-export function deriveStats(state: Readonly<GameState>, elapsedMs: number): DerivedStats {
+export interface FinesseTally {
+  /** Colocaciones evaluadas (las que se hicieron sin usar hold). */
+  placements: number;
+  /** Colocaciones con al menos una pulsación de más. */
+  faultyPlacements: number;
+  /** Pulsaciones de más acumuladas. */
+  faults: number;
+}
+
+export function emptyFinesseTally(): FinesseTally {
+  return { placements: 0, faultyPlacements: 0, faults: 0 };
+}
+
+export function deriveStats(
+  state: Readonly<GameState>,
+  elapsedMs: number,
+  finesse: Readonly<FinesseTally> = emptyFinesseTally(),
+): DerivedStats {
   const seconds = Math.max(elapsedMs / 1000, 0.001);
   return {
     pps: state.stats.pieces / seconds,
     lpm: (state.lines / seconds) * 60,
     tetrisRate: state.lines > 0 ? (state.stats.tetrises * 4) / state.lines : 0,
     elapsedMs,
+    finesseFaults: finesse.faults,
+    finesseRate:
+      finesse.placements > 0
+        ? (finesse.placements - finesse.faultyPlacements) / finesse.placements
+        : 1,
   };
 }
 
