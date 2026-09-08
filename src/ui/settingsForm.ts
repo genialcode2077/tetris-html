@@ -4,6 +4,7 @@ import { ACTION_LABELS, DEFAULT_KEYMAP, keyLabel, type KeyMap } from '@/input/ke
 import type { Settings } from '@/storage/settings';
 import type { Store } from '@/storage/store';
 import { byId, clear, h } from './dom';
+import { LOCALES, LOCALE_NAMES, type Locale } from './i18n';
 
 export interface SettingsFormCallbacks {
   onChange(): void;
@@ -46,6 +47,14 @@ export class SettingsForm {
     this.root.append(
       this.section(
         'Juego',
+        this.select(
+          'Idioma / Language',
+          s.locale,
+          LOCALES.map((l) => [l, LOCALE_NAMES[l]] as [string, string]),
+          (v) => {
+            set((x) => (x.locale = v as Locale));
+          },
+        ),
         this.select(
           'Sistema de rotación',
           s.rules.rotationSystem,

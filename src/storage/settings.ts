@@ -2,6 +2,7 @@ import type { LockResetMode, RotationSystem } from '@/core/types';
 import type { GameMode } from '@/core/rules';
 import type { HandlingSettings } from '@/game/handling';
 import type { PaletteName } from '@/render/types';
+import type { Locale } from '@/ui/i18n';
 
 export interface AudioSettings {
   master: number;
@@ -49,6 +50,8 @@ export interface StatsSettings {
 }
 
 export interface Settings {
+  /** Idioma de la interfaz. */
+  locale: Locale;
   handling: HandlingSettings;
   rules: RuleSettings;
   audio: AudioSettings;
@@ -60,6 +63,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  locale: 'es',
   handling: { dasMs: 167, arrMs: 33, dcdMs: 0 },
   rules: {
     rotationSystem: 'srs',

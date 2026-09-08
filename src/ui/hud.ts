@@ -5,6 +5,7 @@ import { drawPiecePreview, type CellStyle } from '@/render/canvas2d/cells';
 import { PALETTES } from '@/render/palette';
 import type { PaletteName } from '@/render/types';
 import { byId, byIdAs, clear, h } from './dom';
+import { getLocale, t } from './i18n';
 
 const MODE_LABEL: Readonly<Record<GameMode, string>> = {
   marathon: 'Marathon',
@@ -52,15 +53,15 @@ export class Hud {
     const goal = rules.goal;
     this.goalLabel.textContent =
       goal.type === 'lines'
-        ? `Objetivo: ${goal.lines} líneas`
+        ? t('hud.goalLines', { n: goal.lines })
         : goal.type === 'time'
-          ? `Tiempo: ${formatTime(goal.ms, false)}`
-          : 'Sin fin';
+          ? t('hud.goalTime', { t: formatTime(goal.ms, false) })
+          : t('hud.goalNone');
     this.ensureNext(rules.nextCount);
   }
 
   update(state: Readonly<GameState>, stats: DerivedStats, rules: RuleSet): void {
-    this.score.textContent = state.score.toLocaleString('es-ES');
+    this.score.textContent = state.score.toLocaleString(getLocale());
     this.level.textContent = String(state.level);
     const goal = rules.goal;
     this.lines.textContent =
@@ -102,7 +103,7 @@ export class Hud {
     }
     if (this.countdownShown > 0) {
       this.countdownShown = 0;
-      this.overlay.textContent = '¡YA!';
+      this.overlay.textContent = t('countdown.go');
       this.overlay.className = 'board-overlay countdown';
       this.overlay.hidden = false;
       setTimeout(() => {
@@ -141,13 +142,23 @@ export class Hud {
     switch (event.type) {
       case 'lineClear': {
         const parts: string[] = [];
-        if (event.tspin !== 'none') parts.push(event.tspin === 'mini' ? 'MINI T-SPIN' : 'T-SPIN');
-        parts.push(['', 'SINGLE', 'DOUBLE', 'TRIPLE', 'TETRIS'][event.count] ?? '');
+        if (event.tspin !== 'none') {
+          parts.push(t(event.tspin === 'mini' ? 'action.tspinMini' : 'action.tspin'));
+        }
+        const names = [
+          '',
+          'action.single',
+          'action.double',
+          'action.triple',
+          'action.tetris',
+        ] as const;
+        const clearKey = names[event.count];
+        if (clearKey) parts.push(t(clearKey));
         const main = parts.join(' ');
         const extras: string[] = [];
-        if (event.b2b) extras.push('BACK-TO-BACK');
-        if (event.combo > 0) extras.push(`COMBO ×${event.combo}`);
-        if (event.perfectClear) extras.push('PERFECT CLEAR');
+        if (event.b2b) extras.push(t('action.b2b'));
+        if (event.combo > 0) extras.push(t('action.combo', { n: event.combo }));
+        if (event.perfectClear) extras.push(t('action.perfectClear'));
         this.popup(
           main,
           extras,
@@ -160,11 +171,11 @@ export class Hud {
         break;
       }
       case 'tspin':
-        this.popup(event.mini ? 'MINI T-SPIN' : 'T-SPIN', [], '', reducedMotion);
+        this.popup(t(event.mini ? 'action.tspinMini' : 'action.tspin'), [], '', reducedMotion);
         break;
       case 'levelUp':
-        this.popup(`NIVEL ${event.level}`, [], 'level', reducedMotion);
-        this.say(`Nivel ${event.level}`);
+        this.popup(t('action.level', { n: event.level }), [], 'level', reducedMotion);
+        this.say(t('a11y.levelUp', { n: event.level }));
         break;
       case 'lock':
         if (this.showFinesseFaults && this.pendingFinesseFault > 0) {
@@ -178,10 +189,10 @@ export class Hud {
         this.pendingFinesseFault = 0;
         break;
       case 'gameOver':
-        this.say('Fin de la partida');
+        this.say(t('a11y.gameOver'));
         break;
       case 'finished':
-        this.say('Objetivo completado');
+        this.say(t('a11y.finished'));
         break;
       default:
         break;

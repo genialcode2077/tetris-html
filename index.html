@@ -37,21 +37,25 @@
       <main class="game" id="game">
         <aside class="panel panel-left">
           <section class="hold" aria-label="Pieza en reserva">
-            <h2>HOLD</h2>
+            <h2 data-i18n="hud.hold">HOLD</h2>
             <canvas id="hold" class="preview" width="96" height="56" aria-hidden="true"></canvas>
           </section>
           <section class="stats" aria-label="Marcadores">
             <div class="stat">
-              <span class="label">PUNTOS</span><span class="value" id="score">0</span>
+              <span class="label" data-i18n="hud.score">PUNTOS</span
+              ><span class="value" id="score">0</span>
             </div>
             <div class="stat">
-              <span class="label">NIVEL</span><span class="value" id="level">1</span>
+              <span class="label" data-i18n="hud.level">NIVEL</span
+              ><span class="value" id="level">1</span>
             </div>
             <div class="stat">
-              <span class="label">LÍNEAS</span><span class="value" id="lines">0</span>
+              <span class="label" data-i18n="hud.lines">LÍNEAS</span
+              ><span class="value" id="lines">0</span>
             </div>
             <div class="stat">
-              <span class="label">TIEMPO</span><span class="value" id="time">0:00.000</span>
+              <span class="label" data-i18n="hud.time">TIEMPO</span
+              ><span class="value" id="time">0:00.000</span>
             </div>
             <div class="stat">
               <span class="label">PPS</span><span class="value" id="pps">0.00</span>
@@ -70,7 +74,7 @@
 
         <aside class="panel panel-right">
           <section class="next" aria-label="Siguientes piezas">
-            <h2>NEXT</h2>
+            <h2 data-i18n="hud.next">NEXT</h2>
             <div id="next" class="next-list" aria-hidden="true"></div>
           </section>
           <section class="mode-info">
@@ -94,14 +98,30 @@
         <section class="screen" id="screen-title" role="dialog" aria-labelledby="title-heading">
           <div class="card title-card">
             <h2 id="title-heading" class="title-logo">BLOCKFALL</h2>
-            <p class="tagline">Bloques que caen · reglas modernas (SRS, hold, T-spins)</p>
+            <p class="tagline" data-i18n="app.tagline">
+              Bloques que caen · reglas modernas (SRS, hold, T-spins)
+            </p>
             <nav class="menu">
-              <button type="button" class="btn primary" id="btn-play" data-autofocus>Jugar</button>
-              <button type="button" class="btn" id="btn-settings">Ajustes</button>
-              <button type="button" class="btn" id="btn-records">Récords</button>
-              <button type="button" class="btn" id="btn-help">Cómo jugar</button>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-play"
+                data-i18n="menu.play"
+                data-autofocus
+              >
+                Jugar
+              </button>
+              <button type="button" class="btn" id="btn-settings" data-i18n="menu.settings">
+                Ajustes
+              </button>
+              <button type="button" class="btn" id="btn-records" data-i18n="menu.records">
+                Récords
+              </button>
+              <button type="button" class="btn" id="btn-help" data-i18n="menu.help">
+                Cómo jugar
+              </button>
             </nav>
-            <p class="legal muted">
+            <p class="legal muted" data-i18n="app.legal">
               Proyecto educativo de código abierto, no afiliado a The Tetris Company.
             </p>
           </div>
@@ -115,20 +135,30 @@
           aria-labelledby="modes-heading"
         >
           <div class="card">
-            <h2 id="modes-heading">Elige modo</h2>
+            <h2 id="modes-heading" data-i18n="modes.title">Elige modo</h2>
             <div class="mode-list" id="mode-list"></div>
             <div class="row">
               <label class="field inline"
-                ><span>Nivel inicial</span
+                ><span data-i18n="modes.startLevel">Nivel inicial</span
                 ><select id="start-level"></select
               ></label>
               <label class="field check inline"
-                ><input type="checkbox" id="endless" /><span>Sin fin (Marathon)</span></label
+                ><input type="checkbox" id="endless" /><span data-i18n="modes.endless"
+                  >Sin fin (Marathon)</span
+                ></label
               >
             </div>
             <div class="row actions">
-              <button type="button" class="btn ghost" id="btn-modes-back">Volver</button>
-              <button type="button" class="btn primary" id="btn-start" data-autofocus>
+              <button type="button" class="btn ghost" id="btn-modes-back" data-i18n="menu.back">
+                Volver
+              </button>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-start"
+                data-autofocus
+                data-i18n="modes.start"
+              >
                 Empezar
               </button>
             </div>
@@ -143,10 +173,16 @@
           aria-labelledby="settings-heading"
         >
           <div class="card wide">
-            <h2 id="settings-heading">Ajustes</h2>
+            <h2 id="settings-heading" data-i18n="menu.settings">Ajustes</h2>
             <form id="settings-form" class="settings-form" onsubmit="return false;"></form>
             <div class="row actions">
-              <button type="button" class="btn primary" id="btn-settings-back" data-autofocus>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-settings-back"
+                data-autofocus
+                data-i18n="menu.done"
+              >
                 Listo
               </button>
             </div>
@@ -161,13 +197,24 @@
           aria-labelledby="records-heading"
         >
           <div class="card wide">
-            <h2 id="records-heading">Récords</h2>
+            <h2 id="records-heading" data-i18n="records.title">Récords</h2>
             <div id="records-body" class="records"></div>
             <div class="row actions">
-              <button type="button" class="btn ghost small" id="btn-open-replay">
+              <button
+                type="button"
+                class="btn ghost small"
+                id="btn-open-replay"
+                data-i18n="records.openReplay"
+              >
                 Abrir repetición
               </button>
-              <button type="button" class="btn primary" id="btn-records-back" data-autofocus>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-records-back"
+                data-autofocus
+                data-i18n="menu.back"
+              >
                 Volver
               </button>
             </div>
@@ -182,7 +229,7 @@
           aria-labelledby="help-heading"
         >
           <div class="card">
-            <h2 id="help-heading">Cómo jugar</h2>
+            <h2 id="help-heading" data-i18n="help.title">Cómo jugar</h2>
             <p>
               Completa filas para eliminarlas. Un <strong>Tetris</strong> son 4 filas a la vez. Gira
               la <strong>T</strong> en un hueco para hacer un <strong>T-spin</strong>. Encadena
@@ -195,7 +242,13 @@
               para hold.
             </p>
             <div class="row actions">
-              <button type="button" class="btn primary" id="btn-help-back" data-autofocus>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-help-back"
+                data-autofocus
+                data-i18n="menu.back"
+              >
                 Volver
               </button>
             </div>
@@ -210,14 +263,26 @@
           aria-labelledby="pause-heading"
         >
           <div class="card">
-            <h2 id="pause-heading">Pausa</h2>
+            <h2 id="pause-heading" data-i18n="pause.title">Pausa</h2>
             <nav class="menu">
-              <button type="button" class="btn primary" id="btn-resume" data-autofocus>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-resume"
+                data-autofocus
+                data-i18n="pause.resume"
+              >
                 Continuar
               </button>
-              <button type="button" class="btn" id="btn-pause-restart">Reiniciar</button>
-              <button type="button" class="btn" id="btn-pause-settings">Ajustes</button>
-              <button type="button" class="btn ghost" id="btn-pause-quit">Salir al menú</button>
+              <button type="button" class="btn" id="btn-pause-restart" data-i18n="pause.restart">
+                Reiniciar
+              </button>
+              <button type="button" class="btn" id="btn-pause-settings" data-i18n="menu.settings">
+                Ajustes
+              </button>
+              <button type="button" class="btn ghost" id="btn-pause-quit" data-i18n="pause.quit">
+                Salir al menú
+              </button>
             </nav>
           </div>
         </section>
@@ -234,8 +299,21 @@
             <div id="results-body" class="results"></div>
             <div class="row" id="results-actions"></div>
             <div class="row actions">
-              <button type="button" class="btn ghost" id="btn-results-title">Menú</button>
-              <button type="button" class="btn primary" id="btn-results-retry" data-autofocus>
+              <button
+                type="button"
+                class="btn ghost"
+                id="btn-results-title"
+                data-i18n="results.menu"
+              >
+                Menú
+              </button>
+              <button
+                type="button"
+                class="btn primary"
+                id="btn-results-retry"
+                data-autofocus
+                data-i18n="results.retry"
+              >
                 Otra vez
               </button>
             </div>

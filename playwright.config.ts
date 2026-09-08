@@ -11,6 +11,9 @@ export default defineConfig({
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
+    // La interfaz detecta el idioma del navegador, así que se fija para que las
+    // pruebas sean deterministas. El idioma se cubre aparte en i18n.spec.ts.
+    locale: 'es-ES',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

@@ -5,6 +5,7 @@ import { stackHeight } from '@/core/board';
 import { BOARD_W, VISIBLE_H } from '@/core/constants';
 import { PIECE_VALUE, cellsOf } from '@/core/pieces';
 import type { GameEvent, GameState } from '@/core/types';
+import { t } from '@/ui/i18n';
 import { PALETTES, type Palette } from '../palette';
 import { DEFAULT_RENDER_OPTIONS, type RenderOptions, type Renderer } from '../types';
 import {
@@ -77,7 +78,7 @@ export class ThreeRenderer implements Renderer {
     const canvas = document.createElement('canvas');
     canvas.className = 'board-canvas board-canvas-3d';
     canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', 'Tablero de juego en tres dimensiones');
+    canvas.setAttribute('aria-label', t('a11y.board3d'));
     container.appendChild(canvas);
     this.canvas = canvas;
 

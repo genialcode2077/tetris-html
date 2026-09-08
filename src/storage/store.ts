@@ -62,13 +62,32 @@ export function defaultPersisted(): PersistedV1 {
 
 export class Store {
   private data: PersistedV1;
+  private readonly storedLocale: boolean;
 
   constructor(private readonly storage: StorageLike | null) {
     this.data = this.load();
+    this.storedLocale = this.readStoredLocale();
+  }
+
+  private readStoredLocale(): boolean {
+    if (!this.storage) return false;
+    try {
+      const raw = this.storage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const parsed: unknown = JSON.parse(raw);
+      return isObject(parsed) && isObject(parsed.settings) && 'locale' in parsed.settings;
+    } catch {
+      return false;
+    }
   }
 
   get settings(): Settings {
     return this.data.settings;
+  }
+
+  /** true si el jugador ya eligió idioma; si no, se usa el del navegador. */
+  get hasStoredLocale(): boolean {
+    return this.storedLocale;
   }
 
   get keymap(): KeyMap {

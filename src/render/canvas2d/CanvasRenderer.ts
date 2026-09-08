@@ -3,6 +3,7 @@ import { BOARD_W, VISIBLE_H } from '@/core/constants';
 import { PIECE_VALUE, cellsOf } from '@/core/pieces';
 import type { GameEvent, GameState } from '@/core/types';
 import { PALETTES, type Palette } from '../palette';
+import { t } from '@/ui/i18n';
 import { DEFAULT_RENDER_OPTIONS, type RenderOptions, type Renderer } from '../types';
 import { drawCell, drawGhostCell } from './cells';
 import {
@@ -51,7 +52,7 @@ export class CanvasRenderer implements Renderer {
     const canvas = document.createElement('canvas');
     canvas.className = 'board-canvas';
     canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', 'Tablero de juego');
+    canvas.setAttribute('aria-label', t('a11y.board'));
     container.appendChild(canvas);
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d', { alpha: false });

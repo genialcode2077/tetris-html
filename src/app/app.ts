@@ -17,6 +17,7 @@ import type { Store } from '@/storage/store';
 import { byId, byIdAs, clear, h } from '@/ui/dom';
 import { Hud } from '@/ui/hud';
 import { Screens, type ScreenId } from '@/ui/screens';
+import { applyTranslations, detectLocale, getLocale, setLocale, t } from '@/ui/i18n';
 import { SettingsForm } from '@/ui/settingsForm';
 import { APP_TITLE } from './config';
 import { APP_COMMIT, APP_VERSION } from './version';
@@ -96,6 +97,12 @@ export class App {
 
   start(): void {
     document.title = APP_TITLE;
+    // Si el jugador nunca eligió idioma, se usa el del navegador.
+    if (!this.store.hasStoredLocale) {
+      this.store.updateSettings((x) => (x.locale = detectLocale()));
+    }
+    setLocale(this.store.settings.locale);
+    applyTranslations();
     byId('version').textContent = `v${APP_VERSION} · ${APP_COMMIT}`;
     void this.mountRenderer(this.store.settings.video.renderer);
     this.hud.setStyle(this.store.settings.video.palette, this.store.settings.video.patterns);
@@ -231,7 +238,7 @@ export class App {
     if (this.rendererKind === 'canvas2d') return;
     console.warn(`[render] volviendo a Canvas 2D: ${reason}`);
     this.store.updateSettings((x) => (x.video.renderer = 'canvas2d'));
-    this.hud.notify('El modo 3D no está disponible en este dispositivo; se usa el modo clásico.');
+    this.hud.notify(t('notice.no3d'));
     void this.mountRenderer('canvas2d');
     this.settingsForm.build();
   }
@@ -266,8 +273,8 @@ export class App {
     this.renderer?.effect(event, state);
     this.audio.handleEvent(event, state);
     this.hud.handleEvent(event, this.reducedMotion());
-    if (event.type === 'gameOver') this.hud.showOverlayText('GAME OVER', 'gameover');
-    if (event.type === 'finished') this.hud.showOverlayText('¡OBJETIVO!', 'finished');
+    if (event.type === 'gameOver') this.hud.showOverlayText(t('results.gameover'), 'gameover');
+    if (event.type === 'finished') this.hud.showOverlayText(t('results.finished'), 'finished');
   }
 
   private onAction(action: InputAction, pressed: boolean): void {
@@ -350,36 +357,39 @@ export class App {
         date: new Date().toISOString().slice(0, 10),
       });
     }
-    byId('results-title').textContent = won ? '¡Objetivo cumplido!' : 'Fin de la partida';
+    byId('results-title').textContent = t(won ? 'results.finished' : 'results.gameover');
     const body = byId('results-body');
     clear(body);
     const row = (label: string, value: string): HTMLElement =>
       h('div', { className: 'result-row' }, h('span', {}, label), h('strong', {}, value));
     body.append(
-      row('Modo', MODE_LABELS[s.mode]),
-      row('Puntuación', state.score.toLocaleString('es-ES')),
-      row('Líneas', String(state.lines)),
-      row('Nivel', String(state.level)),
-      row('Tiempo', formatTime(s.elapsedMs)),
-      row('Piezas / s', stats.pps.toFixed(2)),
-      row('Tetris rate', `${Math.round(stats.tetrisRate * 100)} %`),
+      row(t('results.mode'), MODE_LABELS[s.mode]),
+      row(t('records.points'), state.score.toLocaleString(getLocale())),
+      row(t('records.lines'), String(state.lines)),
+      row(t('records.level'), String(state.level)),
+      row(t('records.time'), formatTime(s.elapsedMs)),
+      row(t('results.pieces'), stats.pps.toFixed(2)),
+      row(t('results.tetrisRate'), `${Math.round(stats.tetrisRate * 100)} %`),
       row(
-        'Finesse',
+        t('results.finesse'),
         s.finesse.placements > 0
-          ? `${Math.round(stats.finesseRate * 100)} % · ${stats.finesseFaults} teclas de más`
-          : 'sin datos',
+          ? t('results.finesseValue', {
+              p: Math.round(stats.finesseRate * 100),
+              n: stats.finesseFaults,
+            })
+          : t('results.noData'),
       ),
-      row('T-spins', String(state.stats.tspins)),
-      row('Combo máx.', String(Math.max(0, state.stats.maxCombo))),
-      row('B2B máx.', String(state.stats.maxB2b)),
-      row('Perfect clears', String(state.stats.perfectClears)),
+      row(t('results.tspins'), String(state.stats.tspins)),
+      row(t('results.maxCombo'), String(Math.max(0, state.stats.maxCombo))),
+      row(t('results.maxB2b'), String(state.stats.maxB2b)),
+      row(t('results.perfectClears'), String(state.stats.perfectClears)),
     );
     if (rank > 0)
       body.append(
         h(
           'p',
           { className: 'result-rank' },
-          rank === 1 ? '¡Nuevo récord!' : `Puesto ${rank} en tus récords`,
+          rank === 1 ? t('results.newRecord') : t('results.rank', { n: rank }),
         ),
       );
 
@@ -388,7 +398,7 @@ export class App {
       const replay = s.buildReplay(APP_VERSION);
       this.lastReplay = replay;
       if (this.store.saveBestReplay(s.mode, replay)) {
-        body.append(h('p', { className: 'muted small' }, 'Repetición guardada.'));
+        body.append(h('p', { className: 'muted small' }, t('results.replaySaved')));
       }
     }
     const watchable = s.isReplay ? null : (this.store.bestReplay(s.mode) ?? this.lastReplay);
@@ -405,7 +415,7 @@ export class App {
               this.watchReplay(watchable);
             },
           },
-          'Ver repetición',
+          t('results.watchReplay'),
         ),
         h(
           'button',
@@ -416,7 +426,7 @@ export class App {
               this.downloadReplay(watchable);
             },
           },
-          'Descargar',
+          t('results.download'),
         ),
       );
     }
@@ -498,7 +508,7 @@ export class App {
     this.hud.hideOverlay();
     this.audio.startMusic();
     this.screens.hide();
-    this.hud.notify('Reproduciendo una partida guardada.');
+    this.hud.notify(t('notice.replayPlaying'));
     byId('board-wrap').focus();
   }
 
@@ -526,7 +536,7 @@ export class App {
       void file.text().then((text) => {
         const replay = parseReplay(text);
         if (!replay) {
-          this.hud.notify('Ese archivo no es una repetición válida.');
+          this.hud.notify(t('notice.replayInvalid'));
           return;
         }
         this.watchReplay(replay);
@@ -549,10 +559,10 @@ export class App {
     clear(list);
     const modes: GameMode[] = ['marathon', 'sprint', 'ultra', 'zen'];
     const descriptions: Record<GameMode, string> = {
-      marathon: '150 líneas, la velocidad sube con el nivel. Opción sin fin.',
-      sprint: 'Limpia 40 líneas lo más rápido posible.',
-      ultra: 'Máxima puntuación en 2 minutos.',
-      zen: 'Sin fin y sin prisa: gravedad fija.',
+      marathon: t('modes.marathon.desc'),
+      sprint: t('modes.sprint.desc'),
+      ultra: t('modes.ultra.desc'),
+      zen: t('modes.zen.desc'),
     };
     for (const mode of modes) {
       const input = h('input', { type: 'radio', name: 'mode', value: mode });
@@ -604,18 +614,18 @@ export class App {
             'tr',
             {},
             h('th', {}, '#'),
-            h('th', {}, mode === 'sprint' ? 'Tiempo' : 'Puntos'),
-            h('th', {}, 'Líneas'),
-            h('th', {}, 'Nivel'),
+            h('th', {}, mode === 'sprint' ? t('records.time') : t('records.points')),
+            h('th', {}, t('records.lines')),
+            h('th', {}, t('records.level')),
             h('th', {}, 'PPS'),
-            h('th', {}, 'Fecha'),
+            h('th', {}, t('records.date')),
           ),
         ),
         h(
           'tbody',
           {},
           ...(list.length === 0
-            ? [h('tr', {}, h('td', { colspan: 6, className: 'muted' }, 'Sin partidas todavía'))]
+            ? [h('tr', {}, h('td', { colspan: 6, className: 'muted' }, t('records.empty')))]
             : list.map((r, i) =>
                 h(
                   'tr',
@@ -643,12 +653,12 @@ export class App {
     clear(root);
     const keymap = this.store.keymap;
     const rows: [string, string][] = [
-      ['Mover', `${keymap.left.join('/')} · ${keymap.right.join('/')}`],
-      ['Rotar', `${keymap.cw.join('/')} (horario) · ${keymap.ccw.join('/')} (antihorario)`],
-      ['Soft drop / Hard drop', `${keymap.softDrop.join('/')} · ${keymap.hardDrop.join('/')}`],
-      ['Hold', keymap.hold.join('/')],
+      [t('help.move'), `${keymap.left.join('/')} · ${keymap.right.join('/')}`],
+      [t('help.rotate'), `${keymap.cw.join('/')} · ${keymap.ccw.join('/')}`],
+      [t('help.drops'), `${keymap.softDrop.join('/')} · ${keymap.hardDrop.join('/')}`],
+      [t('help.hold'), keymap.hold.join('/')],
       [
-        'Pausa / Reiniciar / Silencio',
+        t('help.system'),
         `${keymap.pause.join('/')} · ${keymap.restart.join('/')} · ${keymap.mute.join('/')}`,
       ],
     ];
@@ -685,8 +695,20 @@ export class App {
     }
   }
 
+  /** Vuelve a aplicar los ajustes; el formulario y las pruebas lo usan tras cambiarlos. */
+  refreshSettings(): void {
+    this.applySettings();
+  }
+
   private applySettings(): void {
     const st = this.store.settings;
+    if (st.locale !== getLocale()) {
+      setLocale(st.locale);
+      applyTranslations();
+      this.buildModes();
+      this.buildHelp();
+      this.settingsForm.build();
+    }
     this.renderer?.setOptions(this.renderOptions());
     if (st.video.renderer !== this.rendererKind && !this.rendererSwitching) {
       void this.mountRenderer(st.video.renderer);
