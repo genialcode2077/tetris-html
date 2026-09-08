@@ -4,6 +4,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 ### Added
+- En Sprint y en el reto diario, al cruzar cada diez líneas se muestra cuánto se va por delante o por detrás de tu mejor marca, en verde o en naranja. El panel del modo enseña además el récord como referencia. Los récords guardan ahora los tiempos parciales.
 - El modo práctica admite subida de basura y niveles hasta el veinte, donde la pieza cae de golpe. La basura sube cada tantas piezas con un hueco que a veces cambia de columna, y limpiar líneas la cancela según la tabla oficial. Todo se genera con la semilla de la partida, así que una repetición sigue reproduciéndose igual.
 - Ajuste para reconocer giros de todas las piezas, no solo de la T, con la regla del inmóvil que usan los juegos competitivos actuales. Tiene tres valores y viene apagado, así que el comportamiento por omisión sigue siendo el de la especificación oficial.
 - Investigación inicial (`docs/research/01..06`), arquitectura, ADRs 0001-0007, protocolo de iteración, AGENTS.md/CLAUDE.md.

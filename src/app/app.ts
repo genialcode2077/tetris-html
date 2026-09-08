@@ -6,6 +6,7 @@ import { Coach } from '@/game/coaching';
 import { GameLoop } from '@/game/loop';
 import { parseReplay, serializeReplay, type Replay } from '@/game/replay';
 import { Session } from '@/game/session';
+import { formatDelta } from '@/game/splits';
 import { formatTime } from '@/game/stats';
 import { GamepadInput } from '@/input/gamepad';
 import { KeyboardInput } from '@/input/keyboard';
@@ -51,6 +52,7 @@ export class App {
   private readonly idle = new Game({ seed: 1 });
   private resultsTimer: ReturnType<typeof setTimeout> | null = null;
   private lastReplay: Replay | null = null;
+  private shownSplit: unknown = null;
   private readonly coach: Coach;
   private readonly reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   private lastTouchCell = 0;
@@ -203,6 +205,7 @@ export class App {
       rules,
       handling: st.handling,
       seed,
+      referenceSplits: this.store.bestSplits(mode),
     });
     this.session.onEvent((e, s) => {
       this.onGameEvent(e, s);
@@ -210,8 +213,14 @@ export class App {
     if (this.resultsTimer) clearTimeout(this.resultsTimer);
     this.resultsTimer = null;
     this.coach.resetForNewGame();
+    this.shownSplit = null;
     (this.rendererHandle?.renderer as { resetBudget?: () => void } | undefined)?.resetBudget?.();
     this.hud.setMode(mode, this.session.rules);
+    const best = this.store.highscores(mode)[0];
+    this.hud.setRecord(
+      mode === 'sprint' || mode === 'daily' ? (best?.timeMs ?? null) : null,
+      mode === 'sprint' || mode === 'daily' ? null : (best?.score ?? null),
+    );
     this.hud.hideOverlay();
     this.audio.setLevel(st.game.startLevel);
     this.audio.startMusic();
@@ -225,6 +234,20 @@ export class App {
     if (!s) return;
     if (this.screens.active) return;
     s.step(dt);
+    // Al cruzar un hito se enseña cuánto se va por delante o por detrás del récord.
+    const split = s.lastSplit;
+    if (split && split !== this.shownSplit) {
+      this.shownSplit = split;
+      this.hud.notify(
+        split.deltaMs === null
+          ? t('split.first', { n: split.lines, t: formatTime(split.timeMs) })
+          : t(split.deltaMs <= 0 ? 'split.ahead' : 'split.behind', {
+              n: split.lines,
+              d: formatDelta(split.deltaMs),
+            }),
+        split.deltaMs !== null && split.deltaMs <= 0 ? 'ahead' : 'behind',
+      );
+    }
     if ((s.status === 'gameover' || s.status === 'finished') && !this.resultsTimer) {
       this.resultsTimer = setTimeout(() => {
         this.showResults();
@@ -392,6 +415,7 @@ export class App {
         timeMs: s.elapsedMs,
         pps: stats.pps,
         date: new Date().toISOString().slice(0, 10),
+        ...(s.recordedSplits.length > 0 ? { splits: s.recordedSplits } : {}),
       });
     }
     byId('results-title').textContent = t(won ? 'results.finished' : 'results.gameover');

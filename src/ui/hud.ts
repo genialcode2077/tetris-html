@@ -43,6 +43,20 @@ export class Hud {
     this.lastHold = undefined;
   }
 
+  /** Muestra la mejor marca del modo como referencia mientras se juega. */
+  setRecord(timeMs: number | null, score: number | null): void {
+    const el = byId('record-label');
+    if (timeMs === null && score === null) {
+      el.hidden = true;
+      return;
+    }
+    el.hidden = false;
+    el.textContent =
+      timeMs !== null
+        ? `${t('hud.record')}: ${formatTime(timeMs)}`
+        : `${t('hud.record')}: ${(score ?? 0).toLocaleString(getLocale())}`;
+  }
+
   setMode(mode: GameMode, rules: RuleSet): void {
     this.modeLabel.textContent = modeLabel(mode);
     const goal = rules.goal;
@@ -114,10 +128,10 @@ export class Hud {
   }
 
   /** Muestra un aviso breve al jugador y lo anuncia al lector de pantalla. */
-  notify(text: string): void {
+  notify(text: string, tone: 'neutral' | 'ahead' | 'behind' = 'neutral'): void {
     const el = h(
       'div',
-      { className: 'badge notice' },
+      { className: `badge notice${tone === 'neutral' ? '' : ` ${tone}`}` },
       h('span', { className: 'badge-extra' }, text),
     );
     this.badges.append(el);
@@ -161,7 +175,10 @@ export class Hud {
           reducedMotion,
         );
         this.say(
-          `${main.toLowerCase()}${extras.length ? ', ' + extras.join(', ').toLowerCase() : ''}, ${event.points} puntos`,
+          t('a11y.points', {
+            action: `${main.toLowerCase()}${extras.length ? ', ' + extras.join(', ').toLowerCase() : ''}`,
+            n: event.points,
+          }),
         );
         break;
       }

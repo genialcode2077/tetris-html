@@ -110,6 +110,10 @@ const es = {
   'tip.perfectClear':
     'Has dejado el tablero vacío. Eso es un perfect clear y da la mayor bonificación del juego.',
   'settings.tips': 'Consejos mientras juegas',
+  'split.ahead': '{n} líneas · {d} sobre tu récord',
+  'split.behind': '{n} líneas · {d} respecto a tu récord',
+  'split.first': '{n} líneas · {t}',
+  'hud.record': 'RÉCORD',
   'settings.spin': 'Giros que cuentan',
   'settings.spin.tspin': 'Solo la T (regla oficial)',
   'settings.spin.allMini': 'Todas las piezas (la T por esquinas)',
@@ -231,6 +235,10 @@ const en: Record<MessageKey, string> = {
   'tip.perfectClear':
     'You emptied the board. That is a perfect clear, the biggest bonus in the game.',
   'settings.tips': 'Tips while you play',
+  'split.ahead': '{n} lines · {d} on your record',
+  'split.behind': '{n} lines · {d} against your record',
+  'split.first': '{n} lines · {t}',
+  'hud.record': 'RECORD',
   'settings.spin': 'Spins that count',
   'settings.spin.tspin': 'T piece only (official rule)',
   'settings.spin.allMini': 'All pieces (T by corners)',

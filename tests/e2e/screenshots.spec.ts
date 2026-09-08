@@ -151,3 +151,37 @@ test('captura del modo práctica con basura @screenshots', async ({ page }, test
   await page.evaluate(() => window.__blockfall?.tick(200));
   await page.screenshot({ path: `${OUT}/${tag}-09-practice-garbage.png` });
 });
+
+test('captura de la comparación con el récord @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  // Se deja un récord previo con parciales para tener con qué comparar.
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.locale = 'es';
+      s.game.mode = 'sprint';
+    });
+    window.__blockfall?.store.addHighScore('sprint', {
+      score: 0,
+      lines: 40,
+      level: 1,
+      timeMs: 60_000,
+      pps: 2,
+      date: '2026-09-01',
+      splits: [20_000, 35_000, 48_000, 60_000],
+    });
+    window.__blockfall?.app.refreshSettings();
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  // Se cruza el primer hito antes que el récord, así que la diferencia es favorable.
+  await page.evaluate(() => {
+    const bf = window.__blockfall;
+    const s = bf?.app.currentSession;
+    if (!bf || !s) return;
+    (s.game.state as { lines: number }).lines = 10;
+    bf.tick(60);
+  });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${OUT}/${tag}-10-split.png` });
+});

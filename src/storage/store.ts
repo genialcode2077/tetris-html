@@ -11,6 +11,8 @@ export interface HighScore {
   timeMs: number;
   pps: number;
   date: string;
+  /** Tiempos en cada hito de diez líneas; ausente en marcas anteriores. */
+  splits?: number[];
 }
 
 export interface PersistedV1 {
@@ -109,6 +111,13 @@ export class Store {
   setSeenTips(tips: readonly TipId[]): void {
     this.data.seenTips = [...tips];
     this.save();
+  }
+
+  /** Tiempos parciales de la mejor marca del modo, para comparar en directo. */
+  bestSplits(mode: GameMode): number[] {
+    const list = this.highscores(mode);
+    const best = mode === 'sprint' ? list[0] : list[0];
+    return best?.splits ?? [];
   }
 
   bestReplay(mode: GameMode): Replay | null {

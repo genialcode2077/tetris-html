@@ -14,6 +14,10 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 08  | [Legibilidad y espacio en móviles pequeños](08-legibilidad-y-espacio-en-moviles-pequenos.md)         | 2026-09-07 | vigente |
 | 09  | [Distinguibilidad de la paleta para daltonismo](09-distinguibilidad-de-la-paleta-para-daltonismo.md) | 2026-09-07 | vigente |
 | 10  | [Aprendizaje contextual en lugar de tutorial](10-aprendizaje-contextual-en-lugar-de-tutorial.md)     | 2026-09-08 | vigente |
+| 11  | [Giros de todas las piezas y regla del inmóvil](11-giros-de-todas-las-piezas.md)                     | 2026-09-08 | vigente |
+| 12  | [Coste de las partículas en equipos lentos](12-coste-de-las-particulas-en-equipos-lentos.md)         | 2026-09-08 | vigente |
+| 13  | [Subida de basura y gravedad máxima](13-basura-y-gravedad-maxima.md)                                 | 2026-09-08 | vigente |
+| 14  | [Comparar con tu récord por hitos](14-comparar-con-tu-record-por-hitos.md)                           | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
@@ -32,8 +36,8 @@ Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción 
 | Rendimiento de partículas en un teléfono de gama baja           | hecho con freno de procesador, informe 12; falta probarlo en un teléfono real   |
 | Tutorial interactivo de un minuto                               | descartado por la evidencia; sustituido por consejos contextuales, informe 10   |
 | All-spin (regla inmóvil) y tabla de giro de 180                 | hecho el all-spin, informe 11; la tabla de 180 sigue sin fuente pública (F-001) |
-| Subida de basura y gravedad máxima para el modo práctica        | **siguiente**                                                                   |
-| Fantasma del récord en Sprint y controles al ver una repetición | pendiente                                                                       |
+| Subida de basura y gravedad máxima para el modo práctica        | hecho, informe 13                                                               |
+| Fantasma del récord en Sprint y controles al ver una repetición | **siguiente**                                                                   |
 
 ## Plantilla
 

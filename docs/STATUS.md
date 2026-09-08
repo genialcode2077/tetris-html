@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 175 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 185 unitarias y de propiedades + 50 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,7 +16,7 @@
 
 ## Próximos pasos (orden)
 
-1. Fantasma del récord en Sprint; controles de avance al ver una repetición.
+1. Controles de avance y velocidad al ver una repetición.
 2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
 3. Posiciones preparadas en el modo práctica para entrenar giros concretos.
 
@@ -26,6 +26,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 10 (agente, iteración periódica) — comparar con tu récord
+
+- Tema del backlog: fantasma del récord en Sprint (informe `docs/research/14`).
+- Se descartó el fantasma visual. En un juego de carreras es un coche translúcido en una pista; aquí serían bloques translúcidos sobre el mismo tablero, compitiendo con la pieza fantasma y con los colores, que son la única señal que distingue cada pieza.
+- En su lugar se trajo lo que hacen las carreras contrarreloj: comparación por hitos. Cada diez líneas se muestra cuánto se va por delante o por detrás del récord, en verde o en naranja, y el panel del modo enseña la mejor marca como referencia.
+- Los récords guardan ahora los tiempos parciales. Los guardados antes siguen valiendo: simplemente no tienen con qué comparar, y hay una prueba que lo fija.
+- Diez pruebas del módulo de hitos, más dos capturas de referencia.
+- Los controles de avance al ver una repetición quedan para otra iteración.
 
 ### 2026-09-08 · Sesión 9 (agente, iteración periódica) — basura y gravedad máxima
 

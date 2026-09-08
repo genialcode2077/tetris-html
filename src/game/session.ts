@@ -10,6 +10,7 @@ import {
   type InputAction,
 } from './handling';
 import { ReplayPlayer, ReplayRecorder, type Replay } from './replay';
+import { SplitTracker, hasSplits, type SplitComparison } from './splits';
 import { deriveStats, emptyFinesseTally, type DerivedStats, type FinesseTally } from './stats';
 
 export type SessionStatus = 'countdown' | 'playing' | 'paused' | 'finished' | 'gameover';
@@ -23,6 +24,8 @@ export interface SessionOptions {
   readonly countdownMs?: number;
   /** Al pasar una repetición, la sesión reproduce sus entradas en vez de escuchar al jugador. */
   readonly replay?: Replay;
+  /** Tiempos de la mejor marca, para comparar hito a hito (docs/research/14). */
+  readonly referenceSplits?: readonly number[];
 }
 
 export type SessionListener = (event: GameEvent, session: Session) => void;
@@ -54,6 +57,10 @@ export class Session {
   private readonly player: ReplayPlayer | null;
   readonly seed: number;
   private readonly handlingSettings: HandlingSettings;
+  /** Seguimiento de hitos; null en los modos donde el tiempo no es el objetivo. */
+  private readonly splits: SplitTracker | null;
+  /** Último hito cruzado, para que el marcador lo muestre. */
+  lastSplit: SplitComparison | null = null;
 
   constructor(options: SessionOptions) {
     const replay = options.replay;
@@ -66,6 +73,10 @@ export class Session {
     this.handlingSettings = replay?.handling ?? options.handling ?? DEFAULT_HANDLING;
     this.handling = new Handling(this.handlingSettings);
     this.player = replay ? new ReplayPlayer(replay.inputs) : null;
+    const goalLines = rules.goal.type === 'lines' ? rules.goal.lines : null;
+    this.splits = hasSplits(this.mode, goalLines)
+      ? new SplitTracker(goalLines ?? 0, options.referenceSplits ?? [])
+      : null;
     this.countdownMs = options.countdownMs ?? 3000;
     if (this.countdownMs <= 0) this.beginPlay();
   }
@@ -171,6 +182,8 @@ export class Session {
         }
         this.handling.step(dtMs, this.game);
         const events = this.game.step(dtMs);
+        const split = this.splits?.update(this.game.state.lines, this.elapsedMs);
+        if (split) this.lastSplit = split;
         for (const e of events) {
           this.trackFinesse(e);
           if (e.type === 'gameOver') this.status = 'gameover';
@@ -182,6 +195,11 @@ export class Session {
       default:
         return [];
     }
+  }
+
+  /** Tiempos de los hitos cruzados, para guardarlos con el récord. */
+  get recordedSplits(): number[] {
+    return this.splits?.recorded ?? [];
   }
 
   stats(): DerivedStats {

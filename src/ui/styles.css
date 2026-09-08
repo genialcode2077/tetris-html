@@ -153,6 +153,10 @@ body {
   font-size: 22px;
   font-weight: 700;
 }
+.mode-info .record {
+  color: var(--accent);
+  font-size: 13px;
+}
 .mode-info {
   display: flex;
   flex-direction: column;
@@ -262,6 +266,14 @@ body {
   animation: fade 4s linear forwards;
   max-width: min(90vw, 320px);
   text-align: center;
+}
+.badge.notice.ahead .badge-extra {
+  color: #3bff7a;
+  font-weight: 700;
+}
+.badge.notice.behind .badge-extra {
+  color: var(--accent-2);
+  font-weight: 700;
 }
 .badge.notice .badge-extra {
   letter-spacing: 0.02em;
@@ -663,6 +675,10 @@ body {
     height: 38px;
     min-width: 0;
     flex: 1 1 0;
+  }
+  .mode-info .record {
+    color: var(--accent);
+    font-size: 13px;
   }
   .mode-info {
     display: none;
