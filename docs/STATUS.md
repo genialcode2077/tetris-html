@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 123 unitarias y de propiedades + 45 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 132 unitarias y de propiedades + 49 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -16,9 +16,10 @@
 
 ## Próximos pasos (orden)
 
-1. Tutorial interactivo de un minuto (mover, rotar, hold, hard drop, T-spin).
+1. Giros de otras piezas con la regla del inmóvil, y verificar la tabla de giro de 180.
 2. Posiciones preparadas en el modo práctica; subida de basura y 20G.
 3. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
+4. Fantasma del récord en Sprint; controles de avance al ver una repetición.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -26,6 +27,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 6 (agente, iteración periódica) — aprender jugando
+
+- Tema del backlog: tutorial interactivo de un minuto (informe `docs/research/10`).
+- La investigación desaconseja ese formato: los avisos que interrumpen al arrancar se saltan, no se recuerdan y no mejoran el desempeño. Solo compensan con formas de interacción genuinamente nuevas, y mover bloques que caen no lo es.
+- Lo que sí es opaco aquí es otra cosa: la reserva de pieza, la caída rápida, el giro de la T, el bono por encadenar y los combos. Nada de eso se descubre solo.
+- Se descartó el tutorial y se hicieron consejos contextuales: aparecen la primera vez que cada mecánica importa, una sola vez en la vida, sin bloquear la partida y con un intervalo mínimo entre ellos. Se pueden apagar en Ajustes.
+- Módulo `src/game/coaching.ts` sin dependencias del navegador, con nueve pruebas, más dos de extremo a extremo y una captura de referencia.
+- De paso se descubrió que el interruptor de avisos de finesse nunca había llegado al formulario de Ajustes.
 
 ### 2026-09-07 · Sesión 5 (agente, iteración periódica) — colores y daltonismo
 

@@ -1,5 +1,6 @@
 import type { GameMode } from '@/core/rules';
 import { DEFAULT_KEYMAP, type KeyMap } from '@/input/keymap';
+import type { TipId } from '@/game/coaching';
 import type { Replay } from '@/game/replay';
 import { DEFAULT_SETTINGS, type Settings } from './settings';
 
@@ -19,6 +20,8 @@ export interface PersistedV1 {
   highscores: Partial<Record<GameMode, HighScore[]>>;
   /** Repetición de la mejor partida de cada modo. */
   bestReplays: Partial<Record<GameMode, Replay>>;
+  /** Consejos que el jugador ya ha visto; no vuelven a mostrarse. */
+  seenTips: TipId[];
 }
 
 export const STORAGE_KEY = 'tetris-html:v1';
@@ -57,6 +60,7 @@ export function defaultPersisted(): PersistedV1 {
     keymap: structuredClone(DEFAULT_KEYMAP),
     highscores: {},
     bestReplays: {},
+    seenTips: [],
   };
 }
 
@@ -96,6 +100,15 @@ export class Store {
 
   highscores(mode: GameMode): HighScore[] {
     return this.data.highscores[mode] ?? [];
+  }
+
+  get seenTips(): TipId[] {
+    return this.data.seenTips;
+  }
+
+  setSeenTips(tips: readonly TipId[]): void {
+    this.data.seenTips = [...tips];
+    this.save();
   }
 
   bestReplay(mode: GameMode): Replay | null {
@@ -167,6 +180,7 @@ export class Store {
         keymap: mergeDefaults(base.keymap, parsed.keymap),
         highscores: isObject(parsed.highscores) ? parsed.highscores : {},
         bestReplays: isObject(parsed.bestReplays) ? parsed.bestReplays : {},
+        seenTips: Array.isArray(parsed.seenTips) ? (parsed.seenTips as TipId[]) : [],
       };
     } catch {
       return base;

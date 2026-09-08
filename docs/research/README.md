@@ -13,24 +13,25 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 07  | [Validación del sistema y plan de la fase 3](07-validacion-y-plan-fase-3.md)                         | 2026-09-07 | vigente |
 | 08  | [Legibilidad y espacio en móviles pequeños](08-legibilidad-y-espacio-en-moviles-pequenos.md)         | 2026-09-07 | vigente |
 | 09  | [Distinguibilidad de la paleta para daltonismo](09-distinguibilidad-de-la-paleta-para-daltonismo.md) | 2026-09-07 | vigente |
+| 10  | [Aprendizaje contextual en lugar de tutorial](10-aprendizaje-contextual-en-lugar-de-tutorial.md)     | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
 Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción concreta. Los temas ya cubiertos quedan marcados para no repetirlos.
 
-| Tema                                                       | Estado                                                |
-| ---------------------------------------------------------- | ----------------------------------------------------- |
-| Finesse y estadísticas avanzadas                           | hecho, sesión 3                                       |
-| Repeticiones y fantasma del récord                         | hecho (falta el fantasma), sesión 3                   |
-| Renderer three.js                                          | hecho, informe 06 y sesión 3                          |
-| Modos extra (Zen, reto diario, práctica)                   | hecho (falta basura y 20G), sesión 3                  |
-| Traducción es/en                                           | hecho, sesión 3                                       |
-| Tipografía y espacio en móviles de 360 puntos o menos      | hecho, informe 08                                     |
-| Tuning de efectos de sonido con escucha comparada          | a la espera: necesita a alguien que escuche y compare |
-| Paleta y contraste con simuladores de daltonismo           | hecho, informe 09                                     |
-| Rendimiento de partículas en un teléfono de gama baja      | pendiente, requiere dispositivo real                  |
-| Tutorial interactivo de un minuto                          | **siguiente**                                         |
-| All-spin (regla inmóvil) y tabla de giro de 180 verificada | pendiente                                             |
+| Tema                                                       | Estado                                                                        |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Finesse y estadísticas avanzadas                           | hecho, sesión 3                                                               |
+| Repeticiones y fantasma del récord                         | hecho (falta el fantasma), sesión 3                                           |
+| Renderer three.js                                          | hecho, informe 06 y sesión 3                                                  |
+| Modos extra (Zen, reto diario, práctica)                   | hecho (falta basura y 20G), sesión 3                                          |
+| Traducción es/en                                           | hecho, sesión 3                                                               |
+| Tipografía y espacio en móviles de 360 puntos o menos      | hecho, informe 08                                                             |
+| Tuning de efectos de sonido con escucha comparada          | a la espera: necesita a alguien que escuche y compare                         |
+| Paleta y contraste con simuladores de daltonismo           | hecho, informe 09                                                             |
+| Rendimiento de partículas en un teléfono de gama baja      | pendiente, requiere dispositivo real                                          |
+| Tutorial interactivo de un minuto                          | descartado por la evidencia; sustituido por consejos contextuales, informe 10 |
+| All-spin (regla inmóvil) y tabla de giro de 180 verificada | **siguiente**                                                                 |
 
 ## Plantilla
 

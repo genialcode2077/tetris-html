@@ -229,6 +229,12 @@ export class SettingsForm {
         this.check('Anuncios para lector de pantalla', s.announce, (v) => {
           set((x) => (x.announce = v));
         }),
+        this.check(t('settings.tips'), s.coaching.enabled, (v) => {
+          set((x) => (x.coaching.enabled = v));
+        }),
+        this.check('Avisar de teclas de más (finesse)', s.stats.showFinesseFaults, (v) => {
+          set((x) => (x.stats.showFinesseFaults = v));
+        }),
       ),
       h(
         'div',

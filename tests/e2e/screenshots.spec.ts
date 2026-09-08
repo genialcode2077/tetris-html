@@ -90,3 +90,34 @@ test('capturas del modo 3D @screenshots', async ({ page }, testInfo) => {
   await page.waitForTimeout(700);
   await page.screenshot({ path: `${OUT}/${tag}-3d-playing.png` });
 });
+
+test('captura de un consejo en pantalla @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.coaching.enabled = true;
+      s.locale = 'es';
+    });
+    window.__blockfall?.store.setSeenTips([]);
+    window.__blockfall?.app.refreshSettings();
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  await page.evaluate(() => {
+    const bf = window.__blockfall;
+    const s = bf?.app.currentSession;
+    if (!bf || !s) return;
+    for (let i = 0; i < 16; i++) {
+      const goLeft = i % 2 === 0;
+      for (let n = 0; n < 4; n++) s.game.dispatch(goLeft ? 'left' : 'right');
+      s.game.dispatch('softDropOn');
+      bf.tick(1400);
+      s.game.dispatch('softDropOff');
+      bf.tick(700);
+      if (i % 3 === 2) s.game.state.board.fill(0);
+    }
+  });
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${OUT}/${tag}-08-tip.png` });
+});

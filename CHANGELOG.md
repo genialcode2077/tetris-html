@@ -27,6 +27,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 - Dos modos nuevos: reto diario, con la misma partida para todo el mundo cada día porque la semilla sale de la fecha, y modo práctica, sin fin y con velocidad constante.
 
+### Added
+- Consejos que aparecen la primera vez que cada mecánica importa: la reserva de pieza, la caída rápida, el giro de la T, encadenar acciones difíciles, los combos, el tablero vacío y la pila en zona de peligro. Cada uno se muestra una sola vez, no interrumpe la partida y se pueden apagar en Ajustes.
+
 ### Changed
 - La pieza azul cambia a un azul más profundo. Con protanopia era prácticamente el mismo color que la pieza morada, así que dos de las siete piezas eran indistinguibles para aproximadamente uno de cada doce hombres.
 - La paleta de alto contraste se rehace entera: pese a su nombre, era la peor de las tres para daltonismo. Su par de piezas más parecido pasa de 2,6 a 9,1 de diferencia perceptual.

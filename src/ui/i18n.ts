@@ -95,6 +95,17 @@ const es = {
   'settings.palette.neon': 'Neón (por defecto)',
   'settings.palette.accessible': 'Daltonismo (Okabe-Ito, la más distinguible)',
   'settings.palette.highContrast': 'Alto contraste (fondo negro, colores vivos)',
+  'tip.hold': 'Puedes guardar la pieza actual para más tarde con la tecla de reserva.',
+  'tip.hardDrop': 'La caída rápida deja la pieza abajo al instante y suma puntos por cada fila.',
+  'tip.tspin':
+    'Acabas de girar la T dentro de un hueco. Esa jugada puntúa mucho más que una limpieza normal.',
+  'tip.backToBack':
+    'Dos jugadas difíciles seguidas: la segunda vale una vez y media. Sigue encadenando.',
+  'tip.combo': 'Limpiar líneas en piezas consecutivas suma un extra que crece con cada una.',
+  'tip.danger': 'La pila está subiendo. Limpia por abajo antes de que te alcance.',
+  'tip.perfectClear':
+    'Has dejado el tablero vacío. Eso es un perfect clear y da la mayor bonificación del juego.',
+  'settings.tips': 'Consejos mientras juegas',
   'countdown.go': '¡YA!',
   'action.single': 'SINGLE',
   'action.double': 'DOUBLE',
@@ -198,6 +209,16 @@ const en: Record<MessageKey, string> = {
   'settings.palette.neon': 'Neon (default)',
   'settings.palette.accessible': 'Colour blindness (Okabe-Ito, most distinguishable)',
   'settings.palette.highContrast': 'High contrast (black background, vivid colours)',
+  'tip.hold': 'You can save the current piece for later with the hold key.',
+  'tip.hardDrop': 'A hard drop sends the piece straight down and scores points for every row.',
+  'tip.tspin': 'You just twisted the T into a gap. That scores far more than a plain clear.',
+  'tip.backToBack':
+    'Two difficult clears in a row: the second is worth one and a half times as much. Keep the chain going.',
+  'tip.combo': 'Clearing lines on consecutive pieces adds a bonus that grows each time.',
+  'tip.danger': 'The stack is rising. Clear from the bottom before it reaches the top.',
+  'tip.perfectClear':
+    'You emptied the board. That is a perfect clear, the biggest bonus in the game.',
+  'settings.tips': 'Tips while you play',
   'countdown.go': 'GO!',
   'action.single': 'SINGLE',
   'action.double': 'DOUBLE',

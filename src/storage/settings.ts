@@ -44,6 +44,11 @@ export interface TouchSettings {
   tapAlwaysCw: boolean;
 }
 
+export interface CoachingSettings {
+  /** Mostrar consejos la primera vez que aparece cada mecánica. */
+  enabled: boolean;
+}
+
 export interface StatsSettings {
   /** Avisar en pantalla cuando una colocación gasta teclas de más. */
   showFinesseFaults: boolean;
@@ -59,6 +64,7 @@ export interface Settings {
   game: GameSettings;
   touch: TouchSettings;
   stats: StatsSettings;
+  coaching: CoachingSettings;
   announce: boolean;
 }
 
@@ -87,5 +93,6 @@ export const DEFAULT_SETTINGS: Settings = {
   game: { mode: 'marathon', startLevel: 1, endless: false },
   touch: { buttons: true, tapAlwaysCw: false },
   stats: { showFinesseFaults: false },
+  coaching: { enabled: true },
   announce: true,
 };

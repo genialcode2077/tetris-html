@@ -1,7 +1,8 @@
 import { Game } from '@/core/game';
 import { ALL_MODES, dailyLabel, dailySeed, type GameMode } from '@/core/rules';
-import type { GameEvent, RuleSet } from '@/core/types';
+import type { GameEvent, GameState, RuleSet } from '@/core/types';
 import type { InputAction } from '@/game/handling';
+import { Coach } from '@/game/coaching';
 import { GameLoop } from '@/game/loop';
 import { parseReplay, serializeReplay, type Replay } from '@/game/replay';
 import { Session } from '@/game/session';
@@ -17,7 +18,14 @@ import type { Store } from '@/storage/store';
 import { byId, byIdAs, clear, h } from '@/ui/dom';
 import { Hud } from '@/ui/hud';
 import { Screens, type ScreenId } from '@/ui/screens';
-import { applyTranslations, detectLocale, getLocale, setLocale, t } from '@/ui/i18n';
+import {
+  applyTranslations,
+  detectLocale,
+  getLocale,
+  setLocale,
+  t,
+  type MessageKey,
+} from '@/ui/i18n';
 import { SettingsForm } from '@/ui/settingsForm';
 import { APP_TITLE } from './config';
 import { APP_COMMIT, APP_VERSION } from './version';
@@ -43,11 +51,13 @@ export class App {
   private readonly idle = new Game({ seed: 1 });
   private resultsTimer: ReturnType<typeof setTimeout> | null = null;
   private lastReplay: Replay | null = null;
+  private readonly coach: Coach;
   private readonly reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   private lastTouchCell = 0;
 
   constructor(private readonly store: Store) {
     this.audio = new AudioManager(store.settings.audio);
+    this.coach = new Coach({ seen: store.seenTips });
     this.screens = new Screens((s) => {
       this.onScreenChange(s);
     });
@@ -192,6 +202,7 @@ export class App {
     });
     if (this.resultsTimer) clearTimeout(this.resultsTimer);
     this.resultsTimer = null;
+    this.coach.resetForNewGame();
     this.hud.setMode(mode, this.session.rules);
     this.hud.hideOverlay();
     this.audio.setLevel(st.game.startLevel);
@@ -277,8 +288,22 @@ export class App {
     this.renderer?.effect(event, state);
     this.audio.handleEvent(event, state);
     this.hud.handleEvent(event, this.reducedMotion());
+    this.maybeCoach(event, state);
     if (event.type === 'gameOver') this.hud.showOverlayText(t('results.gameover'), 'gameover');
     if (event.type === 'finished') this.hud.showOverlayText(t('results.finished'), 'finished');
+  }
+
+  /**
+   * Muestra un consejo la primera vez que aparece cada mecánica, en lugar de un
+   * tutorial al arrancar que casi nadie lee (docs/research/10).
+   */
+  private maybeCoach(event: GameEvent, state: Readonly<GameState>): void {
+    if (!this.store.settings.coaching.enabled) return;
+    if (this.session?.isReplay) return;
+    const tip = this.coach.observe(event, state);
+    if (!tip) return;
+    this.hud.notify(t(`tip.${tip}` as MessageKey));
+    this.store.setSeenTips(this.coach.seenTips);
   }
 
   private onAction(action: InputAction, pressed: boolean): void {

@@ -32,6 +32,7 @@
     "test:pwa": "playwright test --project=chromium --grep @pwa",
     "test:3d": "playwright test --project=chromium --grep @3d",
     "test:responsive": "playwright test --project=chromium --grep @responsive",
+    "test:coaching": "playwright test --project=chromium --grep @coaching",
     "screenshots": "playwright test --grep @screenshots",
     "icons": "node scripts/generate-icons.mjs",
     "knip": "knip",
