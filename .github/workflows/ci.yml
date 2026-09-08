@@ -53,8 +53,8 @@ jobs:
       - run: pnpm test:e2e
         env:
           CI: true
-      - name: Auditoria de accesibilidad y presupuesto de render
-        run: pnpm test:e2e --project=chromium --grep "@a11y|@perf|@pwa"
+      - name: Accesibilidad, presupuesto de render, modo sin conexion y modo 3D
+        run: pnpm test:e2e --project=chromium --grep "@a11y|@perf|@pwa|@3d"
         env:
           CI: true
       - uses: actions/upload-artifact@v4

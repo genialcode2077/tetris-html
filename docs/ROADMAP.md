@@ -30,12 +30,42 @@ Estados: `[ ]` pendiente · `[~]` en curso · `[x]` hecho · `[-]` descartado. C
 - [x] E2E Playwright: flujo, capturas, accesibilidad, presupuesto de render y funcionamiento sin conexión · pendiente: Lighthouse CI
 - [x] Modo Zen; estadísticas PPS/tetris rate/combos en resultados
 
-## Fase 3 · Premium
+## Fase 3 · Premium (decidida el 2026-09-07)
 
-- [ ] Renderer three.js (WebGPU/WebGL2, InstancedMesh, bloom TSL, fallback)
-- [ ] Replays (semilla + entradas) y fantasma de récord
-- [ ] Finesse (pulsaciones mínimas por colocación) y estadísticas avanzadas; tutorial interactivo; traducción a inglés
-- [ ] Tabla 180 verificada y all-spin opcional
+### 3.1 Renderer three.js (ADR-0008) — entregado
+
+- [x] Dependencia `three@0.185.x` y `@types/three`; fragmento separado (238 KB comprimidos) y carga con `import()`
+- [x] `ThreeRenderer` tras la interfaz `Renderer`: escena, cámara, pozo con paredes, pieza activa y fantasma
+- [x] Celdas con `InstancedMesh` y color por instancia; cubos biselados
+- [x] Iluminación de tres puntos y materiales con relieve; rejilla y paredes del pozo
+- [x] Resplandor por post-proceso (`RenderPipeline` + bloom TSL) que se apaga solo si el coste se dispara
+- [x] Efectos: sacudida y balanceo de cámara, partículas 3D al limpiar, filas que se encogen y giran, pulso de luz al subir de nivel y aviso de peligro
+- [x] Detección de capacidades: WebGPU, luego WebGL2, luego Canvas 2D; verificado con una prueba que simula un dispositivo sin GPU
+- [x] Selector en Ajustes con persistencia; presupuesto de render propio (p95 de 3,3 ms frente a 8 de límite)
+
+### 3.2 Finesse y estadísticas
+
+- [ ] Cálculo de las pulsaciones mínimas por colocación (búsqueda en anchura sobre el estado de la pieza)
+- [ ] Contador de fallos de finesse en el HUD y en resultados; APM
+- [ ] Panel de resultados ampliado con desglose por tipo de limpieza
+
+### 3.3 Repeticiones
+
+- [ ] Grabación de semilla, reglas y entradas con marca de tiempo; formato versionado
+- [ ] Reproducción con controles de avance y velocidad
+- [ ] Fantasma del récord propio en Sprint
+- [ ] Exportar e importar como archivo
+
+### 3.4 Tutorial y traducción
+
+- [ ] Tutorial interactivo de un minuto: mover, rotar, hold, hard drop, T-spin
+- [ ] Traducción a inglés con detección del idioma del navegador y selector
+
+### 3.5 Modos adicionales
+
+- [ ] Práctica de T-spins y de perfect clear con posiciones preparadas
+- [ ] Subida de basura configurable y 20G
+- [ ] Desafío diario con semilla derivada de la fecha
 
 ## Fase 4 · Mejora continua (investigaciones periódicas)
 

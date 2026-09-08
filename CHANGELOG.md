@@ -17,6 +17,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 - Validación del motor con maniobras reales (T-Spin Triple con kick, back-to-back, perfect clear, combos, mini T-spin, I-spin).
 - Pruebas de accesibilidad con axe-core (WCAG A y AA) y de presupuesto de render, ambas vigiladas en integración continua.
 
+- Modo de dibujo en tres dimensiones opcional con three.js (ADR-0008): cubos con volumen, pozo con paredes, resplandor por post-proceso, partículas y cámara que reacciona. Se descarga aparte y vuelve al modo clásico si el dispositivo no lo soporta.
+
 ### Fixed
 - `backdrop-filter` en pantallas superpuestas provocaba bloqueos de segundos (F-006).
 - El viewport impedía ampliar la página, lo que incumple el criterio WCAG 1.4.4 (F-009).

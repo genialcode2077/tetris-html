@@ -4,23 +4,23 @@
 
 ## Estado actual
 
-- **Fase:** 2 (pulido) muy avanzada; fase 3 pendiente de una decisión de producto (renderer premium)
+- **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 89 unitarias y de propiedades + 22 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 89 unitarias y de propiedades + 27 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
-- **Tamaño:** 21,7 KB de JavaScript comprimido y 2,8 KB de CSS
+- **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
 - **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas
 - **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
 - **Capturas:** `docs/assets/screenshots/` (`pnpm screenshots`)
 
 ## Próximos pasos (orden)
 
-1. **Decidir el renderer premium** (ver `docs/research/07`, sección 2): PixiJS para 2D con resplandor, o three.js para volumen y cámara. La interfaz `Renderer` ya admite ambos con carga diferida.
-2. Estadísticas de finesse (pulsaciones mínimas por colocación) y panel de resultados ampliado.
-3. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
-4. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración).
-5. Presupuestos de Lighthouse en cada propuesta de cambio.
+1. Estadísticas de finesse (pulsaciones mínimas por colocación) y panel de resultados ampliado.
+2. Repeticiones a partir de la semilla y las entradas; fantasma del récord propio.
+3. Tutorial interactivo y traducción a inglés.
+4. Modos adicionales: práctica de T-spins y perfect clear, subida de basura, 20G, desafío diario.
+5. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil).
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -29,6 +29,15 @@
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-07 · Sesión 3 (agente Claude) — renderer 3D
+
+- Decidido con el usuario: three.js para el renderer premium (ADR-0008), con las cuatro líneas de trabajo restantes aprobadas.
+- `ThreeRenderer` completo: pozo con paredes iluminadas, cubos biselados por instancia, fantasma, partículas en tres dimensiones, sacudida y balanceo de cámara, pulso de luz al subir de nivel y aviso rojo cuando la pila sube.
+- Resplandor con `RenderPipeline` y bloom de TSL. Se ajustó tras verlo en pantalla: la primera versión quemaba todo a blanco porque la emisión era global en lugar de venir del color de cada pieza.
+- WebGPU con vuelta atrás automática a WebGL2 y, si tampoco hay, a Canvas 2D. Verificado con una prueba que simula un dispositivo sin GPU.
+- Carga diferida real: el fragmento de three.js queda fuera de la precarga del service worker y se guarda en caché solo cuando alguien usa el modo.
+- Coste de render en 3D: 3,3 ms en el percentil 95, dentro del presupuesto de 8 ms.
 
 ### 2026-09-07 · Sesión 2 (agente Claude) — validación y aplicación instalable
 

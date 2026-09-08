@@ -10,8 +10,8 @@ import { KeyboardInput } from '@/input/keyboard';
 import type { KeyMap } from '@/input/keymap';
 import { TouchInput } from '@/input/touch';
 import { AudioManager } from '@/audio/manager';
-import { CanvasRenderer } from '@/render/canvas2d/CanvasRenderer';
-import type { RenderOptions } from '@/render/types';
+import { createRenderer, type RendererHandle, type RendererKind } from '@/render/factory';
+import type { RenderOptions, Renderer } from '@/render/types';
 import type { Store } from '@/storage/store';
 import { byId, byIdAs, clear, h } from '@/ui/dom';
 import { Hud } from '@/ui/hud';
@@ -27,7 +27,8 @@ const isTouchDevice = (): boolean =>
 const prefersTouchButtons = (): boolean => window.matchMedia('(pointer: coarse)').matches;
 
 export class App {
-  private readonly renderer = new CanvasRenderer();
+  private rendererHandle: RendererHandle | null = null;
+  private rendererSwitching = false;
   private readonly audio: AudioManager;
   private readonly hud = new Hud();
   private readonly screens: Screens;
@@ -76,10 +77,25 @@ export class App {
     );
   }
 
+  /** Renderer activo; nulo mientras se está creando el primero. */
+  private get renderer(): Renderer | null {
+    return this.rendererHandle?.renderer ?? null;
+  }
+
+  get rendererKind(): RendererKind {
+    return this.rendererHandle?.kind ?? 'canvas2d';
+  }
+
+  /** Diagnóstico del renderer activo, para pruebas automáticas. */
+  get rendererDiagnostics(): unknown {
+    const r = this.rendererHandle?.renderer as { diagnostics?: unknown } | undefined;
+    return r?.diagnostics ?? { kind: this.rendererKind };
+  }
+
   start(): void {
     document.title = APP_TITLE;
     byId('version').textContent = `v${APP_VERSION} · ${APP_COMMIT}`;
-    this.renderer.init(byId('board'), this.renderOptions());
+    void this.mountRenderer(this.store.settings.video.renderer);
     this.hud.setStyle(this.store.settings.video.palette, this.store.settings.video.patterns);
     this.hud.announce = this.store.settings.announce;
     this.keyboard.attach();
@@ -183,23 +199,67 @@ export class App {
     }
   }
 
+  /** Crea el renderer pedido, retirando el anterior. Si el 3D falla, vuelve a Canvas 2D. */
+  private async mountRenderer(kind: RendererKind): Promise<void> {
+    if (this.rendererSwitching) return;
+    this.rendererSwitching = true;
+    const container = byId('board');
+    try {
+      this.rendererHandle?.renderer.dispose();
+      this.rendererHandle = null;
+      const handle = await createRenderer({
+        kind,
+        container,
+        options: this.renderOptions(),
+        onFallback: (reason) => {
+          this.handleRendererFallback(reason);
+        },
+      });
+      this.rendererHandle = handle;
+      if (handle.kind !== kind) {
+        this.store.updateSettings((x) => (x.video.renderer = handle.kind));
+      }
+    } finally {
+      this.rendererSwitching = false;
+    }
+  }
+
+  private handleRendererFallback(reason: string): void {
+    if (this.rendererKind === 'canvas2d') return;
+    console.warn(`[render] volviendo a Canvas 2D: ${reason}`);
+    this.store.updateSettings((x) => (x.video.renderer = 'canvas2d'));
+    this.hud.notify('El modo 3D no está disponible en este dispositivo; se usa el modo clásico.');
+    void this.mountRenderer('canvas2d');
+    this.settingsForm.build();
+  }
+
   private render(now: number): void {
     const s = this.session;
     const state = s ? s.game.state : this.idle.state;
-    this.renderer.render(state, now);
+    this.renderer?.render(state, now);
     if (s) {
       this.hud.update(state, s.stats(), s.rules);
       if (!this.screens.active) this.hud.updateCountdown(s.status === 'countdown', s.countdownMs);
     }
-    if (this.touch && this.renderer.cellSize !== this.lastTouchCell) {
-      this.lastTouchCell = this.renderer.cellSize;
-      this.touch.setOptions({ cellSize: this.lastTouchCell });
+    const cellSize = this.currentCellSize();
+    if (this.touch && cellSize !== this.lastTouchCell) {
+      this.lastTouchCell = cellSize;
+      this.touch.setOptions({ cellSize });
     }
+  }
+
+  /** Tamaño de celda en píxeles; el modo 3D lo deduce del ancho del contenedor. */
+  private currentCellSize(): number {
+    const handle = this.rendererHandle;
+    if (handle?.kind === 'canvas2d') {
+      return (handle.renderer as unknown as { cellSize: number }).cellSize;
+    }
+    return Math.max(8, Math.floor(byId('board').clientWidth / 10));
   }
 
   private onGameEvent(event: GameEvent, s: Session): void {
     const state = s.game.state;
-    this.renderer.effect(event, state);
+    this.renderer?.effect(event, state);
     this.audio.handleEvent(event, state);
     this.hud.handleEvent(event, this.reducedMotion());
     if (event.type === 'gameOver') this.hud.showOverlayText('GAME OVER', 'gameover');
@@ -503,7 +563,7 @@ export class App {
       (a, p) => {
         this.onAction(a, p);
       },
-      { cellSize: this.renderer.cellSize, tapAlwaysCw: this.store.settings.touch.tapAlwaysCw },
+      { cellSize: this.currentCellSize(), tapAlwaysCw: this.store.settings.touch.tapAlwaysCw },
     );
     this.touch.attach();
     const bar = byId('touch-controls');
@@ -526,7 +586,10 @@ export class App {
 
   private applySettings(): void {
     const st = this.store.settings;
-    this.renderer.setOptions(this.renderOptions());
+    this.renderer?.setOptions(this.renderOptions());
+    if (st.video.renderer !== this.rendererKind && !this.rendererSwitching) {
+      void this.mountRenderer(st.video.renderer);
+    }
     this.hud.setStyle(st.video.palette, st.video.patterns);
     this.hud.announce = st.announce;
     this.audio.setSettings(st.audio);

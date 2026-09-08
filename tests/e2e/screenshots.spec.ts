@@ -57,3 +57,36 @@ test('capturas de referencia @screenshots', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Ajustes' }).click();
   await page.screenshot({ path: `${OUT}/${tag}-07-settings.png`, fullPage: false });
 });
+
+test('capturas del modo 3D @screenshots', async ({ page }, testInfo) => {
+  const tag = testInfo.project.name;
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__blockfall?.store.updateSettings((s) => {
+      s.video.renderer = 'three';
+    });
+  });
+  await page.reload();
+  await page.waitForFunction(
+    () =>
+      (window.__blockfall?.app.rendererDiagnostics as { ready?: boolean } | undefined)?.ready ===
+      true,
+    undefined,
+    { timeout: 20_000 },
+  );
+  await page.evaluate(() => {
+    window.__blockfall?.app.newGame(4242);
+  });
+  await page.evaluate(() => window.__blockfall?.tick(4000));
+  await page.evaluate(() => {
+    const s = window.__blockfall?.app.currentSession;
+    if (!s) return;
+    const b = s.game.state.board;
+    for (let y = 0; y < 9; y++) {
+      for (let x = 0; x < 10; x++) if ((x + y * 3) % 4 !== 0) b[y * 10 + x] = ((x * 2 + y) % 7) + 1;
+    }
+  });
+  await page.evaluate(() => window.__blockfall?.tick(200));
+  await page.waitForTimeout(700);
+  await page.screenshot({ path: `${OUT}/${tag}-3d-playing.png` });
+});

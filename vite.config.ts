@@ -55,8 +55,22 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // El modo 3D pesa mucho y solo lo usa quien lo activa: se guarda en cache
+        // la primera vez que se pide, no en la precarga inicial (ADR-0008).
+        globIgnores: ['**/ThreeRenderer-*.js', '**/*.map'],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
+        maximumFileSizeToCacheInBytes: 3_000_000,
+        runtimeCaching: [
+          {
+            urlPattern: /ThreeRenderer-.*\.js$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'blockfall-3d',
+              expiration: { maxEntries: 3, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
       },
       devOptions: { enabled: false },
     }),
@@ -72,6 +86,8 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+    // El modo 3D es un fragmento aparte y grande a propósito; no es una regresión.
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     port: 5180,

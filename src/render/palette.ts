@@ -6,6 +6,8 @@ export interface Palette {
   readonly cells: readonly string[];
   readonly boardBg: string;
   readonly grid: string;
+  /** Igual que `grid` pero sin canal alfa: three.js ignora el alfa de un color. */
+  readonly gridSolid: string;
   readonly border: string;
   readonly ghostAlpha: number;
   readonly glow: boolean;
@@ -29,6 +31,7 @@ export const PALETTES: Readonly<Record<PaletteName, Palette>> = {
     ],
     boardBg: '#0B0F1A',
     grid: 'rgba(255,255,255,0.06)',
+    gridSolid: '#ffffff',
     border: 'rgba(255,255,255,0.14)',
     ghostAlpha: 0.22,
     glow: true,
@@ -49,6 +52,7 @@ export const PALETTES: Readonly<Record<PaletteName, Palette>> = {
     ],
     boardBg: '#0B0F1A',
     grid: 'rgba(255,255,255,0.08)',
+    gridSolid: '#ffffff',
     border: 'rgba(255,255,255,0.18)',
     ghostAlpha: 0.28,
     glow: false,
@@ -69,6 +73,7 @@ export const PALETTES: Readonly<Record<PaletteName, Palette>> = {
     ],
     boardBg: '#000000',
     grid: 'rgba(255,255,255,0.25)',
+    gridSolid: '#ffffff',
     border: '#FFFFFF',
     ghostAlpha: 0.4,
     glow: false,

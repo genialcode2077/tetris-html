@@ -170,6 +170,12 @@ body {
   align-items: flex-start;
   justify-content: center;
 }
+.board-canvas-3d {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: none;
+}
 .board-canvas {
   border-radius: 6px;
   box-shadow:
@@ -237,6 +243,15 @@ body {
 }
 .badge.level .badge-main {
   color: #3bff7a;
+}
+.badge.notice {
+  animation: fade 4s linear forwards;
+  max-width: min(90vw, 320px);
+  text-align: center;
+}
+.badge.notice .badge-extra {
+  letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 .badge-extra {
   font-size: 12px;

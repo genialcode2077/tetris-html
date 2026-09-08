@@ -107,6 +107,20 @@ export class Hud {
     this.overlay.hidden = false;
   }
 
+  /** Muestra un aviso breve al jugador y lo anuncia al lector de pantalla. */
+  notify(text: string): void {
+    const el = h(
+      'div',
+      { className: 'badge notice' },
+      h('span', { className: 'badge-extra' }, text),
+    );
+    this.badges.append(el);
+    setTimeout(() => {
+      el.remove();
+    }, 4000);
+    this.announcer.textContent = text;
+  }
+
   hideOverlay(): void {
     this.overlay.hidden = true;
     this.countdownShown = -1;
