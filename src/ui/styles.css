@@ -31,6 +31,10 @@ html,
 body {
   margin: 0;
   height: 100%;
+  /* Las animaciones que escalan (la cuenta atrás, los avisos de acción) pueden
+     rebasar el ancho del tablero. Con `clip` se dibujan igual pero no generan
+     barra de desplazamiento horizontal. */
+  overflow-x: clip;
   background: radial-gradient(1200px 800px at 50% -10%, var(--bg-2), var(--bg));
   color: var(--text);
   font-family: var(--font);
@@ -48,8 +52,11 @@ body {
 }
 .app {
   min-height: 100dvh;
+  max-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* La fila del juego usa minmax(0, 1fr) para poder encogerse: sin eso su
+     contenido impone un alto mínimo y el tablero se queda sin espacio. */
+  grid-template-rows: auto minmax(0, 1fr) auto;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
 }
@@ -167,7 +174,7 @@ body {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 }
 .board-canvas-3d {
@@ -306,12 +313,14 @@ body {
 }
 .touch-controls {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
 }
 .touch-controls button {
   min-height: 48px;
+  min-width: 0;
+  padding: 0 2px;
   touch-action: manipulation;
   font-size: 18px;
   font-weight: 700;
@@ -600,10 +609,14 @@ body {
 /* móvil vertical */
 @media (max-width: 720px) {
   .game {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'left' 'board' 'right';
-    gap: 8px;
-    padding: 4px 8px 8px;
+    /* El marcador y la cola ocupan lo que necesitan; el tablero se queda con el
+       resto. Así no hace falta reservar una altura fija a ojo. */
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 4px 8px 6px;
+    min-height: 0;
   }
   .panel-left {
     grid-area: left;
@@ -616,17 +629,23 @@ body {
   }
   .panel-left .stats {
     flex: 1;
+    min-width: 0;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 4px 14px;
+    gap: 2px 12px;
   }
   .stat .value {
     font-size: 16px;
   }
   .board-wrap {
     grid-area: board;
-    width: min(100vw - 16px, calc((100dvh - 300px) / 2.05));
-    margin: 0 auto;
+    /* Ocupa todo el hueco disponible; el renderer calcula el tamaño de celda a
+       partir de él y centra el tablero. */
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    margin: 0;
   }
   .panel-right {
     grid-area: right;
@@ -634,19 +653,45 @@ body {
   }
   .panel-right .next {
     flex: 1;
+    min-width: 0;
   }
   .next-list {
     flex-direction: row;
   }
   .next-item,
   .next-item.first {
-    height: 40px;
+    height: 38px;
+    min-width: 0;
+    flex: 1 1 0;
   }
   .mode-info {
     display: none;
   }
   .topbar {
-    padding: 4px 12px;
+    padding: 4px 10px;
+  }
+  .panel section {
+    padding: 6px 8px;
+  }
+  .preview {
+    height: 44px;
+  }
+}
+
+/* Pantallas muy estrechas: se recorta lo accesorio para que el tablero respire. */
+@media (max-width: 380px) {
+  .panel-left .hold {
+    width: 72px;
+  }
+  .brand {
+    font-size: 15px;
+    letter-spacing: 0.22em;
+  }
+  .version {
+    display: none;
+  }
+  .touch-controls button {
+    font-size: 15px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -27,6 +27,11 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 - Dos modos nuevos: reto diario, con la misma partida para todo el mundo cada día porque la semilla sale de la fecha, y modo práctica, sin fin y con velocidad constante.
 
+### Changed
+- En pantallas pequeñas el tablero se queda con todo el espacio que sobra en lugar de encogerse por una altura reservada a ojo. En un móvil de 360 puntos la celda pasa de 16 a 20 píxeles, y en uno de 320 de 13 a 17.
+
 ### Fixed
 - `backdrop-filter` en pantallas superpuestas provocaba bloqueos de segundos (F-006).
 - El viewport impedía ampliar la página, lo que incumple el criterio WCAG 1.4.4 (F-009).
+- La fila de controles táctiles y la cola de piezas siguientes se salían de la pantalla en móviles estrechos (F-018).
+- La animación de la cuenta atrás provocaba una barra de desplazamiento horizontal al ampliarse (F-019).

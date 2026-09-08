@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 114 unitarias y de propiedades + 37 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 114 unitarias y de propiedades + 41 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil (6 % del presupuesto de 60 fps)
 - **Tamaño:** 23,0 KB de JavaScript comprimido y 2,9 KB de CSS; el modo 3D son 238 KB aparte que solo descarga quien lo activa
@@ -22,11 +22,18 @@
 
 ## Bloqueos / decisiones pendientes del usuario
 
-- Renderer premium: elección entre PixiJS y three.js (o quedarse solo con Canvas 2D).
 - Nombre visible "Blockfall" (ADR-0005): cambiar `APP_TITLE` en `src/app/config.ts` si se prefiere otro.
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-07 · Sesión 4 (agente, iteración periódica) — espacio en móviles pequeños
+
+- Tema del backlog: legibilidad del marcador en pantallas de 360 puntos o menos (informe `docs/research/08`).
+- La medición cambió el diagnóstico: la tipografía ya estaba bien a 16 píxeles; lo que fallaba era el reparto del espacio. El tablero ocupaba 160 puntos de los 360 disponibles porque el ancho se calculaba restando una altura fija de 300 píxeles.
+- Ahora el contenedor del juego reparte el alto con una rejilla y el tablero se queda con lo que sobra. La celda pasa de 16 a 20 píxeles en un móvil de 360, y de 13 a 17 en uno de 320.
+- Corregidos dos desbordamientos horizontales: los siete botones táctiles pedían más ancho del que había, y la animación de la cuenta atrás arrastraba la página al ampliarse.
+- Prueba nueva que falla si el tablero se encoge por debajo de un tamaño de celda razonable, si algo se sale a lo ancho o si el marcador baja del mínimo legible.
 
 ### 2026-09-07 · Sesión 3 (agente Claude) — renderer 3D y finesse
 
