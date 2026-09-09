@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 242 unitarias y de propiedades + 72 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 249 unitarias y de propiedades + 72 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -30,6 +30,16 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 21 (agente, iteración periódica) — los avisos que se perdían
+
+- Tema: qué se anuncia durante la partida para quien usa lector de pantalla (informe `docs/research/25`).
+- Antes se descartaron dos candidatos midiéndolos: el **tamaño de los objetivos táctiles** cumple el criterio 2.5.8 con holgura (los veinte controles pasan de 24×24; el más pequeño es de 36 px, y los de la repetición miden 34×34), y el **idioma del documento** ya se actualiza al cambiar de idioma. Sin defecto ninguno.
+- El defecto estaba en el filtro de avisos: descartaba cualquiera llegado antes de 900 ms del anterior **sin mirar cuál era**. En Sprint, el aviso de objetivo completado se emite en el mismo paso que la limpieza que completa las 40 líneas, con cero milisegundos entre ambos: **se perdía siempre**, no de vez en cuando (F-045).
+- Además descartaba en vez de retrasar, así que de dos jugadas seguidas se tiraba la segunda, que es justo la que describe el tablero que el jugador tiene delante (F-046).
+- Ahora hay una política aparte: lo importante no espera ni se descarta, lo corriente se guarda y sale al terminar el silencio, y dos textos iguales seguidos se distinguen con un espacio final para que la región viva vea un cambio. Siete pruebas.
+- **Pendiente y honesto**: esto asegura que los mensajes llegan, no que sean útiles al oído. Probarlo con un lector de pantalla real sigue necesitando a una persona.
+- Se intentó además una prueba de navegador que jugara un Sprint hasta el final y se descartó: el montaje resultó frágil y una prueba que no distingue el fallo del acierto no vale de nada. La política, que es donde estaba el defecto, sí queda cubierta.
 
 ### 2026-09-09 · Sesión 20 (agente, iteración periódica) — el juego ya no se congela en silencio
 

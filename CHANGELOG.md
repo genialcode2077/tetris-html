@@ -6,6 +6,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ### Fixed
 
+- Los avisos para lector de pantalla ya no se pierden. El filtro que evitaba el ruido descartaba cualquier aviso llegado antes de novecientos milisegundos del anterior, sin mirar cuál era, y en Sprint el aviso de objetivo completado se emite en el mismo paso que la limpieza que lo provoca: **se perdía siempre**. Ahora el fin de la partida no espera ni se descarta nunca, y las jugadas seguidas se guardan y se anuncian al pasar el silencio en vez de tirarse.
+
 - El juego ya no se congela en silencio si algo falla. Una sola excepción al dibujar dejaba la pantalla parada para siempre, con la pieza a medio caer y sin ninguna explicación, porque el cuadro siguiente se pedía en la última línea y la excepción se la saltaba. Ahora un fallo suelto se absorbe y la partida continúa; si se repite tres cuadros seguidos, el juego guarda la partida, vuelve al menú y lo dice, así que se puede continuar donde estaba.
 
 - El foco ya no se escapa de los diálogos. Tabulando desde el menú se llegaba al botón de pantalla completa, que está detrás del diálogo abierto, así que quien navega con teclado activaba controles que no ve. Ahora el foco da la vuelta dentro del diálogo en ambos sentidos, el diálogo se anuncia como modal y la tecla de escape lo cierra, cediendo mientras se está reasignando una tecla en Ajustes.

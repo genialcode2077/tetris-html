@@ -4,6 +4,7 @@ import { formatTime, type DerivedStats } from '@/game/stats';
 import { drawPiecePreview, type CellStyle } from '@/render/canvas2d/cells';
 import { PALETTES } from '@/render/palette';
 import type { PaletteName } from '@/render/types';
+import { Announcer, QUIET_MS, type Priority } from './announcements';
 import { byId, byIdAs, clear, h } from './dom';
 import { getLocale, t } from './i18n';
 
@@ -29,7 +30,8 @@ export class Hud {
   private lastHold: PieceType | null | undefined;
   private lastHoldUsed: boolean | undefined;
   private lastQueue = '';
-  private lastAnnounce = 0;
+  private readonly announcerPolicy = new Announcer();
+  private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private countdownShown = -1;
   announce = true;
   /** Avisar en pantalla cuando una colocación gasta teclas de más. */
@@ -58,6 +60,8 @@ export class Hud {
   }
 
   setMode(mode: GameMode, rules: RuleSet): void {
+    // Partida nueva: no arrastrar avisos pendientes de la anterior.
+    this.announcerPolicy.reset();
     this.modeLabel.textContent = modeLabel(mode);
     const goal = rules.goal;
     this.goalLabel.textContent =
@@ -201,10 +205,10 @@ export class Hud {
         this.pendingFinesseFault = 0;
         break;
       case 'gameOver':
-        this.say(t('a11y.gameOver'));
+        this.say(t('a11y.gameOver'), 'high');
         break;
       case 'finished':
-        this.say(t('a11y.finished'));
+        this.say(t('a11y.finished'), 'high');
         break;
       default:
         break;
@@ -226,12 +230,18 @@ export class Hud {
     }, 1100);
   }
 
-  private say(text: string): void {
+  private say(text: string, priority: Priority = 'normal'): void {
     if (!this.announce) return;
-    const now = performance.now();
-    if (now - this.lastAnnounce < 900) return;
-    this.lastAnnounce = now;
-    this.announcer.textContent = text;
+    const out = this.announcerPolicy.push({ text, priority }, performance.now());
+    if (out !== null) this.announcer.textContent = out;
+    // Lo que quede esperando se suelta al terminar el silencio, en vez de
+    // perderse como antes (docs/research/25).
+    if (this.flushTimer !== null) clearTimeout(this.flushTimer);
+    this.flushTimer = setTimeout(() => {
+      this.flushTimer = null;
+      const pend = this.announcerPolicy.flush(performance.now());
+      if (pend !== null) this.announcer.textContent = pend;
+    }, QUIET_MS + 20);
   }
 
   private ensureNext(count: number): void {
