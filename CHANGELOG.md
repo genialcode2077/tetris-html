@@ -3,6 +3,9 @@
 Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+### Fixed
+- El sonido del tetris era el más flojo de las cuatro limpiezas, por debajo incluso del de una línea simple, pese a tener el volumen nominal más alto. Medida la sonoridad de los veintiséis efectos con el algoritmo de la UIT-R BS.1770, la recompensa sonora ahora crece con la jugada. La caída rápida, que suena en cada pieza, baja para no competir con las limpiezas.
+
 ### Added
 - El modo práctica puede empezar con una posición ya montada: giro doble de la T, giro triple, vaciar el tablero y giro por encaje. Cada una trae su tablero y su cola de piezas fija, así la misma jugada se repite hasta que sale sin volver al menú.
 - Al ver una repetición aparece una barra con volver al principio, pausar, velocidad y salir, más un indicador de avance. La velocidad va de la mitad al doble y se maneja también con el teclado, siguiendo los requisitos de accesibilidad para reproducir contenido.

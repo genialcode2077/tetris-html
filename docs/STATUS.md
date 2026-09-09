@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 198 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 205 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 32,7 KB de JavaScript comprimido y 3,2 KB de CSS; el modo 3D son 239 KB aparte que solo descarga quien lo activa
@@ -16,10 +16,11 @@
 
 ## Próximos pasos (orden)
 
-1. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-2. Afinar los efectos de sonido, que necesita a alguien que escuche y compare.
+1. Latencia de entrada: medir cuánto tarda una pulsación en verse en pantalla y si se puede recortar un cuadro.
+2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
+3. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
 
-Los dos que quedan necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
+Los dos últimos necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -27,6 +28,15 @@ Los dos que quedan necesitan a una persona con un dispositivo y con oído; no se
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 13 (agente, iteración periódica) — sonoridad medida de los efectos
+
+- Tema del backlog: afinar los efectos de sonido (informe `docs/research/17`). Estaba marcado como bloqueado por necesitar oído. Lo está en parte: el timbre sí, pero el equilibrio entre unos efectos y otros es un número, y el orden entre ellos lo dicta la tabla de puntuación del propio juego.
+- La UIT-R BS.1770 define cómo se mide la sonoridad percibida: un filtro de dos etapas que corrige que el oído no pesa igual todas las frecuencias, y la energía de la señal filtrada. El recorte por bloques que también describe no aplica aquí, porque usa bloques de 400 ms y casi todos los efectos duran menos.
+- Medidos los veintiséis, salió un defecto claro: el sonido del tetris era el más flojo de las cuatro limpiezas, 2,3 dB por debajo del triple y medio decibelio por debajo de un simple, con el volumen nominal más alto de los cuatro. El volumen del preset no predice la sonoridad porque cada efecto tiene forma de onda, envolvente y duración distintas (F-031).
+- También salió que la caída rápida, que suena en cada pieza, era el cuarto efecto más fuerte del juego y competía con las limpiezas (F-032).
+- Escalera ajustada a decibelio y medio por peldaño y siete pruebas que la fijan, incluida la comprobación de conformidad de la recomendación: un tono de 1 kHz a plena escala debe medir −3,01 LKFS y el medidor da −3,004. Se verificó que la prueba caza el defecto original volviendo a poner el valor antiguo.
+- Evidencia visual en `docs/assets/sonoridad-efectos.svg`: la curva de antes se desploma justo en el tetris.
 
 ### 2026-09-08 · Sesión 12 (agente, iteración periódica) — posiciones preparadas
 
