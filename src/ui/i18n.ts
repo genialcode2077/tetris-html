@@ -16,6 +16,7 @@ export const LOCALE_NAMES: Readonly<Record<Locale, string>> = {
 const es = {
   'app.tagline': 'Bloques que caen · reglas modernas (SRS, hold, T-spins)',
   'app.legal': 'Proyecto educativo de código abierto, no afiliado a The Tetris Company.',
+  'menu.resumeSaved': 'Continuar partida',
   'menu.play': 'Jugar',
   'menu.settings': 'Ajustes',
   'menu.records': 'Récords',
@@ -155,6 +156,7 @@ export type MessageKey = keyof typeof es;
 const en: Record<MessageKey, string> = {
   'app.tagline': 'Falling blocks · modern rules (SRS, hold, T-spins)',
   'app.legal': 'Open-source educational project, not affiliated with The Tetris Company.',
+  'menu.resumeSaved': 'Resume game',
   'menu.play': 'Play',
   'menu.settings': 'Settings',
   'menu.records': 'Records',

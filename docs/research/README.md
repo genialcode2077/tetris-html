@@ -24,6 +24,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 18  | [Latencia de entrada](18-latencia-de-entrada.md)                                                     | 2026-09-08 | vigente |
 | 19  | [Precisión del reloj lógico](19-precision-del-reloj-logico.md)                                       | 2026-09-08 | vigente |
 | 20  | [Actualización de la aplicación instalada](20-actualizacion-de-la-app-instalada.md)                  | 2026-09-08 | vigente |
+| 21  | [Continuar la partida a medias](21-continuar-la-partida-a-medias.md)                                 | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 

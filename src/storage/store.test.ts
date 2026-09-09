@@ -12,6 +12,9 @@ function memoryStorage(
     setItem: (k, v) => {
       data[k] = v;
     },
+    removeItem: (k) => {
+      Reflect.deleteProperty(data, k);
+    },
   };
 }
 

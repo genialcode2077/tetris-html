@@ -248,3 +248,23 @@ test('captura de una posición preparada @screenshots', async ({ page }, testInf
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/${tag}-12-drill.png` });
 });
+
+test('captura del menú con partida guardada @screenshots', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Jugar', exact: true }).click();
+  await page.getByRole('button', { name: 'Empezar' }).click();
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  for (const tecla of ['ArrowLeft', 'ArrowUp', 'Space', 'ArrowRight', 'Space']) {
+    await page.keyboard.press(tecla);
+    await page.evaluate(() => window.__blockfall?.tick(150));
+  }
+  // Ocultar la página guarda la partida.
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: 'Continuar partida' }).waitFor({ state: 'visible' });
+  const tag = testInfo.project.name;
+  await page.screenshot({ path: `${OUT}/${tag}-13-resume.png` });
+});

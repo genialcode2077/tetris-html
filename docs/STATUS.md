@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 233 unitarias y de propiedades + 53 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 239 unitarias y de propiedades + 56 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -19,9 +19,8 @@
 
 ## Próximos pasos (orden)
 
-1. Guardar la partida en curso para no perderla al cerrar la pestaña.
-2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-3. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
+1. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
+2. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
 
 Los dos últimos necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
 
@@ -31,6 +30,16 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 17 (agente, iteración periódica) — continuar la partida a medias
+
+- Tema del backlog: guardar la partida en curso para no perderla al cerrar la pestaña (informe `docs/research/21`).
+- **Cuándo guardar**: la documentación de Chrome es tajante. `unload` es «extremely unreliable, especially on mobile» y no se dispara al cerrar la pestaña desde el conmutador; `beforeunload` tampoco es de fiar. El estado oculto es «the last reliable time to save app and user data». Y la especificación del ciclo de vida confirma que el descarte por falta de memoria no avisa: no hay último aviso posible.
+- **Qué guardar**: no el tablero, sino la semilla y las pulsaciones. El motor es determinista, así que reproducirlas devuelve la misma partida exacta. Ocupa unos kilobytes, reutiliza el formato de repeticiones ya versionado, y rehacer diez minutos de maratón son unas décimas de segundo porque el paso cuesta menos de un microsegundo.
+- La partida vuelve en pausa, y mientras haya una a medias empezar otra deja de ser la acción destacada del menú, para que no compitan dos botones por la atención.
+- Dos fallos que sacó la prueba del ciclo doble (guardar, continuar, volver a guardar, volver a continuar, comparando el tablero celda a celda): **pausar mentía**, porque soltaba las teclas sin anotarlo en el registro (F-038), y **sumar milisegundos en dos tramos no da lo mismo** en coma flotante, y un paso de diferencia es una fila de caída (F-039). Sin ese ciclo doble ninguno se habría visto.
+- Seis pruebas unitarias y una de extremo a extremo que hace el recorrido real en el navegador: jugar, ocultar la página, recargar, continuar y comparar el tablero.
+- La suite de extremo a extremo volvió a fallar de forma intermitente: de tres pasadas, dos fallaron con pruebas distintas y ambas pasan aisladas. Anotado en F-025, que apunta a contención de procesador entre trabajadores.
 
 ### 2026-09-08 · Sesión 16 (agente, iteración periódica) — actualizar sin pisar la partida
 

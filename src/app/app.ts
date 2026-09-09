@@ -7,6 +7,7 @@ import { Coach } from '@/game/coaching';
 import { GameLoop } from '@/game/loop';
 import { parseReplay, serializeReplay, type Replay } from '@/game/replay';
 import { Session } from '@/game/session';
+import { SAVED_GAME_VERSION, isResumable } from '@/game/resume';
 import { formatDelta } from '@/game/splits';
 import { formatTime } from '@/game/stats';
 import { GamepadInput } from '@/input/gamepad';
@@ -160,8 +161,12 @@ export class App {
       { capture: true },
     );
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.autoPause();
-      else this.loop.resetClock();
+      if (document.hidden) {
+        this.autoPause();
+        // Último momento fiable para guardar: al cerrar la pestaña desde el
+        // móvil no llega ningún otro evento (docs/research/21).
+        this.persistGame();
+      } else this.loop.resetClock();
     });
     window.addEventListener('blur', () => {
       this.autoPause();
@@ -170,6 +175,7 @@ export class App {
       this.applySettings();
     });
 
+    this.refreshResumeButton();
     this.screens.show('title');
     this.loop.start();
   }
@@ -195,6 +201,45 @@ export class App {
 
   // ------------------------------------------------------------ partida
 
+  /** Guarda la partida en curso para poder retomarla. */
+  private persistGame(): void {
+    const s = this.session;
+    if (!s || s.isReplay || !isResumable(s.mode)) return;
+    if (s.status !== 'playing' && s.status !== 'paused') {
+      this.store.clearSavedGame();
+      return;
+    }
+    this.store.saveGame({
+      version: SAVED_GAME_VERSION,
+      savedAt: new Date().toISOString(),
+      replay: s.buildReplay(APP_VERSION),
+      elapsedMs: s.elapsedMs,
+    });
+  }
+
+  /** Muestra u oculta el botón de continuar según haya partida guardada. */
+  private refreshResumeButton(): void {
+    const hay = this.store.savedGame() !== null;
+    byId('btn-resume-saved').hidden = !hay;
+    // Con partida a medias, continuar es lo que se espera hacer: empezar una
+    // nueva deja de ser la acción destacada para no competir con ella.
+    byId('btn-play').classList.toggle('primary', !hay);
+  }
+
+  /** Retoma la partida guardada y la borra del almacén. */
+  private resumeSavedGame(): void {
+    const saved = this.store.savedGame();
+    if (!saved) {
+      this.refreshResumeButton();
+      return;
+    }
+    this.store.clearSavedGame();
+    this.session?.releaseAll();
+    this.session = new Session({ mode: saved.replay.mode, countdownMs: 0, resume: saved });
+    this.loop.setStep(1000 / this.session.logicHz);
+    this.afterNewSession();
+  }
+
   newGame(seedOverride?: number): void {
     const st = this.store.settings;
     const mode = st.game.mode;
@@ -212,6 +257,7 @@ export class App {
       (mode === 'daily'
         ? dailySeed()
         : (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0);
+    this.store.clearSavedGame();
     this.session?.releaseAll();
     this.session = new Session({
       mode,
@@ -227,7 +273,15 @@ export class App {
       referenceSplits: this.store.bestSplits(mode),
     });
     this.loop.setStep(1000 / this.session.logicHz);
-    this.session.onEvent((e, s) => {
+    this.afterNewSession();
+  }
+
+  /** Deja todo listo para jugar la sesión recién creada. */
+  private afterNewSession(): void {
+    const session = this.session;
+    if (!session) return;
+    const mode = session.mode;
+    session.onEvent((e, s) => {
       this.onGameEvent(e, s);
     });
     if (this.resultsTimer) clearTimeout(this.resultsTimer);
@@ -237,14 +291,14 @@ export class App {
     byId('replay-bar').hidden = true;
     this.shownSplit = null;
     (this.rendererHandle?.renderer as { resetBudget?: () => void } | undefined)?.resetBudget?.();
-    this.hud.setMode(mode, this.session.rules);
+    this.hud.setMode(mode, session.rules);
     const best = this.store.highscores(mode)[0];
     this.hud.setRecord(
       mode === 'sprint' || mode === 'daily' ? (best?.timeMs ?? null) : null,
       mode === 'sprint' || mode === 'daily' ? null : (best?.score ?? null),
     );
     this.hud.hideOverlay();
-    this.audio.setLevel(st.game.startLevel);
+    this.audio.setLevel(session.game.state.level);
     this.audio.startMusic();
     this.screens.hide();
     byId('board-wrap').focus();
@@ -443,7 +497,9 @@ export class App {
   private showResults(): void {
     const s = this.session;
     if (!s) return;
-    // La partida ha terminado: si había una versión esperando, es el momento.
+    // La partida ha terminado: ya no hay nada que continuar, y si había una
+    // versión esperando, es el momento.
+    this.store.clearSavedGame();
     this.updates?.maybeApply();
     const state = s.game.state;
     const stats = s.stats();
@@ -548,6 +604,9 @@ export class App {
     };
     on('btn-play', () => {
       this.screens.show('modes');
+    });
+    on('btn-resume-saved', () => {
+      this.resumeSavedGame();
     });
     on('btn-settings', () => {
       this.screens.show('settings');
@@ -707,6 +766,7 @@ export class App {
     byId('replay-bar').hidden = true;
     this.audio.stopMusic();
     this.hud.hideOverlay();
+    this.refreshResumeButton();
     this.screens.show('title');
     // Sin partida abierta: si había una versión esperando, entra aquí.
     this.updates?.maybeApply();

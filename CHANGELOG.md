@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Added
+
+- La partida a medias ya no se pierde al cerrar la pestaña. Se guarda cuando la página deja de verse, que es el último momento fiable en el móvil, y el menú ofrece continuarla al volver. No se guarda el tablero sino la semilla y las pulsaciones: el motor es determinista, así que reproducirlas devuelve exactamente la misma partida y el archivo ocupa unos kilobytes. Vuelve en pausa, para que nadie pierda piezas mientras se sitúa. El reto diario queda fuera, porque es la misma partida para todo el mundo.
+
 ### Fixed
 
 - Publicar una versión nueva ya no pisa a quien está jugando. Antes la aplicación instalada se actualizaba sola en cuanto detectaba una versión: la página seguía con el código antiguo en memoria mientras el service worker nuevo ya servía archivos nuevos, así que activar el modo 3D después de un despliegue pedía un archivo que ya no existía. Ahora la versión nueva espera y entra cuando no hay partida que perder, al terminar la partida o al volver al menú. Una partida en pausa cuenta como viva (ADR-0010).

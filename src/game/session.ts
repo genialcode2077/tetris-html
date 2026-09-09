@@ -11,6 +11,7 @@ import {
   type InputAction,
 } from './handling';
 import { LOGIC_HZ } from './loop';
+import type { SavedGame } from './resume';
 import { ReplayPlayer, ReplayRecorder, type Replay } from './replay';
 import { SplitTracker, hasSplits, type SplitComparison } from './splits';
 import { deriveStats, emptyFinesseTally, type DerivedStats, type FinesseTally } from './stats';
@@ -30,7 +31,12 @@ export interface SessionOptions {
   readonly referenceSplits?: readonly number[];
   /** Posición preparada con la que empezar (docs/research/16). */
   readonly drill?: DrillId;
+  /** Partida a medias que hay que reconstruir y devolver al jugador (docs/research/21). */
+  readonly resume?: SavedGame;
 }
+
+/** Tope de tiempo de juego que se acepta reconstruir: seis horas. */
+const MAX_RESUME_MS = 6 * 60 * 60 * 1000;
 
 export type SessionListener = (event: GameEvent, session: Session) => void;
 
@@ -58,8 +64,8 @@ export class Session {
   /** Última colocación evaluada; el HUD la usa para avisar de un fallo. */
   lastFinesseFault = 0;
   private readonly recorder = new ReplayRecorder();
-  private readonly player: ReplayPlayer | null;
-  private readonly replaySource: Replay | null;
+  private player: ReplayPlayer | null;
+  private replaySource: Replay | null;
   readonly seed: number;
   private readonly handlingSettings: HandlingSettings;
   /** Seguimiento de hitos; null en los modos donde el tiempo no es el objetivo. */
@@ -74,7 +80,9 @@ export class Session {
   private rateCarry = 0;
 
   constructor(options: SessionOptions) {
-    const replay = options.replay;
+    // Una partida guardada trae su configuración dentro, igual que una
+    // repetición: sin ella se reconstruiría con otra semilla y otra partida.
+    const replay = options.replay ?? options.resume?.replay;
     this.mode = replay?.mode ?? options.mode;
     const rules: RuleSet = replay
       ? replay.rules
@@ -93,14 +101,38 @@ export class Session {
     });
     this.handlingSettings = replay?.handling ?? options.handling ?? DEFAULT_HANDLING;
     this.handling = new Handling(this.handlingSettings);
-    this.replaySource = replay ?? null;
-    this.player = replay ? new ReplayPlayer(replay.inputs) : null;
+    this.replaySource = options.replay ?? null;
+    this.player = options.replay ? new ReplayPlayer(options.replay.inputs) : null;
     const goalLines = rules.goal.type === 'lines' ? rules.goal.lines : null;
     this.splits = hasSplits(this.mode, goalLines)
       ? new SplitTracker(goalLines ?? 0, options.referenceSplits ?? [])
       : null;
     this.countdownMs = options.countdownMs ?? 3000;
     if (this.countdownMs <= 0) this.beginPlay();
+    if (options.resume) this.restoreFrom(options.resume);
+  }
+
+  /**
+   * Rehace una partida guardada reproduciendo sus pulsaciones a toda velocidad
+   * y devuelve el control al jugador, en pausa. Reproducir un maratón entero
+   * son unas décimas de segundo, porque cada paso cuesta menos de un microsegundo.
+   */
+  private restoreFrom(saved: SavedGame): void {
+    if (this.status === 'countdown') this.beginPlay();
+    this.player = new ReplayPlayer(saved.replay.inputs);
+    this.replaySource = saved.replay;
+    const step = 1000 / saved.replay.logicHz;
+    // Se cuentan pasos enteros, no milisegundos: sumar el mismo tiempo en dos
+    // tramos no da el mismo número en coma flotante, y un paso de diferencia
+    // es una fila de caída. El tope evita que un archivo manipulado cuelgue
+    // el arranque.
+    const steps = Math.min(Math.round(saved.elapsedMs / step), Math.ceil(MAX_RESUME_MS / step));
+    for (let i = 0; i < steps && this.status === 'playing'; i++) this.step(step);
+    this.player = null;
+    this.replaySource = null;
+    // El grabador ya se ha quedado con lo reproducido, así que la partida se
+    // puede volver a guardar sin perder lo anterior.
+    if (this.status === 'playing') this.pause();
   }
 
   get rules(): RuleSet {
@@ -188,8 +220,11 @@ export class Session {
 
   pause(): void {
     if (this.status !== 'playing') return;
+    // Soltar las teclas se anota antes de cambiar de estado: la partida sigue
+    // sin ellas, y quien la reproduzca o la continúe tiene que ver lo mismo.
+    for (const action of [...this.held]) this.release(action);
     this.status = 'paused';
-    this.releaseAll();
+    this.handling.reset();
   }
 
   resume(): void {

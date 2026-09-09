@@ -2,6 +2,7 @@ import type { GameMode } from '@/core/rules';
 import { DEFAULT_KEYMAP, type KeyMap } from '@/input/keymap';
 import type { TipId } from '@/game/coaching';
 import type { Replay } from '@/game/replay';
+import { parseSavedGame, serializeSavedGame, type SavedGame } from '@/game/resume';
 import { DEFAULT_SETTINGS, type Settings } from './settings';
 
 export interface HighScore {
@@ -27,11 +28,17 @@ export interface PersistedV1 {
 }
 
 export const STORAGE_KEY = 'tetris-html:v1';
+/**
+ * La partida a medias va en su propia clave: se escribe al ocultarse la página,
+ * y conviene que no dependa de serializar el resto de ajustes (docs/research/21).
+ */
+export const RESUME_KEY = 'tetris-html:resume';
 const MAX_SCORES = 10;
 
 export interface StorageLike {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
+  removeItem(key: string): void;
 }
 
 function isObject(v: unknown): v is Record<string, unknown> {
@@ -118,6 +125,35 @@ export class Store {
     const list = this.highscores(mode);
     const best = mode === 'sprint' ? list[0] : list[0];
     return best?.splits ?? [];
+  }
+
+  /** Partida a medias guardada, si la hay y se puede leer. */
+  savedGame(): SavedGame | null {
+    try {
+      const raw = this.storage?.getItem(RESUME_KEY);
+      return raw ? parseSavedGame(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Guarda la partida a medias. Devuelve false si el almacén no la admite. */
+  saveGame(saved: SavedGame): boolean {
+    try {
+      this.storage?.setItem(RESUME_KEY, serializeSavedGame(saved));
+      return true;
+    } catch {
+      // Sin sitio o sin permiso: se pierde la partida, pero no el juego.
+      return false;
+    }
+  }
+
+  clearSavedGame(): void {
+    try {
+      this.storage?.removeItem(RESUME_KEY);
+    } catch {
+      // Nada que hacer.
+    }
   }
 
   bestReplay(mode: GameMode): Replay | null {
