@@ -30,6 +30,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 24  | [Resistencia a fallos del bucle](24-resistencia-a-fallos-del-bucle.md)                               | 2026-09-09 | vigente |
 | 25  | [Avisos para lector de pantalla](25-avisos-para-lector-de-pantalla.md)                               | 2026-09-09 | vigente |
 | 26  | [Política de seguridad de contenido](26-politica-de-seguridad-de-contenido.md)                       | 2026-09-09 | vigente |
+| 27  | [El juego en horizontal](27-el-juego-en-horizontal.md)                                               | 2026-09-09 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 

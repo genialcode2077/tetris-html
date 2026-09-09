@@ -85,3 +85,57 @@ test('los controles táctiles caben sin desbordarse @responsive', async ({ page 
   // Se mantiene el objetivo táctil mínimo recomendado en alto.
   for (const h of fits!.heights) expect(h).toBeGreaterThanOrEqual(44);
 });
+
+/**
+ * En horizontal sobra ancho y falta altura. Apilando los paneles el tablero se
+ * quedaba con las migajas: 8,2 píxeles de celda en un móvil de 667×375, que es
+ * injugable. Con los paneles a los lados sube a 14 (docs/research/27).
+ *
+ * Los mínimos llevan margen porque el alto del marcador depende de la fuente
+ * del sistema, pero siguen muy por encima de los 8,2 de antes, así que una
+ * regresión del reparto haría fallar la prueba.
+ */
+const HORIZONTALES = [
+  { name: '915×412', width: 915, height: 412, minCell: 14 },
+  { name: '667×375', width: 667, height: 375, minCell: 12 },
+  { name: '640×360', width: 640, height: 360, minCell: 11 },
+];
+
+for (const size of HORIZONTALES) {
+  test(`el tablero es jugable en horizontal a ${size.name} @responsive`, async ({ page }) => {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    await page.goto('/');
+    await page.evaluate(() => {
+      window.__blockfall?.app.newGame(4242);
+    });
+    await page.evaluate(() => window.__blockfall?.tick(4000));
+
+    const m = await page.evaluate(() => {
+      const canvas = document.querySelector('.board-canvas')?.getBoundingClientRect();
+      const doc = document.documentElement;
+      const barra = document.getElementById('touch-controls');
+      const tactilesVisibles = barra ? !barra.hidden : false;
+      const botones = [...document.querySelectorAll<HTMLElement>('.touch-controls button')].map(
+        (b) => b.getBoundingClientRect(),
+      );
+      return {
+        ancho: canvas ? Math.round(canvas.width) : 0,
+        scrollWidth: doc.scrollWidth,
+        clientWidth: doc.clientWidth,
+        scrollHeight: doc.scrollHeight,
+        clientHeight: doc.clientHeight,
+        tactilesVisibles,
+        botonMin: botones.length ? Math.min(...botones.map((b) => Math.min(b.width, b.height))) : 0,
+      };
+    });
+
+    expect(m.ancho / 10, `celda en ${size.name}`).toBeGreaterThanOrEqual(size.minCell);
+    // Nada se sale, ni a lo ancho ni a lo alto: con tan poca altura era fácil.
+    expect(m.scrollWidth).toBeLessThanOrEqual(m.clientWidth + 1);
+    expect(m.scrollHeight).toBeLessThanOrEqual(m.clientHeight + 1);
+    // Donde hay táctil, los botones siguen por encima del mínimo de la norma.
+    if (m.tactilesVisibles) {
+      expect(m.botonMin, 'lado menor de los botones táctiles').toBeGreaterThanOrEqual(24);
+    }
+  });
+}

@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 249 unitarias y de propiedades + 78 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 249 unitarias y de propiedades + 95 de extremo a extremo (escritorio y móvil), todas en verde
 - **Seguridad:** política de contenido estricta en la página publicada, verificada inyectando un guion (ADR-0011)
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
@@ -31,6 +31,16 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 23 (agente, iteración periódica) — el juego con el móvil tumbado
+
+- Tema: cómo se reparte el espacio en horizontal (informe `docs/research/27`). El informe 08 arregló el reparto en móviles pequeños, pero **solo se midió en vertical**.
+- Medido: en horizontal la celda caía de 30,8 a **8,2 píxeles** y el tablero entero medía ochenta de ancho, menos que un botón. Injugable, no incómodo (F-048). En Pixel 7 tumbado aparecía además barra de desplazamiento.
+- La causa: el reparto móvil se decide por ancho y apila los paneles. En vertical funciona porque sobra altura; tumbado el teléfono la altura es justo lo que falta, así que apilar es lo contrario de lo que conviene.
+- **Precisión sobre la norma**: el criterio 1.3.4 pide que el contenido no quede restringido a una orientación, y su guía aclara que **no exige igual usabilidad en ambas**. Así que esto no era un incumplimiento. Se arregla porque ocho píxeles no se pueden jugar, no porque lo obligue nadie.
+- Ahora una consulta por **altura** (apaisado y menos de 500 px) pone los paneles a los lados y da al tablero todo el alto: celda de 14,3 px en 667×375 y 13,3 en 640×360, sin desplazamiento en ningún caso.
+- Dos tropiezos anotados en el informe: el aviso superpuesto del tablero empujaba la página y no bastó ni estirar la rejilla ni un tope calculado (se recorta el desbordamiento en el contenedor), y las pruebas medían botones táctiles de tamaño cero en el perfil sin táctil.
+- Seis pruebas nuevas y una captura de referencia en horizontal.
 
 ### 2026-09-09 · Sesión 22 (agente, iteración periódica) — política de seguridad de contenido
 

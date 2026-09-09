@@ -765,3 +765,90 @@ body {
     animation-duration: 0.01s;
   }
 }
+
+/* Móvil en horizontal: sobra ancho y falta altura. Apilar los paneles deja al
+   tablero con las migajas (celda de 8 px, injugable), así que van a los lados y
+   el tablero se queda con todo el alto (docs/research/27). */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game {
+    grid-template-columns: minmax(84px, 118px) minmax(0, 1fr) minmax(84px, 118px);
+    grid-template-areas: 'left board right';
+    grid-template-rows: minmax(0, 1fr);
+    /* Sin estirar, el tablero resuelve su alto contra su propio contenido y
+       acaba desbordando la pantalla. */
+    align-items: stretch;
+    gap: 8px;
+    padding: 2px 8px 4px;
+    overflow: hidden;
+  }
+  .panel-left,
+  .panel-right {
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+  }
+  .board-wrap {
+    grid-area: board;
+    /* Ocupa el hueco entero; el renderer deduce el tamaño de celda de ahí. El
+       tope evita que el tablero empuje la página cuando la fila del grid no
+       llega a acotarlo por sí sola. */
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    margin: 0;
+    /* El aviso superpuesto cubre el contenedor entero; sin esto su alto empuja
+       la página y aparece una barra de desplazamiento. */
+    overflow: hidden;
+  }
+  .mode-info {
+    display: none;
+  }
+  .panel-left .hold,
+  .panel-right .next {
+    width: auto;
+    flex: none;
+  }
+  .panel-left .stats {
+    flex: 1;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    overflow: hidden;
+  }
+  .next-list {
+    flex-direction: column;
+  }
+  /* Con tan poca altura solo caben las dos primeras piezas siguientes. */
+  .next-item:nth-child(n + 3) {
+    display: none;
+  }
+  .next-item,
+  .next-item.first {
+    height: 30px;
+  }
+  .preview {
+    height: 32px;
+  }
+  .topbar {
+    padding: 1px 10px;
+  }
+  .panel section {
+    padding: 3px 6px;
+  }
+  .stat .value {
+    font-size: 13px;
+  }
+  .stat .label {
+    font-size: 9px;
+  }
+  /* Los botones bajan lo justo para seguir por encima del mínimo táctil. */
+  .touch-controls {
+    padding: 3px 8px calc(3px + env(safe-area-inset-bottom));
+    gap: 4px;
+  }
+  .touch-controls button {
+    min-height: 34px;
+    font-size: 15px;
+  }
+}

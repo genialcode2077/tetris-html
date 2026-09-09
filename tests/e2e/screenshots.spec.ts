@@ -271,3 +271,19 @@ test('captura del menú con partida guardada @screenshots', async ({ page }, tes
   const tag = testInfo.project.name;
   await page.screenshot({ path: `${OUT}/${tag}-13-resume.png` });
 });
+
+test('captura en horizontal @screenshots', async ({ page }, testInfo) => {
+  // Solo en el perfil táctil: en horizontal es donde el reparto de espacio se
+  // decide (docs/research/27).
+  test.skip(testInfo.project.name !== 'mobile', 'basta con el perfil móvil');
+  await page.setViewportSize({ width: 667, height: 375 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Jugar', exact: true }).click();
+  await page.getByRole('button', { name: 'Empezar' }).click();
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+  for (const k of ['ArrowLeft', 'ArrowUp', 'Space', 'ArrowRight', 'Space', 'Space']) {
+    await page.keyboard.press(k);
+    await page.evaluate(() => window.__blockfall?.tick(150));
+  }
+  await page.screenshot({ path: `${OUT}/mobile-14-horizontal.png` });
+});
