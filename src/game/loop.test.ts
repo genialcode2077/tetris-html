@@ -70,7 +70,8 @@ describe('bucle de juego', () => {
     const { start, frame, orden, renders } = harness();
     start();
     frame(16.7);
-    expect(orden).toEqual(['update', 'update', 'render']);
+    const pasos = Math.floor(16.7 / STEP_MS);
+    expect(orden).toEqual([...Array<string>(pasos).fill('update'), 'render']);
     expect(renders.length).toBe(1);
   });
 
@@ -78,8 +79,8 @@ describe('bucle de juego', () => {
     const { start, frame, renders } = harness();
     start();
     frame(10);
-    // 10 ms dan un paso y sobran 1,67, es decir un quinto de paso.
-    expect(renders[0]?.alpha).toBeCloseTo((10 - STEP_MS) / STEP_MS, 3);
+    // Lo que sobra tras los pasos enteros, en fracción de paso.
+    expect(renders[0]?.alpha).toBeCloseTo(((10 % STEP_MS) / STEP_MS) % 1, 3);
     expect(renders[0]?.alpha).toBeGreaterThanOrEqual(0);
     expect(renders[0]?.alpha).toBeLessThan(1);
   });
@@ -171,16 +172,21 @@ describe('presupuesto de latencia', () => {
     }
   });
 
-  it('deja constancia del punto flojo: por encima de la frecuencia lógica hay cuadros sin lógica', () => {
-    // No se corrige sin subir la frecuencia lógica, y eso invalidaría las
-    // repeticiones guardadas (F-033, informe 18). La prueba fija la magnitud
-    // para que se vea si alguien la cambia.
-    const r144 = medir(144);
-    expect(r144.sinLogica).toBeGreaterThan(0.1);
-    // El peor caso pasa de un intervalo de cuadro, justo lo que no ocurre por
-    // debajo de la frecuencia lógica.
-    expect(r144.peor).toBeGreaterThan(1000 / 144);
-    expect(medir(240).sinLogica).toBeGreaterThan(0.45);
+  it('las pantallas rápidas de uso corriente ya no dejan cuadros sin lógica', () => {
+    // Era el punto flojo de la frecuencia anterior (F-033): a 120 Hz de lógica,
+    // 144 Hz dejaba fuera el 17 % de los cuadros y 240 Hz la mitad.
+    for (const hz of [144, 165, 240]) {
+      expect(medir(hz).sinLogica, `${hz} Hz`).toBeLessThan(0.002);
+      expect(medir(hz).peor, `${hz} Hz`).toBeLessThanOrEqual((1000 / hz) * 1.01);
+    }
+  });
+
+  it('por encima de la frecuencia lógica el problema reaparece, como es aritmético', () => {
+    // Con 240 pasos por segundo no se pueden dar 360: es matemática, no un
+    // fallo. Queda fijado para que se vea si alguien mueve la frecuencia.
+    const r360 = medir(360);
+    expect(r360.sinLogica).toBeGreaterThan(0.1);
+    expect(r360.peor).toBeGreaterThan(1000 / 360);
   });
 
   it('el remedio conocido funciona: con el paso igual al cuadro no queda ninguno sin lógica', () => {

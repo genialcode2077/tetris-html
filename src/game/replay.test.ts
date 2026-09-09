@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { Session } from './session';
-import { parseReplay, serializeReplay, ReplayPlayer, ReplayRecorder } from './replay';
+import { LOGIC_HZ } from './loop';
+import {
+  LEGACY_LOGIC_HZ,
+  REPLAY_VERSION,
+  parseReplay,
+  serializeReplay,
+  ReplayPlayer,
+  ReplayRecorder,
+} from './replay';
 import type { InputAction } from './handling';
 
-const STEP = 1000 / 120;
+const STEP = 1000 / LOGIC_HZ;
 
 /** Juega una partida guiada por un guion y devuelve la sesión terminada. */
 function playScripted(seed: number, script: [number, InputAction, boolean][]): Session {
@@ -112,11 +120,66 @@ describe('repeticiones', () => {
       seed: 5,
       rules: new Session({ mode: 'sprint', countdownMs: 0, seed: 5 }).rules,
       handling: { dasMs: 100, arrMs: 0, dcdMs: 0 },
+      logicHz: 240,
       result: { score: 0, lines: 0, level: 1, timeMs: 0, pieces: 0, finished: false },
     });
     expect(built.inputs[0]?.t).toBe(13);
     expect(built.inputs[1]?.t).toBe(30);
     rec.clear();
     expect(rec.count).toBe(0);
+  });
+});
+
+describe('reloj grabado en la repetición', () => {
+  const base = {
+    createdAt: '2026-01-01T00:00:00.000Z',
+    appVersion: 'x',
+    mode: 'sprint',
+    seed: 7,
+    rules: { goal: { type: 'none' } },
+    handling: { dasMs: 167, arrMs: 33, dcdMs: 0 },
+    inputs: [{ t: 10, action: 'left', down: true }],
+    result: { score: 0, lines: 0, level: 1, timeMs: 0, pieces: 0, finished: false },
+  };
+
+  it('una repetición de la versión 1 se lee con el reloj que tenía entonces', () => {
+    const v1 = parseReplay(JSON.stringify({ ...base, version: 1 }));
+    expect(v1).not.toBeNull();
+    expect(v1?.logicHz).toBe(LEGACY_LOGIC_HZ);
+    expect(v1?.version).toBe(1);
+    // Y sigue conservando sus pulsaciones intactas.
+    expect(v1?.inputs).toEqual(base.inputs);
+  });
+
+  it('una repetición nueva conserva el reloj con el que se jugó', () => {
+    const v2 = parseReplay(JSON.stringify({ ...base, version: 2, logicHz: 240 }));
+    expect(v2?.logicHz).toBe(240);
+  });
+
+  it('se rechaza una versión desconocida o un reloj imposible', () => {
+    expect(parseReplay(JSON.stringify({ ...base, version: 3, logicHz: 240 }))).toBeNull();
+    expect(parseReplay(JSON.stringify({ ...base, version: 2 }))).toBeNull();
+    expect(parseReplay(JSON.stringify({ ...base, version: 2, logicHz: 0 }))).toBeNull();
+  });
+
+  it('la sesión reproduce cada repetición con su propio reloj', () => {
+    const v1 = parseReplay(JSON.stringify({ ...base, version: 1 }));
+    const v2 = parseReplay(JSON.stringify({ ...base, version: 2, logicHz: 240 }));
+    expect(v1).not.toBeNull();
+    expect(v2).not.toBeNull();
+    if (!v1 || !v2) return;
+    expect(new Session({ mode: 'sprint', countdownMs: 0, replay: v1 }).logicHz).toBe(120);
+    expect(new Session({ mode: 'sprint', countdownMs: 0, replay: v2 }).logicHz).toBe(240);
+    // Una partida nueva usa el reloj actual del juego.
+    expect(new Session({ mode: 'sprint', countdownMs: 0, seed: 1 }).logicHz).toBe(LOGIC_HZ);
+  });
+
+  it('lo que se graba hoy lleva el reloj actual y se vuelve a leer igual', () => {
+    const s = new Session({ mode: 'sprint', countdownMs: 0, seed: 3 });
+    const replay = s.buildReplay('1.0.0');
+    expect(replay.version).toBe(REPLAY_VERSION);
+    expect(replay.logicHz).toBe(LOGIC_HZ);
+    const leida = parseReplay(serializeReplay(replay));
+    expect(leida?.logicHz).toBe(LOGIC_HZ);
   });
 });

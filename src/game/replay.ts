@@ -7,7 +7,13 @@ import type { HandlingSettings, InputAction } from './handling';
  * entradas dan el mismo resultado), basta con guardar la configuración inicial y la
  * lista de pulsaciones con su marca de tiempo. Un archivo pesa unos pocos kilobytes.
  */
-export const REPLAY_VERSION = 1;
+export const REPLAY_VERSION = 2;
+
+/**
+ * Frecuencia lógica de las repeticiones de la versión 1, que no la guardaban.
+ * Reproducirlas con este reloj las mantiene fieles al original (ADR-0009).
+ */
+export const LEGACY_LOGIC_HZ = 120;
 
 export interface ReplayInput {
   /** Milisegundos de juego transcurridos, sin contar pausas ni cuenta atrás. */
@@ -27,13 +33,18 @@ export interface ReplayResult {
 }
 
 export interface Replay {
-  readonly version: typeof REPLAY_VERSION;
+  readonly version: 1 | typeof REPLAY_VERSION;
   readonly createdAt: string;
   readonly appVersion: string;
   readonly mode: GameMode;
   readonly seed: number;
   readonly rules: RuleSet;
   readonly handling: HandlingSettings;
+  /**
+   * Pasos por segundo con los que se jugó. Decide en qué instante se aplica
+   * cada pulsación, así que reproducir con otro reloj da otra partida.
+   */
+  readonly logicHz: number;
   readonly inputs: readonly ReplayInput[];
   readonly result: ReplayResult;
 }
@@ -65,6 +76,7 @@ export class ReplayRecorder {
       seed: meta.seed,
       rules: meta.rules,
       handling: meta.handling,
+      logicHz: meta.logicHz,
       inputs: [...this.inputs],
       result: meta.result,
     };
@@ -113,7 +125,7 @@ export function parseReplay(raw: string): Replay | null {
     return null;
   }
   if (!isObject(data)) return null;
-  if (data.version !== REPLAY_VERSION) return null;
+  if (data.version !== REPLAY_VERSION && data.version !== 1) return null;
   if (typeof data.seed !== 'number' || !isObject(data.rules)) return null;
   const inputs = data.inputs;
   if (!Array.isArray(inputs)) return null;
@@ -123,7 +135,10 @@ export function parseReplay(raw: string): Replay | null {
     }
     if (typeof input.action !== 'string') return null;
   }
-  return data as unknown as Replay;
+  // Las de la versión 1 no guardaban el reloj: era 120 Hz.
+  const logicHz = data.version === 1 ? LEGACY_LOGIC_HZ : data.logicHz;
+  if (typeof logicHz !== 'number' || !(logicHz > 0)) return null;
+  return { ...data, logicHz } as unknown as Replay;
 }
 
 export function serializeReplay(replay: Replay): string {

@@ -1,4 +1,9 @@
-export const LOGIC_HZ = 120;
+/**
+ * Frecuencia de la simulación. Es una constante del juego, no del monitor: si
+ * dependiera del refresco, la misma semilla daría partidas distintas en cada
+ * pantalla (ADR-0009).
+ */
+export const LOGIC_HZ = 240;
 export const STEP_MS = 1000 / LOGIC_HZ;
 const MAX_FRAME_MS = 250;
 
@@ -8,6 +13,7 @@ export class GameLoop {
   private last = 0;
   private acc = 0;
   private _running = false;
+  private stepMs: number;
   private readonly raf: (cb: FrameRequestCallback) => number;
   private readonly caf: (id: number) => void;
   /** Tiempo de la última lógica+render en ms (para overlay de debug). */
@@ -16,14 +22,25 @@ export class GameLoop {
   constructor(
     private readonly update: (dtMs: number) => void,
     private readonly render: (nowMs: number, alpha: number) => void,
-    private readonly stepMs = STEP_MS,
+    stepMs = STEP_MS,
     raf: (cb: FrameRequestCallback) => number = (cb) => window.requestAnimationFrame(cb),
     caf: (id: number) => void = (id) => {
       window.cancelAnimationFrame(id);
     },
   ) {
+    this.stepMs = stepMs;
     this.raf = raf;
     this.caf = caf;
+  }
+
+  /**
+   * Cambia el tamaño del paso lógico. Solo para reproducir una repetición con
+   * el reloj que tenía la versión con la que se grabó (ADR-0009).
+   */
+  setStep(ms: number): void {
+    if (ms <= 0 || this.stepMs === ms) return;
+    this.stepMs = ms;
+    this.resetClock();
   }
 
   get running(): boolean {

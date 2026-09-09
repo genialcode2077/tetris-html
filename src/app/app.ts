@@ -212,6 +212,7 @@ export class App {
       seed,
       referenceSplits: this.store.bestSplits(mode),
     });
+    this.loop.setStep(1000 / this.session.logicHz);
     this.session.onEvent((e, s) => {
       this.onGameEvent(e, s);
     });
@@ -634,6 +635,7 @@ export class App {
     this.currentReplay = replay;
     this.session?.releaseAll();
     this.session = new Session({ mode: replay.mode, countdownMs: 1200, replay });
+    this.loop.setStep(1000 / this.session.logicHz);
     this.session.onEvent((e, s) => {
       this.onGameEvent(e, s);
     });

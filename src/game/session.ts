@@ -10,6 +10,7 @@ import {
   type HandlingSettings,
   type InputAction,
 } from './handling';
+import { LOGIC_HZ } from './loop';
 import { ReplayPlayer, ReplayRecorder, type Replay } from './replay';
 import { SplitTracker, hasSplits, type SplitComparison } from './splits';
 import { deriveStats, emptyFinesseTally, type DerivedStats, type FinesseTally } from './stats';
@@ -58,6 +59,7 @@ export class Session {
   lastFinesseFault = 0;
   private readonly recorder = new ReplayRecorder();
   private readonly player: ReplayPlayer | null;
+  private readonly replaySource: Replay | null;
   readonly seed: number;
   private readonly handlingSettings: HandlingSettings;
   /** Seguimiento de hitos; null en los modos donde el tiempo no es el objetivo. */
@@ -91,6 +93,7 @@ export class Session {
     });
     this.handlingSettings = replay?.handling ?? options.handling ?? DEFAULT_HANDLING;
     this.handling = new Handling(this.handlingSettings);
+    this.replaySource = replay ?? null;
     this.player = replay ? new ReplayPlayer(replay.inputs) : null;
     const goalLines = rules.goal.type === 'lines' ? rules.goal.lines : null;
     this.splits = hasSplits(this.mode, goalLines)
@@ -115,6 +118,15 @@ export class Session {
   }
 
   /** Avance de la reproducción, de 0 a 1. */
+  /**
+   * Pasos por segundo con los que hay que hacer avanzar esta sesión. Al ver una
+   * repetición manda el reloj con el que se grabó, porque decide en qué instante
+   * se aplica cada pulsación (ADR-0009).
+   */
+  get logicHz(): number {
+    return this.player ? (this.replaySource?.logicHz ?? LOGIC_HZ) : LOGIC_HZ;
+  }
+
   get replayProgress(): number {
     return this.player?.progress ?? 0;
   }
@@ -310,6 +322,7 @@ export class Session {
       seed: this.seed,
       rules: this.rules,
       handling: this.handlingSettings,
+      logicHz: this.logicHz,
       result: {
         score: state.score,
         lines: state.lines,

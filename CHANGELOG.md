@@ -4,6 +4,11 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Changed
+
+- La simulación pasa de 120 a 240 pasos por segundo (ADR-0009). Con el reloj anterior, un retardo de auto-repetición configurado en 167 ms se disparaba de verdad a los 175; ahora llega a los 170,8. Además, en pantallas de 144 Hz o más ya no hay cuadros que se queden sin ejecutar lógica, que era donde la espera de una pulsación se disparaba.
+- Las repeticiones guardan el reloj con el que se jugaron y se reproducen con él. Las grabadas antes no lo llevan y se leen como 120 Hz, que es el que tenían, así que **siguen reproduciéndose exactamente igual**: no se pierde ninguna.
+
 ### Added
 
 - Pruebas del bucle de juego, que era el único módulo de su carpeta sin ninguna: paso fijo, arrastre del tiempo sobrante entre cuadros, orden de lógica antes de dibujado, tope de parón y reinicio del reloj. Incluyen un presupuesto de latencia que fija cuánto espera una pulsación en pantallas de 30 a 240 Hz.

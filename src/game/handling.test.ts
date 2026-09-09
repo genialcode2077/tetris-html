@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Game } from '@/core/game';
+import { STEP_MS } from './loop';
 import { Handling } from './handling';
 
 function game(): Game {
@@ -59,5 +60,47 @@ describe('Handling DAS/ARR', () => {
     expect(g.state.softDropping).toBe(false);
     h.press('hardDrop', g);
     expect(g.state.stats.pieces).toBe(1);
+  });
+});
+
+describe('precisión temporal del reloj lógico', () => {
+  /** Milisegundo real en que se dispara el primer movimiento automático. */
+  function dasReal(stepMs: number, dasMs: number): number {
+    const g = new Game({
+      seed: 1,
+      rules: { goal: { type: 'none' }, gravityMode: 'fixed', startLevel: 1 },
+    });
+    g.start();
+    const h = new Handling({ dasMs, arrMs: 33, dcdMs: 0 });
+    h.press('left', g);
+    const x = g.state.active?.x ?? 0;
+    let t = 0;
+    for (let i = 0; i < 4000; i++) {
+      t += stepMs;
+      h.step(stepMs, g);
+      g.step(0);
+      if ((g.state.active?.x ?? x) !== x) return t;
+    }
+    return -1;
+  }
+
+  it('un evento nunca se adelanta, y llega como mucho un paso tarde', () => {
+    // Solo puede ocurrir al terminar un paso, así que el retraso está acotado
+    // por el tamaño del paso. Lo que no puede es adelantarse.
+    for (const das of [100, 133, 167, 200]) {
+      const real = dasReal(STEP_MS, das);
+      expect(real, `DAS ${das}`).toBeGreaterThanOrEqual(das);
+      expect(real, `DAS ${das}`).toBeLessThan(das + STEP_MS);
+    }
+  });
+
+  it('el reloj actual acerca el DAS a lo pedido más que el anterior', () => {
+    // A 120 Hz un DAS de 167 ms llegaba a los 175,0; a 240 Hz llega a 170,8
+    // (F-035, ADR-0009).
+    const antes = dasReal(1000 / 120, 167);
+    const ahora = dasReal(STEP_MS, 167);
+    expect(antes).toBeCloseTo(175, 0);
+    expect(ahora).toBeCloseTo(170.8, 0);
+    expect(ahora - 167).toBeLessThan(antes - 167);
   });
 });

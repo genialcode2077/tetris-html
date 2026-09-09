@@ -11,3 +11,5 @@ Formato MADR 4.0 mínimo. Numeración correlativa. Estados: propuesto · aceptad
 | 0005 | [Título visible "Blockfall" y política de marca](0005-nombre-y-marca.md)                                   | aceptado |
 | 0006 | [Audio procedural sin assets; sin Korobeiniki por defecto](0006-audio-procedural.md)                       | aceptado |
 | 0007 | [Reglas por defecto: Guideline SRS + handling moderno](0007-reglas-por-defecto.md)                         | aceptado |
+| 0008 | [Renderer premium opcional con three.js](0008-renderer-premium-three-js.md)                                | aceptado |
+| 0009 | [Frecuencia lógica a 240 Hz y repeticiones versionadas](0009-frecuencia-logica-240-hz.md)                  | aceptado |
