@@ -20,7 +20,10 @@ export default defineConfig({
   base: BASE,
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
+      // No se adelanta solo: el service worker nuevo espera y la aplicación
+      // decide cuándo entrar, para no recargar a mitad de partida (ADR-0010).
+      registerType: 'prompt',
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Blockfall',

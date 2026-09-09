@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Fixed
+
+- Publicar una versión nueva ya no pisa a quien está jugando. Antes la aplicación instalada se actualizaba sola en cuanto detectaba una versión: la página seguía con el código antiguo en memoria mientras el service worker nuevo ya servía archivos nuevos, así que activar el modo 3D después de un despliegue pedía un archivo que ya no existía. Ahora la versión nueva espera y entra cuando no hay partida que perder, al terminar la partida o al volver al menú. Una partida en pausa cuenta como viva (ADR-0010).
+
 ### Changed
 
 - La simulación pasa de 120 a 240 pasos por segundo (ADR-0009). Con el reloj anterior, un retardo de auto-repetición configurado en 167 ms se disparaba de verdad a los 175; ahora llega a los 170,8. Además, en pantallas de 144 Hz o más ya no hay cuadros que se queden sin ejecutar lógica, que era donde la espera de una pulsación se disparaba.

@@ -13,3 +13,4 @@ Formato MADR 4.0 mínimo. Numeración correlativa. Estados: propuesto · aceptad
 | 0007 | [Reglas por defecto: Guideline SRS + handling moderno](0007-reglas-por-defecto.md)                         | aceptado |
 | 0008 | [Renderer premium opcional con three.js](0008-renderer-premium-three-js.md)                                | aceptado |
 | 0009 | [Frecuencia lógica a 240 Hz y repeticiones versionadas](0009-frecuencia-logica-240-hz.md)                  | aceptado |
+| 0010 | [La versión nueva espera a que termine la partida](0010-actualizacion-sin-interrumpir-la-partida.md)       | aceptado |

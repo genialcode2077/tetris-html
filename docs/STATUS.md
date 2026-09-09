@@ -6,22 +6,24 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 225 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 233 unitarias y de propiedades + 53 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 32,7 KB de JavaScript comprimido y 3,2 KB de CSS; el modo 3D son 239 KB aparte que solo descarga quien lo activa
 - **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas; las tres paletas verificadas contra las tres dicromacias
-- **Instalable y sin conexión:** service worker con 17 archivos precacheados, verificado cortando la red
+- **Instalable y sin conexión:** service worker con 16 archivos precacheados, verificado cortando la red; la versión nueva espera a que termine la partida (ADR-0010)
+- **Arranque medido:** primer contenido y mayor elemento pintados a los 140 ms, desplazamiento acumulado 0,035, sin tareas largas
 - **Capturas:** `docs/assets/screenshots/` (`pnpm screenshots`)
 
 ## Próximos pasos (orden)
 
-1. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
-2. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
+1. Guardar la partida en curso para no perderla al cerrar la pestaña.
+2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
+3. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
 
-Los dos necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
+Los dos últimos necesitan a una persona con un dispositivo y con oído; no se pueden cerrar desde aquí sin inventarse el resultado.
 
 ## Bloqueos / decisiones pendientes del usuario
 
@@ -29,6 +31,25 @@ Los dos necesitan a una persona con un dispositivo y con oído; no se pueden cer
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 16 (agente, iteración periódica) — actualizar sin pisar la partida
+
+- El backlog solo dejaba los dos temas que necesitan a una persona, así que se buscó un área sin cubrir: qué le pasa a quien está jugando cuando se publica una versión nueva (informe `docs/research/20`, ADR-0010).
+- La aplicación instalada se actualizaba sola. La especificación de service workers lo dice sin adornos: saltarse la espera activa la versión nueva **mientras hay páginas usando la anterior**. Y la configuración borraba además las cachés viejas al activarse.
+- Este juego tiene justo el caso que la documentación de Chrome señala como peligroso: el modo 3D se descarga aparte, con el nombre marcado por el contenido. Entre dos compilaciones de la misma tarde pasó de `ThreeRenderer-DEFhGv_3.js` a `ThreeRenderer-C_GjVOkI.js`. Quien tuviera la página abierta al publicarse una versión y activara luego el modo 3D pedía un archivo que ya no estaba ni en la caché ni en el servidor (F-036). Degradaba al modo clásico, pero perdía el 3D sin motivo.
+- Peor aún, nada avisaba: la página se quedaba con el código antiguo en memoria mientras el service worker nuevo servía archivos nuevos (F-037).
+- Ahora la versión nueva espera y la aplicación le da paso cuando no hay partida que perder: al terminar una o al volver al menú. Una partida en pausa cuenta como viva, porque recargar la perdería igual. El service worker se registra con la API del navegador para no añadir dependencias.
+- De paso se midió el arranque, que nunca se había mirado: 140 ms al primer contenido y al mayor elemento pintados, 0,035 de desplazamiento acumulado, sin tareas largas. Está sobrado y no hay nada que tocar.
+- Nueve pruebas nuevas. Una comprueba sobre el archivo publicado que el service worker no se adelanta; se verificó volviendo a poner la configuración anterior, y falla como debe. Suite completa de extremo a extremo en verde (62 casos).
+
+### 2026-09-08 · Sesión 15 (agente, iteración periódica) — reloj de la simulación a 240 Hz
+
+- Tema del backlog: subir la frecuencia lógica y versionar las repeticiones (informe `docs/research/19`, ADR-0009). Era el punto que la sesión anterior dejó abierto por miedo a perder las repeticiones guardadas.
+- Al medirlo apareció un segundo motivo, más importante que el primero: **el retardo de auto-repetición no era el configurado**. Pidiendo 167 ms, la pieza se movía de verdad a los 175,0 ms, casi un 5 % más lento. Un evento solo puede ocurrir al terminar un paso, así que el sesgo era sistemático y siempre hacia tarde (F-035).
+- El obstáculo de las repeticiones tenía una salida sencilla que no se había visto: el problema no era cambiar el reloj, sino no saber con cuál se grabó cada repetición. Ahora cada una lo guarda y se reproduce con el suyo; las antiguas no lo llevan pero se sabe que era 120 Hz, así que **siguen reproduciéndose exactamente igual y no se pierde ninguna**.
+- Con el reloj a 240 Hz: el error del retardo baja de 8,0 a 3,8 ms y desaparecen los cuadros sin lógica en pantallas de 144, 165 y 240 Hz (F-033 queda resuelto). Por encima de 240 Hz el problema reaparece, que es aritmética y no un fallo; hay una prueba que lo deja fijado.
+- El gasto se dobla pero sigue siendo despreciable: medido con el motor caliente, 0,8 µs por paso, dos centésimas por ciento de un núcleo.
+- Ocho pruebas nuevas y suite completa de extremo a extremo en verde (60 casos), que era la verificación importante al tocar el reloj del motor.
 
 ### 2026-09-08 · Sesión 14 (agente, iteración periódica) — latencia de entrada
 

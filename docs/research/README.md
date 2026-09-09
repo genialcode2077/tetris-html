@@ -23,31 +23,35 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 17  | [Sonoridad medida de los efectos](17-sonoridad-medida-de-los-efectos.md)                             | 2026-09-08 | vigente |
 | 18  | [Latencia de entrada](18-latencia-de-entrada.md)                                                     | 2026-09-08 | vigente |
 | 19  | [Precisión del reloj lógico](19-precision-del-reloj-logico.md)                                       | 2026-09-08 | vigente |
+| 20  | [Actualización de la aplicación instalada](20-actualizacion-de-la-app-instalada.md)                  | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
 Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción concreta. Los temas ya cubiertos quedan marcados para no repetirlos.
 
-| Tema                                                     | Estado                                                                          |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Finesse y estadísticas avanzadas                         | hecho, sesión 3                                                                 |
-| Repeticiones y fantasma del récord                       | hecho (falta el fantasma), sesión 3                                             |
-| Renderer three.js                                        | hecho, informe 06 y sesión 3                                                    |
-| Modos extra (Zen, reto diario, práctica)                 | hecho (falta basura y 20G), sesión 3                                            |
-| Traducción es/en                                         | hecho, sesión 3                                                                 |
-| Tipografía y espacio en móviles de 360 puntos o menos    | hecho, informe 08                                                               |
-| Tuning de efectos de sonido con escucha comparada        | equilibrio medido y corregido, informe 17; el timbre sigue necesitando oído     |
-| Paleta y contraste con simuladores de daltonismo         | hecho, informe 09                                                               |
-| Rendimiento de partículas en un teléfono de gama baja    | hecho con freno de procesador, informe 12; falta probarlo en un teléfono real   |
-| Tutorial interactivo de un minuto                        | descartado por la evidencia; sustituido por consejos contextuales, informe 10   |
-| All-spin (regla inmóvil) y tabla de giro de 180          | hecho el all-spin, informe 11; la tabla de 180 sigue sin fuente pública (F-001) |
-| Subida de basura y gravedad máxima para el modo práctica | hecho, informe 13                                                               |
-| Fantasma del récord en Sprint                            | descartado por la evidencia; sustituido por comparación por hitos, informe 14   |
-| Controles de avance y velocidad al ver una repetición    | hecho, informe 15                                                               |
-| Posiciones preparadas en el modo práctica                | hecho, informe 16                                                               |
-| Prueba en un teléfono real y con lector de pantalla      | **siguiente**: necesita a alguien con un dispositivo                            |
-| Latencia de entrada: de la pulsación al cuadro dibujado  | hecho, informe 18; queda abierto el caso de pantallas rápidas (F-033)           |
-| Subir la frecuencia lógica y versionar las repeticiones  | hecho, informe 19 y ADR-0009; ninguna repetición se pierde                      |
+| Tema                                                     | Estado                                                                                    |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Finesse y estadísticas avanzadas                         | hecho, sesión 3                                                                           |
+| Repeticiones y fantasma del récord                       | hecho (falta el fantasma), sesión 3                                                       |
+| Renderer three.js                                        | hecho, informe 06 y sesión 3                                                              |
+| Modos extra (Zen, reto diario, práctica)                 | hecho (falta basura y 20G), sesión 3                                                      |
+| Traducción es/en                                         | hecho, sesión 3                                                                           |
+| Tipografía y espacio en móviles de 360 puntos o menos    | hecho, informe 08                                                                         |
+| Tuning de efectos de sonido con escucha comparada        | equilibrio medido y corregido, informe 17; el timbre sigue necesitando oído               |
+| Paleta y contraste con simuladores de daltonismo         | hecho, informe 09                                                                         |
+| Rendimiento de partículas en un teléfono de gama baja    | hecho con freno de procesador, informe 12; falta probarlo en un teléfono real             |
+| Tutorial interactivo de un minuto                        | descartado por la evidencia; sustituido por consejos contextuales, informe 10             |
+| All-spin (regla inmóvil) y tabla de giro de 180          | hecho el all-spin, informe 11; la tabla de 180 sigue sin fuente pública (F-001)           |
+| Subida de basura y gravedad máxima para el modo práctica | hecho, informe 13                                                                         |
+| Fantasma del récord en Sprint                            | descartado por la evidencia; sustituido por comparación por hitos, informe 14             |
+| Controles de avance y velocidad al ver una repetición    | hecho, informe 15                                                                         |
+| Posiciones preparadas en el modo práctica                | hecho, informe 16                                                                         |
+| Prueba en un teléfono real y con lector de pantalla      | **siguiente**: necesita a alguien con un dispositivo                                      |
+| Latencia de entrada: de la pulsación al cuadro dibujado  | hecho, informe 18; queda abierto el caso de pantallas rápidas (F-033)                     |
+| Subir la frecuencia lógica y versionar las repeticiones  | hecho, informe 19 y ADR-0009; ninguna repetición se pierde                                |
+| Actualización de la app instalada sin perder la partida  | hecho, informe 20 y ADR-0010                                                              |
+| Arranque y estabilidad visual                            | medido, informe 20: 140 ms al primer pintado y 0,035 de desplazamiento; nada que arreglar |
+| Guardar la partida en curso al cerrar la pestaña         | pendiente                                                                                 |
 
 ## Plantilla
 

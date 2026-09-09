@@ -37,3 +37,25 @@ test.describe('PWA', () => {
     await context.setOffline(false);
   });
 });
+
+test('el service worker no se adelanta: espera a que la aplicación le dé paso @pwa', async ({
+  page,
+  baseURL,
+}) => {
+  const res = await page.request.get(new URL('sw.js', baseURL).href);
+  expect(res.ok()).toBe(true);
+  const sw = await res.text();
+
+  // Debe ceder el paso solo cuando se le pide por mensaje (ADR-0010).
+  expect(sw).toContain('SKIP_WAITING');
+
+  // Y no debe llamarlo por su cuenta: cada aparición de skipWaiting tiene que
+  // estar dentro del manejador del mensaje. Si alguien vuelve a poner
+  // registerType 'autoUpdate', esta prueba lo caza.
+  const llamadas = [...sw.matchAll(/skipWaiting\s*\(/g)];
+  expect(llamadas.length).toBeGreaterThan(0);
+  for (const m of llamadas) {
+    const antes = sw.slice(Math.max(0, m.index - 200), m.index);
+    expect(antes, 'skipWaiting fuera del manejador del mensaje').toContain('SKIP_WAITING');
+  }
+});

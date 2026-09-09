@@ -20,6 +20,7 @@ import type { Store } from '@/storage/store';
 import { byId, byIdAs, clear, h } from '@/ui/dom';
 import { Hud } from '@/ui/hud';
 import { Screens, type ScreenId } from '@/ui/screens';
+import { UpdateGate } from './updates';
 import {
   applyTranslations,
   detectLocale,
@@ -39,6 +40,7 @@ const isTouchDevice = (): boolean =>
 const prefersTouchButtons = (): boolean => window.matchMedia('(pointer: coarse)').matches;
 
 export class App {
+  private updates: UpdateGate | null = null;
   private rendererHandle: RendererHandle | null = null;
   private rendererSwitching = false;
   private readonly audio: AudioManager;
@@ -111,6 +113,18 @@ export class App {
       { diagnostics?: unknown; particleBudget?: number } | undefined;
     if (r?.diagnostics !== undefined) return r.diagnostics;
     return { kind: this.rendererKind, particleBudget: r?.particleBudget };
+  }
+
+  /**
+   * Hay una versión nueva esperando. Se aplica cuando no haya una partida que
+   * perder: puede ser ahora mismo o al terminar la que esté en curso.
+   */
+  onUpdateReady(apply: () => void): void {
+    this.updates ??= new UpdateGate(apply, () => ({
+      session: this.session?.status ?? null,
+      screen: this.screens.active,
+    }));
+    this.updates.notifyReady();
   }
 
   start(): void {
@@ -429,6 +443,8 @@ export class App {
   private showResults(): void {
     const s = this.session;
     if (!s) return;
+    // La partida ha terminado: si había una versión esperando, es el momento.
+    this.updates?.maybeApply();
     const state = s.game.state;
     const stats = s.stats();
     const won = s.status === 'finished';
@@ -692,6 +708,8 @@ export class App {
     this.audio.stopMusic();
     this.hud.hideOverlay();
     this.screens.show('title');
+    // Sin partida abierta: si había una versión esperando, entra aquí.
+    this.updates?.maybeApply();
   }
 
   private buildModes(): void {
