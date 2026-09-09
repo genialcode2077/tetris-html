@@ -2,15 +2,16 @@
 
 Formato MADR 4.0 mínimo. Numeración correlativa. Estados: propuesto · aceptado · superado por NNNN · rechazado.
 
-| #    | Título                                                                                                     | Estado   |
-| ---- | ---------------------------------------------------------------------------------------------------------- | -------- |
-| 0001 | [Registrar decisiones con MADR](0001-usar-madr.md)                                                         | aceptado |
-| 0002 | [Stack: Vite 8 + TypeScript 6 + pnpm + Vitest 5 + Playwright, sin framework UI](0002-stack-tecnologico.md) | aceptado |
-| 0003 | [Motor puro determinista + renderers intercambiables](0003-core-puro-y-renderers.md)                       | aceptado |
-| 0004 | [Coordenadas con y hacia arriba y tablero 10×40](0004-coordenadas-y-tablero.md)                            | aceptado |
-| 0005 | [Título visible "Blockfall" y política de marca](0005-nombre-y-marca.md)                                   | aceptado |
-| 0006 | [Audio procedural sin assets; sin Korobeiniki por defecto](0006-audio-procedural.md)                       | aceptado |
-| 0007 | [Reglas por defecto: Guideline SRS + handling moderno](0007-reglas-por-defecto.md)                         | aceptado |
-| 0008 | [Renderer premium opcional con three.js](0008-renderer-premium-three-js.md)                                | aceptado |
-| 0009 | [Frecuencia lógica a 240 Hz y repeticiones versionadas](0009-frecuencia-logica-240-hz.md)                  | aceptado |
-| 0010 | [La versión nueva espera a que termine la partida](0010-actualizacion-sin-interrumpir-la-partida.md)       | aceptado |
+| #    | Título                                                                                                           | Estado   |
+| ---- | ---------------------------------------------------------------------------------------------------------------- | -------- |
+| 0001 | [Registrar decisiones con MADR](0001-usar-madr.md)                                                               | aceptado |
+| 0002 | [Stack: Vite 8 + TypeScript 6 + pnpm + Vitest 5 + Playwright, sin framework UI](0002-stack-tecnologico.md)       | aceptado |
+| 0003 | [Motor puro determinista + renderers intercambiables](0003-core-puro-y-renderers.md)                             | aceptado |
+| 0004 | [Coordenadas con y hacia arriba y tablero 10×40](0004-coordenadas-y-tablero.md)                                  | aceptado |
+| 0005 | [Título visible "Blockfall" y política de marca](0005-nombre-y-marca.md)                                         | aceptado |
+| 0006 | [Audio procedural sin assets; sin Korobeiniki por defecto](0006-audio-procedural.md)                             | aceptado |
+| 0007 | [Reglas por defecto: Guideline SRS + handling moderno](0007-reglas-por-defecto.md)                               | aceptado |
+| 0008 | [Renderer premium opcional con three.js](0008-renderer-premium-three-js.md)                                      | aceptado |
+| 0009 | [Frecuencia lógica a 240 Hz y repeticiones versionadas](0009-frecuencia-logica-240-hz.md)                        | aceptado |
+| 0010 | [La versión nueva espera a que termine la partida](0010-actualizacion-sin-interrumpir-la-partida.md)             | aceptado |
+| 0011 | [Política de seguridad de contenido en etiqueta, solo en producción](0011-politica-de-seguridad-de-contenido.md) | aceptado |

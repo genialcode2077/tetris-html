@@ -16,9 +16,40 @@ function gitShortSha(): string {
 
 const BASE = process.env.BASE_PATH ?? '/';
 
+/**
+ * Todo se sirve desde el propio origen: no hay guiones en línea, ni fuentes o
+ * imágenes externas, ni peticiones a terceros. `frame-ancestors` y `report-uri`
+ * no se ponen porque se ignoran cuando la política llega en una etiqueta.
+ */
+const CSP = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "manifest-src 'self'",
+  "worker-src 'self'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+
 export default defineConfig({
   base: BASE,
   plugins: [
+    {
+      // Política de seguridad de contenido, solo en la compilación publicada:
+      // el servidor de desarrollo usa guiones en línea que la política
+      // bloquearía (ADR-0011, docs/research/26).
+      name: 'blockfall-csp',
+      apply: 'build',
+      transformIndexHtml(html: string) {
+        return html.replace(
+          '<meta charset="UTF-8" />',
+          `<meta charset="UTF-8" />\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />`,
+        );
+      },
+    },
     VitePWA({
       // No se adelanta solo: el service worker nuevo espera y la aplicación
       // decide cuándo entrar, para no recargar a mitad de partida (ADR-0010).

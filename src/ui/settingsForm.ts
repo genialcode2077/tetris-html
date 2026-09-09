@@ -35,7 +35,14 @@ export class SettingsForm {
   constructor(
     private readonly store: Store,
     private readonly callbacks: SettingsFormCallbacks,
-  ) {}
+  ) {
+    // El formulario no se envía nunca: sin esto, pulsar Intro recargaría la
+    // página. Antes iba como atributo en el HTML, que la política de seguridad
+    // de contenido bloquea (docs/research/26).
+    this.root.addEventListener('submit', (e) => {
+      e.preventDefault();
+    });
+  }
 
   build(): void {
     clear(this.root);

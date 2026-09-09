@@ -6,7 +6,8 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 249 unitarias y de propiedades + 72 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 249 unitarias y de propiedades + 78 de extremo a extremo (escritorio y móvil), todas en verde
+- **Seguridad:** política de contenido estricta en la página publicada, verificada inyectando un guion (ADR-0011)
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -30,6 +31,15 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 22 (agente, iteración periódica) — política de seguridad de contenido
+
+- Tema: seguridad de la página publicada (informe `docs/research/26`, ADR-0011). El juego guarda ajustes, récords, repeticiones y la partida a medias en el navegador, y no había **ninguna** política que impidiera a un guion ajeno leerlos (F-047).
+- Antes se descartó otro candidato midiéndolo: **no hay fugas de memoria**. Tras 380 piezas y seis partidas, con recolección de basura forzada, el montón se queda en 9766 KB, el documento en 404 elementos, los escuchadores en 113 y los nodos en ~1210, sin crecer en ninguna ronda.
+- El alojamiento es estático y no permite cabeceras, así que la política va en una etiqueta. La especificación avisa de que así se ignoran `frame-ancestors`, `report-uri` y `sandbox`: no se escriben, y queda anotado que incrustar la página en otra **no queda cubierto**.
+- El inventario salió favorable: un solo guion, del propio origen; sin peticiones a terceros; y un único estorbo, el atributo `onsubmit` del formulario de Ajustes, que pasa a manejador normal. Los ocho estilos aplicados desde código no obligaban a relajar nada, porque la política no alcanza las asignaciones a `element.style`.
+- Solo se añade al compilar para publicar: el servidor de desarrollo usa guiones en línea y la política los bloquearía.
+- Tres pruebas, y una es la que importa: **inyecta un guion en línea y comprueba que no se ejecuta**. Una política que está pero no protege es peor que ninguna.
 
 ### 2026-09-09 · Sesión 21 (agente, iteración periódica) — los avisos que se perdían
 

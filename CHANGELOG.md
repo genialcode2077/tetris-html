@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Added
+
+- La página publicada declara una política de seguridad de contenido estricta: todo se carga del propio origen y lo que no esté permitido no se carga. Protege lo que el juego guarda en el navegador (ajustes, récords, repeticiones y la partida a medias) de cualquier guion que llegara a colarse. Hay una prueba que inyecta uno y comprueba que no se ejecuta, para que la política no se quede en decorativa (ADR-0011).
+
 ### Fixed
 
 - Los avisos para lector de pantalla ya no se pierden. El filtro que evitaba el ruido descartaba cualquier aviso llegado antes de novecientos milisegundos del anterior, sin mirar cuál era, y en Sprint el aviso de objetivo completado se emite en el mismo paso que la limpieza que lo provoca: **se perdía siempre**. Ahora el fin de la partida no espera ni se descarta nunca, y las jugadas seguidas se guardan y se anuncian al pasar el silencio en vez de tirarse.
