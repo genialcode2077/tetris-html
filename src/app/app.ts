@@ -67,9 +67,14 @@ export class App {
   constructor(private readonly store: Store) {
     this.audio = new AudioManager(store.settings.audio);
     this.coach = new Coach({ seen: store.seenTips });
-    this.screens = new Screens((s) => {
-      this.onScreenChange(s);
-    });
+    this.screens = new Screens(
+      (s) => {
+        this.onScreenChange(s);
+      },
+      // Mientras se está capturando una tecla en Ajustes, la de escape sirve
+      // para cancelar esa captura, no para cerrar el diálogo.
+      () => this.settingsForm.isCapturing,
+    );
     this.keyboard = new KeyboardInput(
       store.keymap,
       (a, p) => {

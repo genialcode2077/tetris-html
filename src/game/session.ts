@@ -252,13 +252,17 @@ export class Session {
         // Al ver una repetición, la velocidad decide cuánto tiempo de juego avanza
         // en este cuadro. El paso que recibe el motor no cambia de tamaño.
         if (this.player && this.rate !== 1) return this.stepAtRate(dtMs);
-        this.elapsedMs += dtMs;
+        // Las pulsaciones se aplican con el reloj anterior al paso, que es el
+        // que tenían al grabarse: quien juega pulsa entre dos pasos y su orden
+        // la consume el siguiente. Drenarlas después de avanzar el tiempo las
+        // adelantaba un paso, y un paso puede ser una fila de caída (F-042).
         if (this.player) {
           for (const input of this.player.drain(this.elapsedMs)) {
             if (input.down) this.applyPress(input.action);
             else this.applyRelease(input.action);
           }
         }
+        this.elapsedMs += dtMs;
         this.handling.step(dtMs, this.game);
         const events = this.game.step(dtMs);
         const split = this.splits?.update(this.game.state.lines, this.elapsedMs);

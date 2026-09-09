@@ -109,7 +109,7 @@ describe('repeticiones', () => {
     expect(player.progress).toBe(1);
   });
 
-  it('el grabador redondea el tiempo y se puede vaciar', () => {
+  it('el grabador trunca el tiempo y se puede vaciar', () => {
     const rec = new ReplayRecorder();
     rec.record(12.7, 'left', true);
     rec.record(30.2, 'left', false);
@@ -123,7 +123,9 @@ describe('repeticiones', () => {
       logicHz: 240,
       result: { score: 0, lines: 0, level: 1, timeMs: 0, pieces: 0, finished: false },
     });
-    expect(built.inputs[0]?.t).toBe(13);
+    // Se trunca, no se redondea: hacia arriba la pulsación se aplicaría en el
+    // paso siguiente al que ocurrió (F-042).
+    expect(built.inputs[0]?.t).toBe(12);
     expect(built.inputs[1]?.t).toBe(30);
     rec.clear();
     expect(rec.count).toBe(0);

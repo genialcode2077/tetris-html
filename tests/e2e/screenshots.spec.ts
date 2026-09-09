@@ -59,6 +59,9 @@ test('capturas de referencia @screenshots', async ({ page }, testInfo) => {
 });
 
 test('capturas del modo 3D @screenshots', async ({ page }, testInfo) => {
+  // Descarga los 869 KB del modo 3D y compila sombreadores: aislada tarda unos
+  // 17 s, y con la suite en paralelo se pasaba del límite general (F-041).
+  test.slow();
   const tag = testInfo.project.name;
   await page.goto('/');
   await page.evaluate(() => {

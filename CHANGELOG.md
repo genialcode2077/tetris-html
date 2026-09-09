@@ -6,6 +6,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ### Fixed
 
+- El foco ya no se escapa de los diálogos. Tabulando desde el menú se llegaba al botón de pantalla completa, que está detrás del diálogo abierto, así que quien navega con teclado activaba controles que no ve. Ahora el foco da la vuelta dentro del diálogo en ambos sentidos, el diálogo se anuncia como modal y la tecla de escape lo cierra, cediendo mientras se está reasignando una tecla en Ajustes.
+- Las repeticiones se reproducen fielmente. Las pulsaciones se aplicaban un paso antes que en la partida original: quien juega pulsa entre dos pasos y su orden la consume el siguiente, pero al reproducir se adelantaban. Un paso puede ser una fila de caída, así que una partida rehecha salía distinta de vez en cuando.
+
 - Las pruebas de extremo a extremo verificaban un juego que no existe en producción. El gancho que usan para avanzar el tiempo tenía el paso escrito a mano en 120 pasos por segundo y se quedó atrás cuando la simulación pasó a 240, así que desde entonces medían con un reloj que ya no era el del juego. Ahora el gancho usa el paso del propio bucle. Era también la causa de los fallos intermitentes que arrastraba la suite desde hacía nueve sesiones.
 
 ### Added

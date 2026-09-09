@@ -54,9 +54,12 @@ export class ReplayRecorder {
   private readonly inputs: ReplayInput[] = [];
 
   record(timeMs: number, action: InputAction, down: boolean): void {
-    // El tiempo se redondea al milisegundo: el paso lógico es de 4,17 ms, así que
-    // no se pierde precisión y el archivo queda más pequeño.
-    this.inputs.push({ t: Math.round(timeMs), action, down });
+    // Se trunca al milisegundo, no se redondea. Al reproducir, la pulsación se
+    // aplica en el primer paso cuyo tiempo la alcanza: redondear hacia arriba
+    // la empujaba al paso siguiente, y un paso de más es una fila de caída
+    // (F-042). Truncar es exacto mientras el paso dure más de un milisegundo,
+    // que a 240 pasos por segundo son 4,17.
+    this.inputs.push({ t: Math.floor(timeMs), action, down });
   }
 
   get count(): number {

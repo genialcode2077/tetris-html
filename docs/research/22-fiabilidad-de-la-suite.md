@@ -61,9 +61,19 @@ Se añade además una prueba que lo ata: pide al gancho un tiempo que no es múl
 - Prueba que comprueba que ambos coinciden, verificada restaurando el número antiguo.
 - Corregidos los otros restos del reloj anterior: el comentario del gancho, el de las repeticiones, el diagrama de `ARCHITECTURE.md` y el paso de las pruebas de reproducción.
 
+## Corrección posterior (sesión 19)
+
+**La conclusión de esta sesión fue prematura.** El paso equivocado del gancho era un defecto real y grave, pero no era la única causa: el fallo volvió a la sesión siguiente, otra vez en la prueba de continuar partida y otra vez con dos puntos de diferencia.
+
+La causa de fondo estaba en cómo se reproducen las pulsaciones. Quien juega pulsa **entre** dos pasos, y su orden la consume el paso siguiente. Al reproducir, en cambio, las pulsaciones se aplicaban después de avanzar el reloj, es decir un paso antes de lo que les tocaba. Un paso puede ser una fila de caída, así que la partida rehecha salía distinta de vez en cuando (F-042).
+
+Se corrigió drenando las pulsaciones con el reloj anterior al paso, que es el que tenían al grabarse. Cuatro pasadas seguidas limpias después.
+
+La lección de esta sesión sigue en pie, y se refuerza: lo que resuelve estos casos es leer el mensaje de error concreto. Lo que falló fue dar por cerrada la causa con tres pasadas verdes en lugar de explicar por qué el error decía exactamente dos puntos.
+
 ## Riesgos
 
-Tres pasadas limpias después del arreglo no demuestran que no quede ninguna otra fuente de intermitencia; demuestran que esta estaba y ya no. F-025 se cierra con la causa encontrada, y si vuelve a aparecer un fallo suelto habrá que leer su mensaje, no suponer.
+Cuatro pasadas limpias no demuestran que no quede ninguna otra fuente de intermitencia; demuestran que estas dos estaban y ya no. F-025 se cierra con la causa encontrada, y si vuelve a aparecer un fallo suelto habrá que leer su mensaje, no suponer.
 
 Las pruebas del motor en `src/core` siguen avanzando con su propio paso. Ahí es deliberado: el motor tiene que funcionar con cualquier intervalo, y probarlo con uno distinto del de producción es una comprobación más, no un descuido.
 

@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 239 unitarias y de propiedades + 58 de extremo a extremo (escritorio y móvil), todas en verde; tres pasadas seguidas limpias tras cerrar F-025
+- **Pruebas:** 239 unitarias y de propiedades + 68 de extremo a extremo (escritorio y móvil), todas en verde; cuatro pasadas seguidas limpias tras dar con la causa de fondo de F-025
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -30,6 +30,15 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 19 (agente, iteración periódica) — diálogos accesibles y la causa real de la intermitencia
+
+- Tema: navegación por teclado en los diálogos (informe `docs/research/23`). La auditoría automática lleva quince sesiones sin violaciones, pero mira el marcado, no el comportamiento.
+- Medido tabulando veinticinco veces desde el menú: **nueve pulsaciones caían fuera del diálogo**, y no en cualquier sitio, sino en el botón de pantalla completa que está detrás. Faltaba `aria-modal` y la tecla de escape no cerraba nada (F-043).
+- Arreglado en el gestor de pantallas: el foco da la vuelta dentro del diálogo en ambos sentidos, `aria-modal` solo mientras está abierto, y la tecla de escape pulsa el botón de volver que cada diálogo ya tiene, en vez de repetir a dónde va cada uno. Cede mientras se reasigna una tecla en Ajustes, donde esa tecla ya tenía dueño.
+- **Corrección de la sesión anterior**: di F-025 por cerrado con tres pasadas verdes y fue prematuro. El fallo volvió, otra vez con dos puntos de diferencia. La causa de fondo es que al reproducir una repetición las pulsaciones se aplicaban un paso antes que en la partida original: quien juega pulsa entre dos pasos y su orden la consume el siguiente (F-042). Corregido drenando con el reloj anterior al paso, y truncando el tiempo al grabar en vez de redondearlo. Cuatro pasadas seguidas limpias.
+- Encontrado de paso que las capturas del modo 3D tardan 17 s y el límite general son 30, así que en paralelo se pasaban (F-041). Marcadas como lentas.
+- Diez pruebas de extremo a extremo nuevas, verificadas quitando el arreglo: el foco vuelve a escaparse al botón de detrás.
 
 ### 2026-09-09 · Sesión 18 (agente, iteración periódica) — por qué fallaba la suite
 
