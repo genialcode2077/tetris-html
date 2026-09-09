@@ -187,15 +187,14 @@ export class App {
 
   /**
    * Avanza la simulación manualmente (depuración/e2e cuando la pestaña está oculta y rAF no corre).
-   * Ejecuta pasos lógicos de 1000/120 ms y un render.
+   * Ejecuta pasos lógicos del tamaño que use el bucle, y un render.
    */
   debugTick(ms: number): void {
-    const step = 1000 / 120;
-    let t = 0;
-    while (t < ms) {
-      this.update(step);
-      t += step;
-    }
+    // El paso lo manda el bucle: si aquí se usara otro, las pruebas de extremo
+    // a extremo medirían un juego que no existe en producción (F-040).
+    const step = this.loop.step;
+    const steps = Math.round(ms / step);
+    for (let i = 0; i < steps; i++) this.update(step);
     this.render(performance.now());
   }
 

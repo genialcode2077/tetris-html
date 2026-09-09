@@ -47,6 +47,11 @@ export class GameLoop {
     return this._running;
   }
 
+  /** Tamaño del paso lógico vigente, en milisegundos. */
+  get step(): number {
+    return this.stepMs;
+  }
+
   start(): void {
     if (this._running) return;
     this._running = true;

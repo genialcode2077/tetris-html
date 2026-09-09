@@ -88,7 +88,7 @@ interface Renderer {
 ## Flujo por frame
 
 ```
-rAF → loop.acumula(dt≤250ms) → mientras acc ≥ 8.333ms: handling.step → game.dispatch(cmds); game.step(8.333) → eventos → audio/render.effect/ui
+rAF → loop.acumula(dt≤250ms) → mientras acc ≥ 4.167ms: handling.step → game.dispatch(cmds); game.step(4.167) → eventos → audio/render.effect/ui
      → renderer.render(state, now) → hud.update(state)
 ```
 

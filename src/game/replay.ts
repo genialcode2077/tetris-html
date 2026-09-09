@@ -54,7 +54,7 @@ export class ReplayRecorder {
   private readonly inputs: ReplayInput[] = [];
 
   record(timeMs: number, action: InputAction, down: boolean): void {
-    // El tiempo se redondea al milisegundo: el paso lógico es de 8,33 ms, así que
+    // El tiempo se redondea al milisegundo: el paso lógico es de 4,17 ms, así que
     // no se pierde precisión y el archivo queda más pequeño.
     this.inputs.push({ t: Math.round(timeMs), action, down });
   }

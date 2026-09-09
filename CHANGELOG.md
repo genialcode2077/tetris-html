@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Fixed
+
+- Las pruebas de extremo a extremo verificaban un juego que no existe en producción. El gancho que usan para avanzar el tiempo tenía el paso escrito a mano en 120 pasos por segundo y se quedó atrás cuando la simulación pasó a 240, así que desde entonces medían con un reloj que ya no era el del juego. Ahora el gancho usa el paso del propio bucle. Era también la causa de los fallos intermitentes que arrastraba la suite desde hacía nueve sesiones.
+
 ### Added
 
 - La partida a medias ya no se pierde al cerrar la pestaña. Se guarda cuando la página deja de verse, que es el último momento fiable en el móvil, y el menú ofrece continuarla al volver. No se guarda el tablero sino la semilla y las pulsaciones: el motor es determinista, así que reproducirlas devuelve exactamente la misma partida y el archivo ocupa unos kilobytes. Vuelve en pausa, para que nadie pierda piezas mientras se sitúa. El reto diario queda fuera, porque es la misma partida para todo el mundo.

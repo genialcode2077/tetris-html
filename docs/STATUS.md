@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 239 unitarias y de propiedades + 56 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 239 unitarias y de propiedades + 58 de extremo a extremo (escritorio y móvil), todas en verde; tres pasadas seguidas limpias tras cerrar F-025
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -30,6 +30,17 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 18 (agente, iteración periódica) — por qué fallaba la suite
+
+- Tema: F-025, los fallos intermitentes de la suite de extremo a extremo. Llevaba nueve sesiones abierto con la nota «no se pudo reproducir», y la sesión anterior lo empeoró: dos de tres pasadas fallaron.
+- La sospecha escrita era contención de procesador entre trabajadores. **Era falsa.** Se reprodujo ejecutando la suite tres veces: falló una, y no fue ninguna de las pruebas de rendimiento, que eran las sospechosas. Falló la de continuar partida, con «Expected: 96, Received: 98»: dos puntos, exactamente una celda de caída rápida. No era ruido de medida sino una partida distinta.
+- **Causa**: el gancho que usan las pruebas para avanzar el tiempo tenía el paso escrito a mano, `1000 / 120`, y se quedó atrás cuando la simulación pasó a 240 pasos por segundo en la sesión 15. Desde entonces todas las pruebas de extremo a extremo medían un juego que no existe en producción: la gravedad, el retardo de bloqueo y el reparto de piezas dependen del tamaño del paso. Seguían pasando porque eran coherentes consigo mismas (F-040).
+- El fallo intermitente salía cuando algo comparaba los dos relojes. La prueba de continuar partida hace justo eso: juega con el gancho y reconstruye con el reloj que va dentro de la repetición, que sí es el de verdad.
+- Arreglo: el bucle expone su paso y el gancho lo usa, así que ya no hay dos sitios que puedan discrepar. Tres pasadas seguidas limpias después.
+- La prueba que lo ata necesitó dos intentos: la primera comprobaba que pedir mil milisegundos avanzaba mil, y eso sale igual con los dos relojes. Hizo falta pedir seis milisegundos, que delatan la granularidad. Verificada restaurando el número antiguo: falla como debe.
+- Corregidos los demás restos del reloj anterior: dos comentarios, el diagrama de `ARCHITECTURE.md` y el paso de las pruebas de reproducción.
+- Lección anotada en F-025: lo que resolvió el caso fue leer el mensaje de error concreto, no contar cuántas pruebas fallaban.
 
 ### 2026-09-08 · Sesión 17 (agente, iteración periódica) — continuar la partida a medias
 

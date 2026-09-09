@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { LOGIC_HZ } from './loop';
 import { Session } from './session';
 import type { InputAction } from './handling';
 import type { Replay } from './replay';
 
-const STEP = 1000 / 120;
+const STEP = 1000 / LOGIC_HZ;
 
 /** Juega una partida guiada por un guion y devuelve la repetición resultante. */
 function record(seed: number): Replay {

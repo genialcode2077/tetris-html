@@ -95,3 +95,37 @@ test('se puede ver la repetición de la partida recién jugada @replay', async (
   });
   expect(replayed.pieces).toBeGreaterThanOrEqual(played.pieces);
 });
+
+/**
+ * El gancho de pruebas tiene que avanzar el juego igual que el bucle real. Si
+ * usara otro paso, todo lo que se verifica aquí mediría un juego que no existe
+ * en producción (F-040, docs/research/22).
+ */
+test('el gancho de pruebas avanza con el mismo paso que el bucle @hook', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Jugar', exact: true }).click();
+  await page.getByRole('button', { name: 'Empezar' }).click();
+  await page.evaluate(() => window.__blockfall?.tick(3600));
+
+  const r = await page.evaluate(() => {
+    const bf = window.__blockfall;
+    const loop = (bf?.app as unknown as { loop: { step: number } }).loop;
+    const medir = (ms: number): number => {
+      const antes = bf?.app.currentSession?.elapsedMs ?? 0;
+      bf?.tick(ms);
+      return (bf?.app.currentSession?.elapsedMs ?? 0) - antes;
+    };
+    // Un tiempo que no es múltiplo de ningún paso plausible: el avance delata
+    // el tamaño real del paso, cosa que un total redondo no haría.
+    const suelto = medir(6);
+    const redondo = medir(1000);
+    return { paso: loop.step, suelto, redondo };
+  });
+
+  // El paso es el del juego, no un número escrito a mano en el gancho.
+  expect(r.paso).toBeCloseTo(1000 / 240, 6);
+  // Pedir seis milisegundos avanza exactamente un paso, el del bucle.
+  expect(r.suelto).toBeCloseTo(r.paso, 6);
+  // Y un tiempo redondo avanza ese tiempo.
+  expect(r.redondo).toBeCloseTo(1000, 6);
+});
