@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 239 unitarias y de propiedades + 68 de extremo a extremo (escritorio y móvil), todas en verde; cuatro pasadas seguidas limpias tras dar con la causa de fondo de F-025
+- **Pruebas:** 242 unitarias y de propiedades + 72 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
 - **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
@@ -30,6 +30,15 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 20 (agente, iteración periódica) — el juego ya no se congela en silencio
+
+- Tema: qué ve el jugador si algo se rompe en marcha (informe `docs/research/24`). Antes se descartó otro candidato: el idioma del documento ya se actualiza al cambiar de idioma, así que ese defecto no existía.
+- La especificación de HTML es clara: la función de animación **se retira antes de invocarse** y hay que volver a pedirla. El bucle pedía el cuadro siguiente en su última línea, después de la lógica y el dibujado, así que cualquier excepción se la saltaba.
+- Comprobado en el navegador con una partida real y **un solo fallo** al dibujar: el tiempo de juego pasó de 796 a 812 ms y ahí se quedó. Pantalla congelada, teclas sin efecto, ni una palabra al jugador, partida perdida entera (F-044).
+- Ahora el cuadro se ejecuta protegido y el siguiente se pide igualmente. Un fallo suelto se absorbe; tres seguidos detienen el bucle, guardan la partida y devuelven al menú con un aviso. Un cuadro bueno borra la cuenta, así que un fallo intermitente no agota la paciencia.
+- Lo que convierte la caída en una simple interrupción es el guardado de la sesión 17: se comprobó que con 74 puntos antes del fallo, tras recargar y continuar salen los mismos 74.
+- Tres pruebas del bucle y dos de extremo a extremo, verificadas volviendo a dejar escapar la excepción: fallan como deben.
 
 ### 2026-09-09 · Sesión 19 (agente, iteración periódica) — diálogos accesibles y la causa real de la intermitencia
 

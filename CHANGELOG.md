@@ -6,6 +6,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ### Fixed
 
+- El juego ya no se congela en silencio si algo falla. Una sola excepción al dibujar dejaba la pantalla parada para siempre, con la pieza a medio caer y sin ninguna explicación, porque el cuadro siguiente se pedía en la última línea y la excepción se la saltaba. Ahora un fallo suelto se absorbe y la partida continúa; si se repite tres cuadros seguidos, el juego guarda la partida, vuelve al menú y lo dice, así que se puede continuar donde estaba.
+
 - El foco ya no se escapa de los diálogos. Tabulando desde el menú se llegaba al botón de pantalla completa, que está detrás del diálogo abierto, así que quien navega con teclado activaba controles que no ve. Ahora el foco da la vuelta dentro del diálogo en ambos sentidos, el diálogo se anuncia como modal y la tecla de escape lo cierra, cediendo mientras se está reasignando una tecla en Ajustes.
 - Las repeticiones se reproducen fielmente. Las pulsaciones se aplicaban un paso antes que en la partida original: quien juega pulsa entre dos pasos y su orden la consume el siguiente, pero al reproducir se adelantaban. Un paso puede ser una fila de caída, así que una partida rehecha salía distinta de vez en cuando.
 

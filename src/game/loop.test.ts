@@ -203,3 +203,111 @@ describe('presupuesto de latencia', () => {
     expect(sin).toBeLessThanOrEqual(1);
   });
 });
+
+describe('resistencia a errores', () => {
+  /** Bucle cuyo dibujado falla las veces indicadas. */
+  function conFallos(veces: number) {
+    const pending: FrameRequestCallback[] = [];
+    let renders = 0;
+    let updates = 0;
+    const caidas: unknown[] = [];
+    const loop = new GameLoop(
+      () => {
+        updates++;
+      },
+      () => {
+        renders++;
+        if (renders <= veces) throw new Error(`fallo ${renders}`);
+      },
+      STEP_MS,
+      (cb) => {
+        pending.push(cb);
+        return pending.length;
+      },
+      () => {
+        pending.length = 0;
+      },
+    );
+    loop.onError = (e) => caidas.push(e);
+    let base = 0;
+    const start = (): void => {
+      loop.start();
+      base = performance.now();
+      loop.resetClock();
+    };
+    const frame = (offsetMs: number): void => {
+      const due = pending.splice(0, pending.length);
+      for (const cb of due) cb(base + offsetMs);
+    };
+    return {
+      loop,
+      start,
+      frame,
+      caidas,
+      get updates() {
+        return updates;
+      },
+      get pending() {
+        return pending.length;
+      },
+    };
+  }
+
+  it('un fallo suelto no mata la partida: el bucle sigue', () => {
+    const h = conFallos(1);
+    h.start();
+    h.frame(20); // este falla
+    expect(h.caidas).toHaveLength(0);
+    expect(h.pending).toBe(1); // ha pedido el siguiente cuadro
+    const antes = h.updates;
+    h.frame(40); // este ya va bien
+    expect(h.updates).toBeGreaterThan(antes);
+    expect(h.loop.running).toBe(true);
+  });
+
+  it('tres fallos seguidos detienen el bucle y lo avisan', () => {
+    const h = conFallos(99);
+    h.start();
+    h.frame(20);
+    h.frame(40);
+    expect(h.loop.running).toBe(true);
+    h.frame(60);
+    expect(h.loop.running).toBe(false);
+    expect(h.caidas).toHaveLength(1);
+    expect((h.caidas[0] as Error).message).toContain('fallo');
+    // Y deja de pedir cuadros.
+    expect(h.pending).toBe(0);
+  });
+
+  it('un cuadro bueno borra la cuenta de fallos anteriores', () => {
+    const pending: FrameRequestCallback[] = [];
+    let n = 0;
+    const caidas: unknown[] = [];
+    // Falla uno sí y uno no: nunca llega a tres seguidos.
+    const loop = new GameLoop(
+      () => {},
+      () => {
+        n++;
+        if (n % 2 === 1) throw new Error('intermitente');
+      },
+      STEP_MS,
+      (cb) => {
+        pending.push(cb);
+        return pending.length;
+      },
+      () => {
+        pending.length = 0;
+      },
+    );
+    loop.onError = (e) => caidas.push(e);
+    loop.start();
+    const base = performance.now();
+    loop.resetClock();
+    for (let i = 1; i <= 12; i++) {
+      const due = pending.splice(0, pending.length);
+      for (const cb of due) cb(base + i * 20);
+    }
+    expect(caidas).toHaveLength(0);
+    expect(loop.running).toBe(true);
+  });
+});

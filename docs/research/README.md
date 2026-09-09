@@ -27,6 +27,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 21  | [Continuar la partida a medias](21-continuar-la-partida-a-medias.md)                                 | 2026-09-08 | vigente |
 | 22  | [Fiabilidad de la suite de pruebas](22-fiabilidad-de-la-suite.md)                                    | 2026-09-09 | vigente |
 | 23  | [Diálogos modales accesibles](23-dialogos-modales-accesibles.md)                                     | 2026-09-09 | vigente |
+| 24  | [Resistencia a fallos del bucle](24-resistencia-a-fallos-del-bucle.md)                               | 2026-09-09 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 

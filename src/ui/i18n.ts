@@ -15,6 +15,7 @@ export const LOCALE_NAMES: Readonly<Record<Locale, string>> = {
 /** Claves de texto. Todas deben existir en todos los idiomas. */
 const es = {
   'app.tagline': 'Bloques que caen · reglas modernas (SRS, hold, T-spins)',
+  'app.loopError': 'Algo falló y la partida se ha guardado. Puedes continuarla.',
   'app.legal': 'Proyecto educativo de código abierto, no afiliado a The Tetris Company.',
   'menu.resumeSaved': 'Continuar partida',
   'menu.play': 'Jugar',
@@ -155,6 +156,7 @@ export type MessageKey = keyof typeof es;
 
 const en: Record<MessageKey, string> = {
   'app.tagline': 'Falling blocks · modern rules (SRS, hold, T-spins)',
+  'app.loopError': 'Something went wrong; your game was saved. You can resume it.',
   'app.legal': 'Open-source educational project, not affiliated with The Tetris Company.',
   'menu.resumeSaved': 'Resume game',
   'menu.play': 'Play',

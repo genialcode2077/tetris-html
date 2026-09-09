@@ -180,6 +180,11 @@ export class App {
       this.applySettings();
     });
 
+    // Si el bucle se rinde, la partida se salva y el jugador vuelve al menú,
+    // donde puede continuarla, en vez de quedarse con la pantalla congelada.
+    this.loop.onError = (error) => {
+      this.onLoopError(error);
+    };
     this.refreshResumeButton();
     this.screens.show('title');
     this.loop.start();
@@ -204,6 +209,27 @@ export class App {
   }
 
   // ------------------------------------------------------------ partida
+
+  /**
+   * El bucle se ha rendido tras varios cuadros seguidos con error. Se salva lo
+   * jugado y se vuelve al menú: es preferible perder el dibujado a perder la
+   * partida sin decir nada (docs/research/24).
+   */
+  private onLoopError(error: unknown): void {
+    console.error('[blockfall] el bucle se detuvo por un error', error);
+    try {
+      this.persistGame();
+    } catch {
+      // Si ni siquiera se puede guardar, al menos se sale del congelado.
+    }
+    this.session?.releaseAll();
+    this.session = null;
+    this.hud.notify(t('app.loopError'));
+    this.refreshResumeButton();
+    this.screens.show('title');
+    // El bucle vuelve a arrancar: el menú tiene que responder.
+    this.loop.start();
+  }
 
   /** Guarda la partida en curso para poder retomarla. */
   private persistGame(): void {

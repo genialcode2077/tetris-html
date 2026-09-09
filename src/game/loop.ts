@@ -6,6 +6,11 @@
 export const LOGIC_HZ = 240;
 export const STEP_MS = 1000 / LOGIC_HZ;
 const MAX_FRAME_MS = 250;
+/**
+ * Cuadros seguidos con error antes de rendirse. Uno suelto puede ser un
+ * tropiezo del contexto de dibujado; tres seguidos es que algo está roto.
+ */
+const MAX_CONSECUTIVE_ERRORS = 3;
 
 /** Bucle rAF con paso lógico fijo y acumulador (docs/research/02 §3). */
 export class GameLoop {
@@ -18,6 +23,12 @@ export class GameLoop {
   private readonly caf: (id: number) => void;
   /** Tiempo de la última lógica+render en ms (para overlay de debug). */
   frameCostMs = 0;
+  /**
+   * Aviso de que el bucle se ha rendido tras varios cuadros seguidos con error.
+   * Quien lo reciba puede salvar la partida y decírselo al jugador.
+   */
+  onError: ((error: unknown) => void) | null = null;
+  private errors = 0;
 
   constructor(
     private readonly update: (dtMs: number) => void,
@@ -74,15 +85,32 @@ export class GameLoop {
 
   private readonly frame = (now: number): void => {
     if (!this._running) return;
-    const t0 = performance.now();
-    this.acc += Math.min(now - this.last, MAX_FRAME_MS);
-    this.last = now;
-    while (this.acc >= this.stepMs) {
-      this.update(this.stepMs);
-      this.acc -= this.stepMs;
+    // Pedir el siguiente cuadro es lo último que hace este método, así que una
+    // excepción dejaría el bucle sin nada registrado y el juego congelado en
+    // silencio: la especificación retira el callback antes de invocarlo, y no
+    // vuelve a ponerlo (F-044).
+    try {
+      const t0 = performance.now();
+      this.acc += Math.min(now - this.last, MAX_FRAME_MS);
+      this.last = now;
+      while (this.acc >= this.stepMs) {
+        this.update(this.stepMs);
+        this.acc -= this.stepMs;
+      }
+      this.render(now, this.acc / this.stepMs);
+      this.frameCostMs = performance.now() - t0;
+      this.errors = 0;
+    } catch (error) {
+      this.errors++;
+      // El reloj se reinicia: el tiempo perdido en el fallo no se recupera de
+      // golpe con una avalancha de pasos.
+      this.resetClock();
+      if (this.errors >= MAX_CONSECUTIVE_ERRORS) {
+        this._running = false;
+        this.onError?.(error);
+        return;
+      }
     }
-    this.render(now, this.acc / this.stepMs);
-    this.frameCostMs = performance.now() - t0;
     this.rafId = this.raf(this.frame);
   };
 }
