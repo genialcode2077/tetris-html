@@ -6,7 +6,7 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 249 unitarias y de propiedades + 95 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 249 unitarias y de propiedades + 101 de extremo a extremo (escritorio y móvil), todas en verde
 - **Seguridad:** política de contenido estricta en la página publicada, verificada inyectando un guion (ADR-0011)
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
 - **Reloj de la simulación:** 240 pasos por segundo (ADR-0009); ninguna pantalla de uso corriente deja cuadros sin lógica
@@ -31,6 +31,15 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-09 · Sesión 24 (agente, iteración periódica) — movimiento reducido, hipótesis descartada
+
+- Tema: qué alcanza de verdad la preferencia de movimiento reducido (informe `docs/research/28`). El criterio 2.3.3 lo pide, y su guía recuerda que el impacto vestibular puede llegar a la náusea y la migraña.
+- **La sospecha era falsa y conviene dejarlo escrito.** El código parecía no aplicar la preferencia a las partículas, y una primera medición lo confirmaba con 160 partículas. Esa medición cambiaba el ajuste sin propagarlo al dibujado. Con el ajuste aplicado como lo haría el jugador: **0 partículas, 0 rastros, 0 temblor**.
+- Antes hubo otra medición engañosa: dos casos seguidos en la misma página daban 160 y luego 320, y parecía que la preferencia **duplicaba** las partículas. Era acumulación de la prueba anterior. Con página limpia, 160 en ambos.
+- Dos mediciones equivocadas seguidas, cada una apuntando a una conclusión distinta y ambas falsas. El orden correcto es comprobar el instrumento antes que el código.
+- Revisado caso por caso, **no falta ninguno**: temblor, partículas, rastro, destellos, modo 3D y hojas de estilo lo respetan, y el modo automático sigue la preferencia del sistema en los dos sentidos. El destello al subir de nivel es solo color, que la norma excluye explícitamente.
+- Lo que sí faltaba: **nada de esto estaba comprobado**. Funcionaba porque nadie lo había tocado. Tres pruebas nuevas con control positivo, verificadas quitando la comprobación del código.
 
 ### 2026-09-09 · Sesión 23 (agente, iteración periódica) — el juego con el móvil tumbado
 

@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Added
+
+- Pruebas que fijan el respeto a la preferencia de movimiento reducido: con ella activada no se emite ninguna partícula, ni rastro, ni temblor, y en automático se sigue la preferencia del sistema. El comportamiento ya era correcto, pero nada lo comprobaba y bastaba quitar una línea para romperlo sin enterarse. Llevan control positivo, para que no pasen si los efectos se rompieran por otro motivo.
+
 ### Fixed
 
 - El juego es jugable con el móvil tumbado. En horizontal los paneles se apilaban y al tablero le quedaban las migajas: la celda bajaba a 8,2 píxeles y el tablero entero medía ochenta de ancho, menos que un botón. Ahora, cuando la pantalla es apaisada y baja, los paneles van a los lados y el tablero se queda con todo el alto: la celda sube a 14,3 píxeles en un móvil de 667×375 y desaparece la barra de desplazamiento.
