@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 400" width="780" height="400" font-family="system-ui,-apple-system,Segoe UI,sans-serif">
+<rect width="780" height="400" fill="#0B0F1A"/>
+<text x="62" y="26" fill="#E8ECF5" font-size="15" font-weight="600">Espera de una pulsación hasta el paso lógico que la atiende</text>
+<text x="62" y="44" fill="#7C89A3" font-size="11.5">La lógica corre a 120 Hz. Por encima de esa cifra hay cuadros que no ejecutan ninguna.</text>
+<line x1="62" y1="324.0" x2="602" y2="324.0" stroke="#1C2334"/>
+<text x="53" y="327.5" fill="#5A6680" font-size="10.5" text-anchor="end">0</text>
+<line x1="62" y1="277.4" x2="602" y2="277.4" stroke="#1C2334"/>
+<text x="53" y="280.9" fill="#5A6680" font-size="10.5" text-anchor="end">2</text>
+<line x1="62" y1="230.8" x2="602" y2="230.8" stroke="#1C2334"/>
+<text x="53" y="234.3" fill="#5A6680" font-size="10.5" text-anchor="end">4</text>
+<line x1="62" y1="184.2" x2="602" y2="184.2" stroke="#1C2334"/>
+<text x="53" y="187.7" fill="#5A6680" font-size="10.5" text-anchor="end">6</text>
+<line x1="62" y1="137.6" x2="602" y2="137.6" stroke="#1C2334"/>
+<text x="53" y="141.1" fill="#5A6680" font-size="10.5" text-anchor="end">8</text>
+<line x1="62" y1="91.0" x2="602" y2="91.0" stroke="#1C2334"/>
+<text x="53" y="94.5" fill="#5A6680" font-size="10.5" text-anchor="end">10</text>
+<text x="16" y="190" fill="#5A6680" font-size="10.5" text-anchor="middle" transform="rotate(-90 16 190)">ms</text>
+<line x1="332.0" y1="56" x2="332.0" y2="324" stroke="#48546E" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="326.0" y="69" fill="#7C89A3" font-size="10.5" text-anchor="end">lógica 120 Hz</text>
+<rect x="80.0" y="129.9" width="24.3" height="194.1" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="108.3" y="129.9" width="24.3" height="194.1" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="107.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">60 Hz</text>
+<text x="107.0" y="362" fill="#4A5670" font-size="10.5" text-anchor="middle">—</text>
+<rect x="170.0" y="207.5" width="24.3" height="116.5" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="198.3" y="207.5" width="24.3" height="116.5" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="197.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">100 Hz</text>
+<text x="197.0" y="362" fill="#4A5670" font-size="10.5" text-anchor="middle">—</text>
+<rect x="260.0" y="226.8" width="24.3" height="97.2" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="288.4" y="226.8" width="24.3" height="97.2" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="287.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">120 Hz</text>
+<text x="287.0" y="362" fill="#4A5670" font-size="10.5" text-anchor="middle">—</text>
+<rect x="350.0" y="81.2" width="24.3" height="242.8" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="378.4" y="216.1" width="24.3" height="107.9" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="377.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">144 Hz</text>
+<text x="377.0" y="362" fill="#F2C94C" font-size="10.5" text-anchor="middle">17 %</text>
+<rect x="440.0" y="112.2" width="24.3" height="211.8" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="468.4" y="214.9" width="24.3" height="109.1" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="467.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">165 Hz</text>
+<text x="467.0" y="362" fill="#F2C94C" font-size="10.5" text-anchor="middle">27 %</text>
+<rect x="530.0" y="178.3" width="24.3" height="145.7" fill="#F2555A" opacity="0.85" rx="2"/>
+<rect x="558.4" y="226.8" width="24.3" height="97.2" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="557.0" y="344" fill="#9AA6BF" font-size="11.5" text-anchor="middle">240 Hz</text>
+<text x="557.0" y="362" fill="#F2C94C" font-size="10.5" text-anchor="middle">50 %</text>
+<text x="62" y="362" fill="#5A6680" font-size="10" text-anchor="end">sin lógica</text>
+<text x="377.0" y="73.2" fill="#F2555A" font-size="10.5" text-anchor="middle">10,4</text>
+<text x="287.0" y="218.8" fill="#9AA6BF" font-size="10.5" text-anchor="middle">4,2</text>
+<rect x="616" y="66" width="13" height="13" fill="#F2555A" opacity="0.85" rx="2"/>
+<text x="636" y="77" fill="#9AA6BF" font-size="11.5">peor caso</text>
+<rect x="616" y="88" width="13" height="13" fill="#38D39F" opacity="0.9" rx="2"/>
+<text x="636" y="99" fill="#9AA6BF" font-size="11.5">media</text>
+<text x="616" y="134" fill="#F2C94C" font-size="11">Cambiar 120 Hz por</text>
+<text x="616" y="149" fill="#F2C94C" font-size="11">144 Hz empeora el</text>
+<text x="616" y="164" fill="#F2C94C" font-size="11">peor caso: 4,2 → 10,4 ms.</text>
+</svg>

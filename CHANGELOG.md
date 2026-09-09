@@ -3,6 +3,11 @@
 Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+### Added
+
+- Pruebas del bucle de juego, que era el único módulo de su carpeta sin ninguna: paso fijo, arrastre del tiempo sobrante entre cuadros, orden de lógica antes de dibujado, tope de parón y reinicio del reloj. Incluyen un presupuesto de latencia que fija cuánto espera una pulsación en pantallas de 30 a 240 Hz.
+
 ### Fixed
 - El sonido del tetris era el más flojo de las cuatro limpiezas, por debajo incluso del de una línea simple, pese a tener el volumen nominal más alto. Medida la sonoridad de los veintiséis efectos con el algoritmo de la UIT-R BS.1770, la recompensa sonora ahora crece con la jugada. La caída rápida, que suena en cada pieza, baja para no competir con las limpiezas.
 

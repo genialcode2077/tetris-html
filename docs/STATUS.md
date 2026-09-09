@@ -6,8 +6,9 @@
 
 - **Fase:** 3 en curso; el renderer premium 3D ya está entregado
 - **Versión:** 0.1.0 · **Demo:** https://genialcode2077.github.io/tetris-html/ · **Repo:** https://github.com/genialcode2077/tetris-html
-- **Pruebas:** 205 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
+- **Pruebas:** 217 unitarias y de propiedades + 51 de extremo a extremo (escritorio y móvil), todas en verde
 - **Cobertura del motor:** 96 % de líneas, 85 % de ramas
+- **Latencia de entrada medida:** 0,20 ms de mediana desde que ocurre la pulsación hasta que la procesa el juego, y 8,0 ms hasta el cuadro siguiente, que es el mínimo posible a 60 Hz
 - **Rendimiento medido:** paso lógico 35 µs (0,4 % del presupuesto); render p95 1,0 ms en escritorio y 1,2 ms en móvil. Con el procesador seis veces más lento y partículas, el peor cuadro se queda en 8,4 ms gracias al presupuesto adaptativo
 - **Tamaño:** 32,7 KB de JavaScript comprimido y 3,2 KB de CSS; el modo 3D son 239 KB aparte que solo descarga quien lo activa
 - **Accesibilidad:** auditoría axe-core WCAG A/AA sin violaciones en las cinco pantallas; las tres paletas verificadas contra las tres dicromacias
@@ -16,7 +17,7 @@
 
 ## Próximos pasos (orden)
 
-1. Latencia de entrada: medir cuánto tarda una pulsación en verse en pantalla y si se puede recortar un cuadro.
+1. Decidir si se sube la frecuencia lógica por encima de 120 Hz (F-033). Requiere ADR y versionar las repeticiones, porque las guardadas dejarían de reproducirse igual.
 2. Prueba manual con lector de pantalla y en un teléfono real (audio, gestos, vibración, modo 3D en GPU móvil, coste de las partículas).
 3. Timbre de los efectos de sonido: su equilibrio ya está medido y corregido, pero si cada sonido es el adecuado sigue necesitando oído.
 
@@ -28,6 +29,16 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 - Verificación de audio y de gestos táctiles: requiere una persona con un dispositivo real.
 
 ## Sesiones
+
+### 2026-09-08 · Sesión 14 (agente, iteración periódica) — latencia de entrada
+
+- Tema del backlog: latencia de entrada, de la pulsación al cuadro dibujado (informe `docs/research/18`).
+- La especificación de HTML fija que las funciones de animación corren antes de recalcular estilos y disposición, y que los eventos se reparten antes de eso. Medido en el navegador con cuarenta pulsaciones de una partida real: 0,20 ms de mediana desde que ocurre la pulsación hasta que el juego la procesa, y 7,8 ms más hasta el cuadro siguiente, que es medio cuadro a 60 Hz. Es el mínimo que permite la plataforma: no hay ningún cuadro que recortar.
+- Se comprobó también si el arranque del bucle mezcla bases de tiempo, porque fija su referencia con `performance.now()` y luego recibe la marca del cuadro. En treinta arranques la diferencia salió siempre positiva. No es un problema, y queda escrito para no volver a sospecharlo.
+- Sí apareció un punto flojo: con la lógica a 120 Hz, en pantallas más rápidas hay cuadros que no ejecutan ningún paso (17 % a 144 Hz, 50 % a 240 Hz) y el peor caso de espera a 144 Hz dobla con creces al de 120 Hz. Cambiar a una pantalla más rápida empeora el peor caso (F-033).
+- No se corrige hoy: subir la frecuencia lógica cambia el momento en que se aplican las pulsaciones grabadas, así que invalidaría todas las repeticiones guardadas. Eso es una decisión con pérdida de datos del usuario, no el retoque de una constante; queda como primer próximo paso con su ADR.
+- Lo que sí faltaba y se hizo: el bucle era el único módulo de `src/game` sin una sola prueba (F-034). Doce pruebas nuevas, verificadas invirtiendo el orden de lógica y dibujado y quitando el tope de parón: cazan ambas regresiones.
+- Evidencia visual en `docs/assets/latencia-por-refresco.svg`.
 
 ### 2026-09-08 · Sesión 13 (agente, iteración periódica) — sonoridad medida de los efectos
 

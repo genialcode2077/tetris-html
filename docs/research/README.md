@@ -21,6 +21,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 15  | [Controles al ver una repetición](15-controles-al-ver-una-repeticion.md)                             | 2026-09-08 | vigente |
 | 16  | [Posiciones preparadas para entrenar](16-posiciones-preparadas-para-entrenar.md)                     | 2026-09-08 | vigente |
 | 17  | [Sonoridad medida de los efectos](17-sonoridad-medida-de-los-efectos.md)                             | 2026-09-08 | vigente |
+| 18  | [Latencia de entrada](18-latencia-de-entrada.md)                                                     | 2026-09-08 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
@@ -44,7 +45,8 @@ Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción 
 | Controles de avance y velocidad al ver una repetición    | hecho, informe 15                                                               |
 | Posiciones preparadas en el modo práctica                | hecho, informe 16                                                               |
 | Prueba en un teléfono real y con lector de pantalla      | **siguiente**: necesita a alguien con un dispositivo                            |
-| Latencia de entrada: de la pulsación al cuadro dibujado  | pendiente                                                                       |
+| Latencia de entrada: de la pulsación al cuadro dibujado  | hecho, informe 18; queda abierto el caso de pantallas rápidas (F-033)           |
+| Subir la frecuencia lógica y versionar las repeticiones  | pendiente: necesita ADR, invalida las repeticiones guardadas (F-033)            |
 
 ## Plantilla
 
