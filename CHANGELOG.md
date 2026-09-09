@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), versionado 
 
 ## [Unreleased]
 
+### Changed
+
+- Con el móvil tumbado, los botones táctiles se reparten en dos columnas a los lados en vez de una franja abajo: mover con el pulgar izquierdo y girar, soltar y reservar con el derecho, como en un mando. Al sujetar el aparato por los extremos los pulgares descansan ahí, y el tablero recupera el alto que ocupaba la franja: la celda pasa de 14,3 a 16,4 píxeles en un móvil de 667×375, el doble que antes de la sesión anterior. Los botones pasan de 34 a 76 píxeles de lado.
+
 ### Added
 
 - Pruebas que fijan el respeto a la preferencia de movimiento reducido: con ella activada no se emite ninguna partícula, ni rastro, ni temblor, y en automático se sigue la preferencia del sistema. El comportamiento ya era correcto, pero nada lo comprobaba y bastaba quitar una línea para romperlo sin enterarse. Llevan control positivo, para que no pasen si los efectos se rompieran por otro motivo.

@@ -1,4 +1,8 @@
 :root {
+  /* Ancho de cada columna de botones táctiles con el móvil tumbado, y alto que
+     hay que dejar libre arriba para no pisar la barra superior. */
+  --pad-w: 76px;
+  --topbar-h: 38px;
   --bg: #0b0f1a;
   --bg-2: #141a2e;
   --panel: rgba(255, 255, 255, 0.04);
@@ -850,5 +854,61 @@ body {
   .touch-controls button {
     min-height: 34px;
     font-size: 15px;
+  }
+}
+
+/* Con el móvil tumbado se sostiene con las dos manos y los pulgares caen en los
+   laterales, no en el centro de abajo (docs/research/29). Los botones se reparten
+   a los lados: quedan bajo los pulgares y el tablero recupera el alto que ocupaba
+   la franja inferior. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .touch-controls {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: var(--pad-w) 1fr var(--pad-w);
+    grid-template-rows: repeat(4, 1fr);
+    align-content: center;
+    gap: 6px;
+    /* El hueco de arriba deja libre la barra superior: sin él, el botón de
+       girar quedaba debajo del de pantalla completa. */
+    padding: calc(var(--topbar-h) + 4px) calc(6px + env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom)) calc(6px + env(safe-area-inset-left));
+    /* El hueco central deja pasar los toques al tablero. */
+    pointer-events: none;
+    z-index: 2;
+  }
+  .touch-controls button {
+    pointer-events: auto;
+    min-height: 0;
+    font-size: 17px;
+  }
+  /* Mover con el pulgar izquierdo; girar y soltar con el derecho, como en un mando. */
+  .touch-controls [data-action='left'] {
+    grid-area: 1 / 1;
+  }
+  .touch-controls [data-action='right'] {
+    grid-area: 2 / 1;
+  }
+  .touch-controls [data-action='softDrop'] {
+    grid-area: 3 / 1 / 5 / 2;
+  }
+  .touch-controls [data-action='ccw'] {
+    grid-area: 1 / 3;
+  }
+  .touch-controls [data-action='cw'] {
+    grid-area: 2 / 3;
+  }
+  .touch-controls [data-action='hardDrop'] {
+    grid-area: 3 / 3;
+  }
+  .touch-controls [data-action='hold'] {
+    grid-area: 4 / 3;
+    font-size: 13px;
+  }
+  /* El juego se aparta de las dos columnas de botones. */
+  .game {
+    padding-left: calc(var(--pad-w) + 12px + env(safe-area-inset-left));
+    padding-right: calc(var(--pad-w) + 12px + env(safe-area-inset-right));
   }
 }

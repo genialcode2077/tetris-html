@@ -96,9 +96,9 @@ test('los controles táctiles caben sin desbordarse @responsive', async ({ page 
  * regresión del reparto haría fallar la prueba.
  */
 const HORIZONTALES = [
-  { name: '915×412', width: 915, height: 412, minCell: 14 },
-  { name: '667×375', width: 667, height: 375, minCell: 12 },
-  { name: '640×360', width: 640, height: 360, minCell: 11 },
+  { name: '915×412', width: 915, height: 412, minCell: 16 },
+  { name: '667×375', width: 667, height: 375, minCell: 15 },
+  { name: '640×360', width: 640, height: 360, minCell: 14 },
 ];
 
 for (const size of HORIZONTALES) {
@@ -118,7 +118,17 @@ for (const size of HORIZONTALES) {
       const botones = [...document.querySelectorAll<HTMLElement>('.touch-controls button')].map(
         (b) => b.getBoundingClientRect(),
       );
+      const tablero = canvas;
+      const botonPantalla = document.getElementById('btn-fullscreen')?.getBoundingClientRect();
+      const cruza = (a: DOMRect, b: DOMRect): boolean =>
+        a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom;
       return {
+        tapanTablero: tablero ? botones.some((b) => cruza(b, tablero)) : false,
+        chocanConBarra: botonPantalla
+          ? [...document.querySelectorAll<HTMLElement>('.touch-controls button')]
+              .filter((b) => cruza(b.getBoundingClientRect(), botonPantalla))
+              .map((b) => b.dataset.action ?? '?')
+          : [],
         ancho: canvas ? Math.round(canvas.width) : 0,
         scrollWidth: doc.scrollWidth,
         clientWidth: doc.clientWidth,
@@ -133,9 +143,12 @@ for (const size of HORIZONTALES) {
     // Nada se sale, ni a lo ancho ni a lo alto: con tan poca altura era fácil.
     expect(m.scrollWidth).toBeLessThanOrEqual(m.clientWidth + 1);
     expect(m.scrollHeight).toBeLessThanOrEqual(m.clientHeight + 1);
-    // Donde hay táctil, los botones siguen por encima del mínimo de la norma.
+    // Donde hay táctil, los botones siguen por encima del mínimo de la norma y
+    // no se meten donde no deben (docs/research/29).
     if (m.tactilesVisibles) {
       expect(m.botonMin, 'lado menor de los botones táctiles').toBeGreaterThanOrEqual(24);
+      expect(m.tapanTablero, 'botones encima del tablero').toBe(false);
+      expect(m.chocanConBarra, 'botones encima de la barra superior').toEqual([]);
     }
   });
 }

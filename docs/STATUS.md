@@ -32,6 +32,15 @@ Los dos últimos necesitan a una persona con un dispositivo y con oído; no se p
 
 ## Sesiones
 
+### 2026-09-09 · Sesión 25 (agente, iteración periódica) — controles al alcance del pulgar
+
+- Tema: dónde poner los botones táctiles con el móvil tumbado (informe `docs/research/29`). Era el siguiente paso que dejó anotado el informe 27.
+- Fuente: el estudio de observación de Hoober, 1333 personas en la calle, con el reparto de agarres (49 % una mano, 36 % acunado, 15 % dos pulgares) y las zonas de alcance. La conclusión que aplica es geométrica: al sujetar el teléfono por los extremos, los pulgares descansan en los laterales, y una fila centrada abajo obliga a estirarlos hacia dentro.
+- Los botones pasan a dos columnas laterales, con el reparto de un mando: mover a la izquierda, girar y soltar a la derecha. Solo cuando la pantalla es apaisada, baja **y el puntero es grueso**: en un portátil con ventana baja no hay pulgares que alcanzar.
+- Medido: la celda pasa de 14,3 a **16,4 px** en 667×375 y de 13,3 a 15,4 en 640×360. Frente al punto de partida de la sesión 23 (8,2 px), **se ha duplicado**. Los botones pasan de 34 a 76 px de lado.
+- **La primera versión pisaba el botón de pantalla completa**, y se vio en la captura, no en las medidas. Corregido dejando libre el alto de la barra superior, con una prueba nueva que lo comprueba porque era invisible para las que ya había.
+- De paso se corrigió el índice de investigación: «guardar la partida en curso» figuraba como pendiente y se había hecho en la sesión 17.
+
 ### 2026-09-09 · Sesión 24 (agente, iteración periódica) — movimiento reducido, hipótesis descartada
 
 - Tema: qué alcanza de verdad la preferencia de movimiento reducido (informe `docs/research/28`). El criterio 2.3.3 lo pide, y su guía recuerda que el impacto vestibular puede llegar a la náusea y la migraña.

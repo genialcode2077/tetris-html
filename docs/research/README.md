@@ -32,6 +32,7 @@ Cada informe es fechado y termina con "Decisiones recomendadas" y "Riesgos". Las
 | 26  | [Política de seguridad de contenido](26-politica-de-seguridad-de-contenido.md)                       | 2026-09-09 | vigente |
 | 27  | [El juego en horizontal](27-el-juego-en-horizontal.md)                                               | 2026-09-09 | vigente |
 | 28  | [Movimiento reducido](28-movimiento-reducido.md)                                                     | 2026-09-09 | vigente |
+| 29  | [Controles al alcance del pulgar](29-controles-al-alcance-del-pulgar.md)                             | 2026-09-09 | vigente |
 
 ## Backlog de investigación (para iteraciones periódicas)
 
@@ -59,7 +60,7 @@ Orden sugerido; cada una produce un informe `NN-tema.md` y al menos una acción 
 | Subir la frecuencia lógica y versionar las repeticiones  | hecho, informe 19 y ADR-0009; ninguna repetición se pierde                                |
 | Actualización de la app instalada sin perder la partida  | hecho, informe 20 y ADR-0010                                                              |
 | Arranque y estabilidad visual                            | medido, informe 20: 140 ms al primer pintado y 0,035 de desplazamiento; nada que arreglar |
-| Guardar la partida en curso al cerrar la pestaña         | pendiente                                                                                 |
+| Guardar la partida en curso al cerrar la pestaña         | hecho, informe 21 y sesión 17                                                             |
 
 ## Plantilla
 
